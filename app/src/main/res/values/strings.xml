@@ -12,7 +12,9 @@
          "version":1,
          "data":[
             "edu.mit.media.funf.probe.builtin.WifiProbe",
-            "edu.mit.media.funf.probe.builtin.LocationProbe"
+            "edu.mit.media.funf.probe.builtin.LocationProbe",
+            "edu.mit.media.funf.probe.builtin.CellTowerProbe",
+            "tprz.signaltracker.CellSignalProbe"
          ]
         }
     </string>

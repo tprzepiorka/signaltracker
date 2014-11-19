@@ -26,6 +26,7 @@ import edu.mit.media.funf.FunfManager;
 import edu.mit.media.funf.json.IJsonObject;
 import edu.mit.media.funf.pipeline.BasicPipeline;
 import edu.mit.media.funf.probe.Probe;
+import edu.mit.media.funf.probe.builtin.CellTowerProbe;
 import edu.mit.media.funf.probe.builtin.SimpleLocationProbe;
 import edu.mit.media.funf.probe.builtin.WifiProbe;
 import edu.mit.media.funf.storage.NameValueDatabaseHelper;
@@ -38,6 +39,8 @@ public class MainActivity extends Activity  implements Probe.DataListener{
     private BasicPipeline pipeline;
     private WifiProbe wifiProbe;
     private SimpleLocationProbe locationProbe;
+    private CellTowerProbe cellTowerProbe;
+    private CellSignalProbe cellSignalProbe;
     private CheckBox enabledCheckbox;
     private Button archiveButton, scanNowButton;
     private TextView dataCountView;
@@ -50,9 +53,14 @@ public class MainActivity extends Activity  implements Probe.DataListener{
             Gson gson = funfManager.getGson();
             wifiProbe = gson.fromJson(new JsonObject(), WifiProbe.class);
             locationProbe = gson.fromJson(new JsonObject(), SimpleLocationProbe.class);
+            cellTowerProbe = gson.fromJson(new JsonObject(), CellTowerProbe.class);
+           cellSignalProbe = gson.fromJson(new JsonObject(), CellSignalProbe.class);
             pipeline = (BasicPipeline) funfManager.getRegisteredPipeline(PIPELINE_NAME);
             wifiProbe.registerPassiveListener(MainActivity.this);
             locationProbe.registerPassiveListener(MainActivity.this);
+            cellTowerProbe.registerPassiveListener(MainActivity.this);
+           cellSignalProbe.registerPassiveListener(MainActivity.this);
+
 
             // This checkbox enables or disables the pipeline
             enabledCheckbox.setChecked(pipeline.isEnabled());
@@ -130,6 +138,8 @@ public class MainActivity extends Activity  implements Probe.DataListener{
                     // Manually register the pipeline
                     wifiProbe.registerListener(pipeline);
                     locationProbe.registerListener(pipeline);
+                    cellTowerProbe.registerListener(pipeline);
+                    cellSignalProbe.registerListener(pipeline);
                 } else {
                     Toast.makeText(getBaseContext(), "Pipeline is not enabled.", Toast.LENGTH_SHORT).show();
                 }
