@@ -1,42 +1,79 @@
 package tprz.signaltracker;
 
 import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
-import android.telephony.CellInfo;
-import android.telephony.CellInfoGsm;
-import android.telephony.CellSignalStrengthGsm;
+import android.telephony.PhoneStateListener;
+import android.telephony.SignalStrength;
 import android.telephony.TelephonyManager;
-import android.telephony.gsm.GsmCellLocation;
 
-import java.util.List;
+import java.util.HashMap;
 
 import edu.mit.media.funf.probe.Probe;
-import edu.mit.media.funf.probe.builtin.ProbeKeys;
 
 /**
  * Created by Thomas on 19-Nov-14.
  */
 public class CellSignalProbe extends Probe.Base  {
+    private int latestGsmSignalStrength = -1;
+    TelephonyManager manager;
+    MyPhoneStateListener myListener = new MyPhoneStateListener();
+
     @Override
     protected void onStart() {
         super.onStart();
-        sendData(getGson().toJsonTree(getData()).getAsJsonObject());
-        stop();
+        manager = (TelephonyManager) getContext().getSystemService(Context.TELEPHONY_SERVICE);
+        MyPhoneStateListener myListener = new MyPhoneStateListener();
+        manager.listen(myListener ,PhoneStateListener.LISTEN_SIGNAL_STRENGTHS);
+        //sendData(getGson().toJsonTree(getData()).getAsJsonObject());
+        //stop();
     }
 
-    private Bundle getData() {
-        TelephonyManager manager = (TelephonyManager) getContext().getSystemService(Context.TELEPHONY_SERVICE);
-        List<CellInfo> cellInfos = manager.getAllCellInfo();
-        CellInfoGsm cellInfoGsm = (CellInfoGsm)manager.getAllCellInfo().get(0);
-        CellSignalStrengthGsm cellSignalStrengthGsm = cellInfoGsm.getCellSignalStrength();
-        int cellDbm = cellSignalStrengthGsm.getDbm();
-
-        Bundle data = new Bundle();
-        data.putInt("dbm", cellDbm);
-//        data.putInt(TYPE, cellSignalStrengthGsm.getLevel());
-
-        return data;
+    @Override
+    protected void onEnable() {
+     //   super.onStart();
+//        sendData(getGson().toJsonTree(getData()).getAsJsonObject());
+        //stop();
     }
+
+    private HashMap<String, String> getData() {
+        HashMap<String, String> map = new HashMap<String, String>();
+        ConnectivityManager cm =
+                (ConnectivityManager)getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = cm.getActiveNetworkInfo();
+        String typeName = activeNetworkInfo.getTypeName();
+        String subTypeName = activeNetworkInfo.getSubtypeName();
+
+        map.put("signalStrength", "" + latestGsmSignalStrength);
+        map.put("connectionType", typeName);
+        map.put("connectionSubType", subTypeName);
+
+        return map;
+    }
+
+    private class MyPhoneStateListener extends PhoneStateListener {
+        public int signalStrengthInt =0;
+        @Override
+        public void onSignalStrengthsChanged(SignalStrength signalStrength){
+            super.onSignalStrengthsChanged(signalStrength);
+            latestGsmSignalStrength  = signalStrength.getGsmSignalStrength();
+
+            HashMap<String, String> map = new HashMap<String, String>();
+            ConnectivityManager cm =
+                    (ConnectivityManager)getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+            NetworkInfo activeNetworkInfo = cm.getActiveNetworkInfo();
+            String typeName = activeNetworkInfo.getTypeName();
+            String subTypeName = activeNetworkInfo.getSubtypeName();
+
+            map.put("signalStrength", "" + latestGsmSignalStrength);
+            map.put("connectionType", typeName);
+            map.put("connectionSubType", subTypeName);
+
+            sendData(getGson().toJsonTree(map).getAsJsonObject());
+        }
+
+    };
 
 
 }

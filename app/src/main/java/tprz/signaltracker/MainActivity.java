@@ -37,9 +37,9 @@ public class MainActivity extends Activity  implements Probe.DataListener{
     public static final String PIPELINE_NAME = "default";
     private FunfManager funfManager;
     private BasicPipeline pipeline;
-    private WifiProbe wifiProbe;
-    private SimpleLocationProbe locationProbe;
-    private CellTowerProbe cellTowerProbe;
+//    private WifiProbe wifiProbe;
+//    private SimpleLocationProbe locationProbe;
+//    private CellTowerProbe cellTowerProbe;
     private CellSignalProbe cellSignalProbe;
     private CheckBox enabledCheckbox;
     private Button archiveButton, scanNowButton;
@@ -51,14 +51,14 @@ public class MainActivity extends Activity  implements Probe.DataListener{
             funfManager = ((FunfManager.LocalBinder)service).getManager();
 
             Gson gson = funfManager.getGson();
-            wifiProbe = gson.fromJson(new JsonObject(), WifiProbe.class);
-            locationProbe = gson.fromJson(new JsonObject(), SimpleLocationProbe.class);
-            cellTowerProbe = gson.fromJson(new JsonObject(), CellTowerProbe.class);
+//            wifiProbe = gson.fromJson(new JsonObject(), WifiProbe.class);
+//            locationProbe = gson.fromJson(new JsonObject(), SimpleLocationProbe.class);
+//            cellTowerProbe = gson.fromJson(new JsonObject(), CellTowerProbe.class);
            cellSignalProbe = gson.fromJson(new JsonObject(), CellSignalProbe.class);
             pipeline = (BasicPipeline) funfManager.getRegisteredPipeline(PIPELINE_NAME);
-            wifiProbe.registerPassiveListener(MainActivity.this);
-            locationProbe.registerPassiveListener(MainActivity.this);
-            cellTowerProbe.registerPassiveListener(MainActivity.this);
+//            wifiProbe.registerPassiveListener(MainActivity.this);
+//            locationProbe.registerPassiveListener(MainActivity.this);
+//            cellTowerProbe.registerPassiveListener(MainActivity.this);
            cellSignalProbe.registerPassiveListener(MainActivity.this);
 
 
@@ -136,9 +136,9 @@ public class MainActivity extends Activity  implements Probe.DataListener{
             public void onClick(View v) {
                 if (pipeline.isEnabled()) {
                     // Manually register the pipeline
-                    wifiProbe.registerListener(pipeline);
-                    locationProbe.registerListener(pipeline);
-                    cellTowerProbe.registerListener(pipeline);
+                    //wifiProbe.registerListener(pipeline);
+//                    locationProbe.registerListener(pipeline);
+//                    cellTowerProbe.registerListener(pipeline);
                     cellSignalProbe.registerListener(pipeline);
                 } else {
                     Toast.makeText(getBaseContext(), "Pipeline is not enabled.", Toast.LENGTH_SHORT).show();
@@ -184,8 +184,8 @@ public class MainActivity extends Activity  implements Probe.DataListener{
     public void onDataCompleted(IJsonObject probeConfig, JsonElement checkpoint) {
         updateScanCount();
         // Re-register to keep listening after probe completes.
-        wifiProbe.registerPassiveListener(this);
-        locationProbe.registerPassiveListener(this);
+      //  wifiProbe.registerPassiveListener(this);
+//        locationProbe.registerPassiveListener(this);
     }
 
     private static final String TOTAL_COUNT_SQL = "SELECT count(*) FROM " + NameValueDatabaseHelper.DATA_TABLE.name;
