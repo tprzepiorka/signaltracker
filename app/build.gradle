@@ -1,13 +1,13 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 21
+    compileSdkVersion 19
     buildToolsVersion "21.1.1"
 
     defaultConfig {
         applicationId "tprz.signaltracker"
-        minSdkVersion 17
-        targetSdkVersion 21
+        minSdkVersion 19
+        targetSdkVersion 19
         versionCode 1
         versionName "1.0"
     }
@@ -22,4 +22,18 @@ android {
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile files('libs/gson-2.1.funf.jar')
+    compile files('libs/acra-4.5.0.jar')
+}
+
+
+apply plugin: 'android'
+
+repositories {
+    maven {
+        url "https://mint.splunk.com/gradle/"
+    }
+}
+
+dependencies {
+    compile "com.splunk.mint:mint:4.0.6"
 }

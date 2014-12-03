@@ -21,12 +21,15 @@ import android.widget.Toast;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.splunk.mint.Mint;
 
 import edu.mit.media.funf.FunfManager;
 import edu.mit.media.funf.json.IJsonObject;
 import edu.mit.media.funf.pipeline.BasicPipeline;
 import edu.mit.media.funf.probe.Probe;
 import edu.mit.media.funf.probe.builtin.CellTowerProbe;
+import edu.mit.media.funf.probe.builtin.HardwareInfoProbe;
+import edu.mit.media.funf.probe.builtin.ProbeKeys;
 import edu.mit.media.funf.probe.builtin.SimpleLocationProbe;
 import edu.mit.media.funf.probe.builtin.WifiProbe;
 import edu.mit.media.funf.storage.NameValueDatabaseHelper;
@@ -38,9 +41,10 @@ public class MainActivity extends Activity  implements Probe.DataListener{
     private FunfManager funfManager;
     private BasicPipeline pipeline;
 //    private WifiProbe wifiProbe;
-//    private SimpleLocationProbe locationProbe;
+    private SimpleLocationProbe locationProbe;
 //    private CellTowerProbe cellTowerProbe;
     private CellSignalProbe cellSignalProbe;
+    private HardwareInfoProbe hardwareInfoProbe;
     private CheckBox enabledCheckbox;
     private Button archiveButton, scanNowButton;
     private TextView dataCountView;
@@ -52,13 +56,15 @@ public class MainActivity extends Activity  implements Probe.DataListener{
 
             Gson gson = funfManager.getGson();
 //            wifiProbe = gson.fromJson(new JsonObject(), WifiProbe.class);
-//            locationProbe = gson.fromJson(new JsonObject(), SimpleLocationProbe.class);
+            locationProbe = gson.fromJson(new JsonObject(), SimpleLocationProbe.class);
 //            cellTowerProbe = gson.fromJson(new JsonObject(), CellTowerProbe.class);
-           cellSignalProbe = gson.fromJson(new JsonObject(), CellSignalProbe.class);
+            cellSignalProbe = gson.fromJson(new JsonObject(), CellSignalProbe.class);
+            hardwareInfoProbe = gson.fromJson(new JsonObject(), HardwareInfoProbe.class);
             pipeline = (BasicPipeline) funfManager.getRegisteredPipeline(PIPELINE_NAME);
 //            wifiProbe.registerPassiveListener(MainActivity.this);
-//            locationProbe.registerPassiveListener(MainActivity.this);
+            locationProbe.registerPassiveListener(MainActivity.this);
 //            cellTowerProbe.registerPassiveListener(MainActivity.this);
+            hardwareInfoProbe.registerPassiveListener(MainActivity.this);
            cellSignalProbe.registerPassiveListener(MainActivity.this);
 
 
@@ -93,6 +99,7 @@ public class MainActivity extends Activity  implements Probe.DataListener{
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Mint.initAndStartSession(MainActivity.this, "65ac44bd");
         setContentView(R.layout.main);
 
         // Displays the count of rows in the data
@@ -137,9 +144,10 @@ public class MainActivity extends Activity  implements Probe.DataListener{
                 if (pipeline.isEnabled()) {
                     // Manually register the pipeline
                     //wifiProbe.registerListener(pipeline);
-//                    locationProbe.registerListener(pipeline);
+                    locationProbe.registerListener(pipeline);
 //                    cellTowerProbe.registerListener(pipeline);
                     cellSignalProbe.registerListener(pipeline);
+                    hardwareInfoProbe.registerListener(pipeline);
                 } else {
                     Toast.makeText(getBaseContext(), "Pipeline is not enabled.", Toast.LENGTH_SHORT).show();
                 }
@@ -148,6 +156,8 @@ public class MainActivity extends Activity  implements Probe.DataListener{
 
         // Bind to the service, to create the connection with FunfManager
         bindService(new Intent(this, FunfManager.class), funfManagerConn, BIND_AUTO_CREATE);
+
+
     }
 
 
@@ -186,6 +196,8 @@ public class MainActivity extends Activity  implements Probe.DataListener{
         // Re-register to keep listening after probe completes.
       //  wifiProbe.registerPassiveListener(this);
 //        locationProbe.registerPassiveListener(this);
+        cellSignalProbe.registerPassiveListener(this);
+        hardwareInfoProbe.registerPassiveListener(this);
     }
 
     private static final String TOTAL_COUNT_SQL = "SELECT count(*) FROM " + NameValueDatabaseHelper.DATA_TABLE.name;

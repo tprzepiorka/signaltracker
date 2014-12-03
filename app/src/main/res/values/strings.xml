@@ -10,12 +10,27 @@
         {"@type":"edu.mit.media.funf.pipeline.BasicPipeline",
          "name":"default",
          "version":1,
-         "data":[
-            <!--"edu.mit.media.funf.probe.builtin.WifiProbe",-->
-            <!--"edu.mit.media.funf.probe.builtin.LocationProbe",-->
-            <!--"edu.mit.media.funf.probe.builtin.CellTowerProbe",-->
-            "tprz.signaltracker.CellSignalProbe"
-         ]
+         "data": [
+                 {"@type": "edu.mit.media.funf.probe.builtin.HardwareInfoProbe"
+                 },
+                {"@type": "tprz.signaltracker.CellSignalProbe",
+                  "@schedule": {"interval": 30,  "strict": true}
+                 },
+                {"@type": "edu.mit.media.funf.probe.builtin.LocationProbe",
+                  "@schedule": {"interval": 30,  "strict": true}
+                 }
+         ],
+        "archive": {
+            <!--"password": "TCfO2RZ0wsob",-->
+            "name": "SignalTracker",
+            "@schedule": {"interval": 300}
+        }
+         <!--"data":[-->
+            <!--&lt;!&ndash;"edu.mit.media.funf.probe.builtin.WifiProbe",&ndash;&gt;-->
+            <!--&lt;!&ndash;"edu.mit.media.funf.probe.builtin.LocationProbe",&ndash;&gt;-->
+            <!--&lt;!&ndash;"edu.mit.media.funf.probe.builtin.CellTowerProbe",&ndash;&gt;-->
+            <!--"tprz.signaltracker.CellSignalProbe"-->
+         <!--]-->
         }
     </string>
 </resources>
