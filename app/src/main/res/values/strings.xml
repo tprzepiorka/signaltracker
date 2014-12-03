@@ -13,8 +13,8 @@
          "data": [
                  {"@type": "edu.mit.media.funf.probe.builtin.HardwareInfoProbe"
                  },
-                {"@type": "tprz.signaltracker.CellSignalProbe",
-                  "@schedule": {"interval": 30,  "strict": true}
+                {"@type": "tprz.signaltracker.CellSignalProbe"
+                  <!--"@schedule": {"interval": 30,  "strict": true}-->
                  },
                 {"@type": "edu.mit.media.funf.probe.builtin.LocationProbe",
                   "@schedule": {"interval": 30,  "strict": true}

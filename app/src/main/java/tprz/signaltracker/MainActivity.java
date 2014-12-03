@@ -195,7 +195,7 @@ public class MainActivity extends Activity  implements Probe.DataListener{
         updateScanCount();
         // Re-register to keep listening after probe completes.
       //  wifiProbe.registerPassiveListener(this);
-//        locationProbe.registerPassiveListener(this);
+        locationProbe.registerPassiveListener(this);
         cellSignalProbe.registerPassiveListener(this);
         hardwareInfoProbe.registerPassiveListener(this);
     }
