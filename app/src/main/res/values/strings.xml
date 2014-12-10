@@ -18,6 +18,12 @@
                  },
                 {"@type": "edu.mit.media.funf.probe.builtin.LocationProbe",
                   "@schedule": {"interval": 30,  "strict": true}
+                 },
+                {"@type": "edu.mit.media.funf.probe.builtin.WifiProbe",
+                  "@schedule": {"interval": 30}
+                 },
+                {"@type": "tprz.signaltracker.SkyhookProbe",
+                  "@schedule": {"interval": 30}
                  }
          ],
         "archive": {

@@ -27,9 +27,7 @@ import edu.mit.media.funf.FunfManager;
 import edu.mit.media.funf.json.IJsonObject;
 import edu.mit.media.funf.pipeline.BasicPipeline;
 import edu.mit.media.funf.probe.Probe;
-import edu.mit.media.funf.probe.builtin.CellTowerProbe;
 import edu.mit.media.funf.probe.builtin.HardwareInfoProbe;
-import edu.mit.media.funf.probe.builtin.ProbeKeys;
 import edu.mit.media.funf.probe.builtin.SimpleLocationProbe;
 import edu.mit.media.funf.probe.builtin.WifiProbe;
 import edu.mit.media.funf.storage.NameValueDatabaseHelper;
@@ -40,10 +38,11 @@ public class MainActivity extends Activity  implements Probe.DataListener{
     public static final String PIPELINE_NAME = "default";
     private FunfManager funfManager;
     private BasicPipeline pipeline;
-//    private WifiProbe wifiProbe;
+    private WifiProbe wifiProbe;
     private SimpleLocationProbe locationProbe;
 //    private CellTowerProbe cellTowerProbe;
     private CellSignalProbe cellSignalProbe;
+    private SkyhookProbe skyhookProbe;
     private HardwareInfoProbe hardwareInfoProbe;
     private CheckBox enabledCheckbox;
     private Button archiveButton, scanNowButton;
@@ -55,17 +54,19 @@ public class MainActivity extends Activity  implements Probe.DataListener{
             funfManager = ((FunfManager.LocalBinder)service).getManager();
 
             Gson gson = funfManager.getGson();
-//            wifiProbe = gson.fromJson(new JsonObject(), WifiProbe.class);
+            wifiProbe = gson.fromJson(new JsonObject(), WifiProbe.class);
             locationProbe = gson.fromJson(new JsonObject(), SimpleLocationProbe.class);
 //            cellTowerProbe = gson.fromJson(new JsonObject(), CellTowerProbe.class);
             cellSignalProbe = gson.fromJson(new JsonObject(), CellSignalProbe.class);
+            skyhookProbe = gson.fromJson(new JsonObject(), SkyhookProbe.class);
             hardwareInfoProbe = gson.fromJson(new JsonObject(), HardwareInfoProbe.class);
             pipeline = (BasicPipeline) funfManager.getRegisteredPipeline(PIPELINE_NAME);
-//            wifiProbe.registerPassiveListener(MainActivity.this);
+            wifiProbe.registerPassiveListener(MainActivity.this);
             locationProbe.registerPassiveListener(MainActivity.this);
 //            cellTowerProbe.registerPassiveListener(MainActivity.this);
             hardwareInfoProbe.registerPassiveListener(MainActivity.this);
-           cellSignalProbe.registerPassiveListener(MainActivity.this);
+            cellSignalProbe.registerPassiveListener(MainActivity.this);
+            skyhookProbe.registerPassiveListener(MainActivity.this);
 
 
             // This checkbox enables or disables the pipeline
@@ -143,10 +144,11 @@ public class MainActivity extends Activity  implements Probe.DataListener{
             public void onClick(View v) {
                 if (pipeline.isEnabled()) {
                     // Manually register the pipeline
-                    //wifiProbe.registerListener(pipeline);
+                    wifiProbe.registerListener(pipeline);
                     locationProbe.registerListener(pipeline);
 //                    cellTowerProbe.registerListener(pipeline);
                     cellSignalProbe.registerListener(pipeline);
+                    skyhookProbe.registerListener(pipeline);
                     hardwareInfoProbe.registerListener(pipeline);
                 } else {
                     Toast.makeText(getBaseContext(), "Pipeline is not enabled.", Toast.LENGTH_SHORT).show();
@@ -194,9 +196,10 @@ public class MainActivity extends Activity  implements Probe.DataListener{
     public void onDataCompleted(IJsonObject probeConfig, JsonElement checkpoint) {
         updateScanCount();
         // Re-register to keep listening after probe completes.
-      //  wifiProbe.registerPassiveListener(this);
+        wifiProbe.registerPassiveListener(this);
         locationProbe.registerPassiveListener(this);
         cellSignalProbe.registerPassiveListener(this);
+        skyhookProbe.registerPassiveListener(this);
         hardwareInfoProbe.registerPassiveListener(this);
     }
 
