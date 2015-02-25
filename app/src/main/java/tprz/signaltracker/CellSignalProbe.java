@@ -23,7 +23,6 @@ import android.telephony.TelephonyManager;
 import android.util.Log;
 
 import com.google.gson.JsonObject;
-import com.skyhookwireless.wps.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -50,45 +49,10 @@ public class CellSignalProbe extends Probe.Base implements Probe.PassiveProbe {
     private MyPhoneStateListener myListener;
     private PowerManager.WakeLock wakeLock;
 
-    private boolean testIsFirst = true;
-    WPSLocationCallback callback = new WPSLocationCallback()
-    {
-        // What the application should do after it's done
-        public void done()
-        {
-            // after done() returns, you can make more WPS calls.
-        }
-
-        // What the application should do if an error occurs
-        public WPSContinuation handleError(WPSReturnCode error)
-        {
-           // handleWPSError(error); // you'll implement handleWPSError()
-
-            // To retry the location call on error use WPS_CONTINUE,
-            // otherwise return WPS_STOP
-            return WPSContinuation.WPS_STOP;
-        }
-
-        // Implements the actions using the location object
-        public void handleWPSLocation(WPSLocation location)
-        {
-            // you'll implement printLocation()
-            Log.d("skyhook api", "" + location.getLatitude() + ", " + location.getLongitude() + ": " + location.getStreetAddress());
-        }
-    };
 
     @Override
     protected void onStart() {
         super.onStart();
-
-        if(testIsFirst) {
-            testIsFirst = false;
-            XPS _xps = new XPS(getContext());
-            _xps.setKey("eJwz5DQ0AAEjCzMLzmpXI0NXI3MDM11TJyDhauhopGtgaeGsa2Jp7ORi5GJpZmpiWAsADhMK9A");
-            _xps.getLocation(null,
-                    WPSStreetAddressLookup.WPS_FULL_STREET_ADDRESS_LOOKUP,
-                    callback);
-        }
 
         if(supportsCellInfo) {
             Log.i("CelSignalProbe", "Using getAllCellInfo()");
@@ -137,7 +101,7 @@ public class CellSignalProbe extends Probe.Base implements Probe.PassiveProbe {
 
     @Override
     protected void onDisable() {
-        Log.v("CelSignalProbe", "onEnable().");
+        Log.v("CelSignalProbe", "onDisable().");
         super.onDisable();
 
         if(wakeLock != null && wakeLock.isHeld()) {

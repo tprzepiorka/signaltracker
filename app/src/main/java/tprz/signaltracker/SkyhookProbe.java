@@ -33,9 +33,12 @@ public class SkyhookProbe extends Probe.Base implements Probe.PassiveProbe {
         @Override
         public void done() {
             // nothing to do
+            Log.d("skyhookprobe", "done() in skyhookapi");
+            stop();
         }
 
         // What the application should do if an error occurs
+        @Override
         public WPSContinuation handleError(WPSReturnCode error)
         {
             final byte[] key = Base64.decode(offlineKey, Base64.DEFAULT);
@@ -49,6 +52,7 @@ public class SkyhookProbe extends Probe.Base implements Probe.PassiveProbe {
         }
 
         // Implements the actions using the location object
+        @Override
         public void handleWPSLocation(WPSLocation location)
         {
             hasSentData = false;
@@ -64,13 +68,17 @@ public class SkyhookProbe extends Probe.Base implements Probe.PassiveProbe {
         private void saveOfflineData(byte[] token) {
             long currTime = (System.currentTimeMillis() / 1000L);
 
-            String tokenString = Base64.encodeToString(token, Base64.DEFAULT);
+            String tokenString = token != null ? Base64.encodeToString(token, Base64.DEFAULT) : "Error";
             OfflineKeyInfo tokenInfo = new OfflineKeyInfo(tokenString, currTime);
             offlineTokenInfos.add(tokenInfo);
 
+            JsonObject jo = new JsonObject();
+            jo.addProperty("token", tokenInfo.getOfflineToken());
+            jo.addProperty("timestamp", currTime);
+
             JsonObject tokenInfoJson = getGson().toJsonTree(tokenInfo.toMap()).getAsJsonObject();
             Log.d("skyhookProbe", "Saving offline data: " + tokenInfo.getOfflineToken());
-            sendData(tokenInfoJson);
+            sendData(jo);
             hasSentData = true;
 
         }
@@ -80,22 +88,23 @@ public class SkyhookProbe extends Probe.Base implements Probe.PassiveProbe {
     @Override
     protected void onStart() {
         super.onStart();
+        Log.d("skyhookProbe", "onStart()");
             _xps.getLocation(null,
                     WPSStreetAddressLookup.WPS_FULL_STREET_ADDRESS_LOOKUP,
                     callback);
 
-        int count = 0;
-        JsonObject skyhookTokenData = new JsonObject();
-        while(!offlineTokenInfos.isEmpty()) {
-            OfflineKeyInfo tokenInfo = offlineTokenInfos.poll();
-            JsonObject tokenInfoJson = getGson().toJsonTree(tokenInfo).getAsJsonObject();
-            skyhookTokenData.add("" + count++, tokenInfoJson);
-        }
-
-        if(count > 0) {
-            Log.v("SkyhookProbe", "Sending " + count + " skyhook offline tokens.");
-            sendData(skyhookTokenData);
-        }
+//        int count = 0;
+//        JsonObject skyhookTokenData = new JsonObject();
+//        while(!offlineTokenInfos.isEmpty()) {
+//            OfflineKeyInfo tokenInfo = offlineTokenInfos.poll();
+//            JsonObject tokenInfoJson = getGson().toJsonTree(tokenInfo).getAsJsonObject();
+//            skyhookTokenData.add("" + count++, tokenInfoJson);
+//        }
+//
+//        if(count > 0) {
+//            Log.v("SkyhookProbe", "Sending " + count + " skyhook offline tokens.");
+//            sendData(skyhookTokenData);
+//        }
     }
 
     @Override
@@ -103,6 +112,7 @@ public class SkyhookProbe extends Probe.Base implements Probe.PassiveProbe {
         super.onEnable();
         if(_xps == null) {
             _xps = new XPS(getContext());
+            // set the API key
             _xps.setKey("eJwz5DQ0AAEjCzMLzmpXI0NXI3MDM11TJyDhauhopGtgaeGsa2Jp7ORi5GJpZmpiWAsADhMK9A");
         }
 
