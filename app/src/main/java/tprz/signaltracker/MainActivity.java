@@ -1,7 +1,9 @@
 package tprz.signaltracker;
 
 import android.app.Activity;
+import android.app.DownloadManager;
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.database.Cursor;
@@ -9,6 +11,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -42,7 +45,7 @@ public class MainActivity extends Activity  implements Probe.DataListener{
     private SimpleLocationProbe locationProbe;
 //    private CellTowerProbe cellTowerProbe;
     private CellSignalProbe cellSignalProbe;
-    private SkyhookProbe skyhookProbe;
+    private BandwidthProbe bandwidthProbe;
     private HardwareInfoProbe hardwareInfoProbe;
     private CheckBox enabledCheckbox;
     private Button archiveButton, scanNowButton;
@@ -58,15 +61,15 @@ public class MainActivity extends Activity  implements Probe.DataListener{
             locationProbe = gson.fromJson(new JsonObject(), SimpleLocationProbe.class);
 //            cellTowerProbe = gson.fromJson(new JsonObject(), CellTowerProbe.class);
             cellSignalProbe = gson.fromJson(new JsonObject(), CellSignalProbe.class);
-            skyhookProbe = gson.fromJson(new JsonObject(), SkyhookProbe.class);
+            bandwidthProbe = gson.fromJson(new JsonObject(), BandwidthProbe.class);
             hardwareInfoProbe = gson.fromJson(new JsonObject(), HardwareInfoProbe.class);
             pipeline = (BasicPipeline) funfManager.getRegisteredPipeline(PIPELINE_NAME);
             wifiProbe.registerPassiveListener(MainActivity.this);
-            locationProbe.registerPassiveListener(MainActivity.this);
-//            cellTowerProbe.registerPassiveListener(MainActivity.this);
-            hardwareInfoProbe.registerPassiveListener(MainActivity.this);
-            cellSignalProbe.registerPassiveListener(MainActivity.this);
-            skyhookProbe.registerPassiveListener(MainActivity.this);
+//            locationProbe.registerPassiveListener(MainActivity.this);
+////            cellTowerProbe.registerPassiveListener(MainActivity.this);
+//            hardwareInfoProbe.registerPassiveListener(MainActivity.this);
+//            cellSignalProbe.registerPassiveListener(MainActivity.this);
+            bandwidthProbe.registerListener(MainActivity.this);
 
 
             // This checkbox enables or disables the pipeline
@@ -80,6 +83,8 @@ public class MainActivity extends Activity  implements Probe.DataListener{
                             pipeline = (BasicPipeline) funfManager.getRegisteredPipeline(PIPELINE_NAME);
                         } else {
                             funfManager.disablePipeline(PIPELINE_NAME);
+                            BandwidthProbe.cancelDownloads((DownloadManager) getApplicationContext().getSystemService(Context.DOWNLOAD_SERVICE));
+                            stopDownloads();
                         }
                     }
                 }
@@ -145,11 +150,11 @@ public class MainActivity extends Activity  implements Probe.DataListener{
                 if (pipeline.isEnabled()) {
                     // Manually register the pipeline
                     wifiProbe.registerListener(pipeline);
-                    locationProbe.registerListener(pipeline);
-//                    cellTowerProbe.registerListener(pipeline);
-                    cellSignalProbe.registerListener(pipeline);
-                    skyhookProbe.registerListener(pipeline);
-                    hardwareInfoProbe.registerListener(pipeline);
+//                    locationProbe.registerListener(pipeline);
+////                    cellTowerProbe.registerListener(pipeline);
+//                    cellSignalProbe.registerListener(pipeline);
+                    bandwidthProbe.registerListener(pipeline);
+//                    hardwareInfoProbe.registerListener(pipeline);
                 } else {
                     Toast.makeText(getBaseContext(), "Pipeline is not enabled.", Toast.LENGTH_SHORT).show();
                 }
@@ -162,7 +167,29 @@ public class MainActivity extends Activity  implements Probe.DataListener{
 
     }
 
+    private void stopDownloads() {
+        DownloadManager manager = (DownloadManager) getApplicationContext().getSystemService(Context.DOWNLOAD_SERVICE);
+            DownloadManager.Query query = new DownloadManager.Query().setFilterByStatus(DownloadManager.STATUS_RUNNING);
+            Cursor c = manager.query(query);
+            c.moveToFirst();
+            while (c.moveToNext()) {
+                Long id = c
+                        .getLong(c
+                                .getColumnIndex(DownloadManager.COLUMN_ID));
+                String status = c
+                        .getString(c
+                                .getColumnIndex(DownloadManager.COLUMN_STATUS));
+//            if(status.equals(DownloadManager.STATUS_RUNNING)) {
+                int res = manager.remove(id);
+                if(res == 0) {
+                    Log.i("BandwidthProbe", "Item was not removed from Download manager");
+                } else {
+                    Log.i("BandwidthProbe", "Removing download with id: " + id);
+                }
+//            }
 
+            }
+    }
 
 
     @Override
@@ -194,13 +221,14 @@ public class MainActivity extends Activity  implements Probe.DataListener{
 
     @Override
     public void onDataCompleted(IJsonObject probeConfig, JsonElement checkpoint) {
+        Log.i("MainActivity", "onDataCompleted");
         updateScanCount();
         // Re-register to keep listening after probe completes.
         wifiProbe.registerPassiveListener(this);
-        locationProbe.registerPassiveListener(this);
-        cellSignalProbe.registerPassiveListener(this);
-        skyhookProbe.registerPassiveListener(this);
-        hardwareInfoProbe.registerPassiveListener(this);
+//        locationProbe.registerPassiveListener(this);
+//        cellSignalProbe.registerPassiveListener(this);
+        bandwidthProbe.registerPassiveListener(this);
+//        hardwareInfoProbe.registerPassiveListener(this);
     }
 
     private static final String TOTAL_COUNT_SQL = "SELECT count(*) FROM " + NameValueDatabaseHelper.DATA_TABLE.name;
@@ -209,17 +237,20 @@ public class MainActivity extends Activity  implements Probe.DataListener{
      */
     private void updateScanCount() {
         // Query the pipeline db for the count of rows in the data table
-        SQLiteDatabase db = pipeline.getDb();
-        Cursor mcursor = db.rawQuery(TOTAL_COUNT_SQL, null);
-        mcursor.moveToFirst();
-        final int count = mcursor.getInt(0);
-        // Update interface on main thread
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                dataCountView.setText("Data Count: " + count);
-            }
-        });
+//        SQLiteDatabase db = pipeline.getDb();
+        //if(db.isOpen()) {
+//            db.close();
+       // }
+//        Cursor mcursor = db.rawQuery(TOTAL_COUNT_SQL, null);
+//        mcursor.moveToFirst();
+//        final int count = mcursor.getInt(0);
+//        // Update interface on main thread
+//        runOnUiThread(new Runnable() {
+//            @Override
+//            public void run() {
+//                dataCountView.setText("Data Count: " + count);
+//            }
+//        });
     }
 
 
