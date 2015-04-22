@@ -29,3 +29,6 @@ Thumbs.db
 # Eclipse project files
 .classpath
 .project
+.idea/.name
+SignalTracker.iml
+app/app.iml
