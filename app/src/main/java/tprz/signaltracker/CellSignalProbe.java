@@ -34,7 +34,7 @@ import edu.mit.media.funf.probe.Probe;
 
 /**
  * CellSignalProbe is a probe to measure the cell signal strength of a mobile device.
- * Created by Thomas on 19-Nov-14.
+ * It support direct and event listener callbacks to get the phone signal strength.
  */
 @Probe.DisplayName("CellSignal")
 @Schedule.DefaultSchedule(interval=10)
@@ -42,20 +42,17 @@ public class CellSignalProbe extends Probe.Base implements Probe.PassiveProbe {
 
     // True if this device we are running supports the getAllCellInfo() API.
     private boolean supportsCellInfo;
-    @SuppressWarnings("FieldCanBeLocal")
-    private int latestGsmSignalStrength = -1;
     private TelephonyManager telephonyManager;
-    @SuppressWarnings("FieldCanBeLocal")
-    private MyPhoneStateListener myListener;
     private PowerManager.WakeLock wakeLock;
 
+    private final String celSignalProbe = "CellSignalProbe";
 
     @Override
     protected void onStart() {
         super.onStart();
 
         if(supportsCellInfo) {
-            Log.i("CelSignalProbe", "Using getAllCellInfo()");
+            Log.i(celSignalProbe, "Using getAllCellInfo()");
 
             List<Map<String, String>> maps = getData();
             JsonObject cellInfoData = new JsonObject();
@@ -63,14 +60,15 @@ public class CellSignalProbe extends Probe.Base implements Probe.PassiveProbe {
             for(Map<String, String> map : maps) {
                 JsonObject cellInfo = getGson().toJsonTree(map).getAsJsonObject();
                 cellInfoData.add("" + count++, cellInfo);
-                Log.v("CelSignalProbe", "Adding cellInfo Data from getAllCellInfo().");
+                Log.v(celSignalProbe, "Adding cellInfo Data from getAllCellInfo().");
             }
-            Log.v("CelSignalProbe", "Sending getAllCellInfo() data.");
+            Log.v(celSignalProbe, "Sending getAllCellInfo() data.");
             sendData(cellInfoData);
 
             stop();
         } else {
-            Log.i("CelSignalProbe", "Using cellSignalChangedListener()");
+            Log.i(celSignalProbe, "Using cellSignalChangedListener()");
+
             // Setup wake lock
             if(wakeLock == null) {
                 PowerManager pm = (PowerManager) getContext().getSystemService(Context.POWER_SERVICE);
@@ -80,7 +78,7 @@ public class CellSignalProbe extends Probe.Base implements Probe.PassiveProbe {
             wakeLock.acquire();
 
             // Use Listener
-            myListener = new MyPhoneStateListener();
+            MyPhoneStateListener myListener = new MyPhoneStateListener();
             telephonyManager.listen(myListener, PhoneStateListener.LISTEN_SIGNAL_STRENGTHS);
         }
 
@@ -88,7 +86,7 @@ public class CellSignalProbe extends Probe.Base implements Probe.PassiveProbe {
 
     @Override
     protected void onEnable() {
-        Log.v("CelSignalProbe", "onEnable().");
+        Log.v(celSignalProbe, "onEnable().");
         super.onEnable();
 
         // Initialise telephony manager
@@ -101,7 +99,7 @@ public class CellSignalProbe extends Probe.Base implements Probe.PassiveProbe {
 
     @Override
     protected void onDisable() {
-        Log.v("CelSignalProbe", "onDisable().");
+        Log.v(celSignalProbe, "onDisable().");
         super.onDisable();
 
         if(wakeLock != null && wakeLock.isHeld()) {
@@ -141,7 +139,7 @@ public class CellSignalProbe extends Probe.Base implements Probe.PassiveProbe {
         } else if(cellInfo instanceof CellInfoCdma) {
             addCellInfo(map, (CellInfoCdma)cellInfo);
         } else {
-            Log.w("CelSignalProbe", "Unsupported type of cellInfo.");
+            Log.w(celSignalProbe, "Unsupported type of cellInfo.");
         }
     }
 
@@ -210,7 +208,7 @@ public class CellSignalProbe extends Probe.Base implements Probe.PassiveProbe {
         @Override
         public void onSignalStrengthsChanged(SignalStrength signalStrength){
             super.onSignalStrengthsChanged(signalStrength);
-            latestGsmSignalStrength  = signalStrength.getGsmSignalStrength();
+            int latestGsmSignalStrength = signalStrength.getGsmSignalStrength();
 
             HashMap<String, String> map = new HashMap<String, String>();
             ConnectivityManager cm =
@@ -231,7 +229,7 @@ public class CellSignalProbe extends Probe.Base implements Probe.PassiveProbe {
             map.put("connectionType", typeName);
             map.put("connectionSubType", subTypeName);
 
-            Log.v("CelSignalProbe", "Sending data using onSignalStrengthsChanged");
+            Log.v(celSignalProbe, "Sending data using onSignalStrengthsChanged");
             sendData(getGson().toJsonTree(map).getAsJsonObject());
         }
 

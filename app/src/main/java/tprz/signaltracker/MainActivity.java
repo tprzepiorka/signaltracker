@@ -7,7 +7,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -42,8 +41,6 @@ public class MainActivity extends Activity  implements Probe.DataListener{
     private FunfManager funfManager;
     private BasicPipeline pipeline;
     private WifiProbe wifiProbe;
-    private SimpleLocationProbe locationProbe;
-//    private CellTowerProbe cellTowerProbe;
     private CellSignalProbe cellSignalProbe;
     private BandwidthProbe bandwidthProbe;
     private HardwareInfoProbe hardwareInfoProbe;
@@ -58,17 +55,13 @@ public class MainActivity extends Activity  implements Probe.DataListener{
 
             Gson gson = funfManager.getGson();
             wifiProbe = gson.fromJson(new JsonObject(), WifiProbe.class);
-            locationProbe = gson.fromJson(new JsonObject(), SimpleLocationProbe.class);
-//            cellTowerProbe = gson.fromJson(new JsonObject(), CellTowerProbe.class);
             cellSignalProbe = gson.fromJson(new JsonObject(), CellSignalProbe.class);
             bandwidthProbe = gson.fromJson(new JsonObject(), BandwidthProbe.class);
             hardwareInfoProbe = gson.fromJson(new JsonObject(), HardwareInfoProbe.class);
             pipeline = (BasicPipeline) funfManager.getRegisteredPipeline(PIPELINE_NAME);
             wifiProbe.registerPassiveListener(MainActivity.this);
-//            locationProbe.registerPassiveListener(MainActivity.this);
-////            cellTowerProbe.registerPassiveListener(MainActivity.this);
-//            hardwareInfoProbe.registerPassiveListener(MainActivity.this);
-//            cellSignalProbe.registerPassiveListener(MainActivity.this);
+            hardwareInfoProbe.registerPassiveListener(MainActivity.this);
+            cellSignalProbe.registerPassiveListener(MainActivity.this);
             bandwidthProbe.registerListener(MainActivity.this);
 
 
@@ -148,6 +141,7 @@ public class MainActivity extends Activity  implements Probe.DataListener{
             @Override
             public void onClick(View v) {
                 if (pipeline.isEnabled()) {
+
                     // Manually register the pipeline
                     wifiProbe.registerListener(pipeline);
 //                    locationProbe.registerListener(pipeline);
