@@ -63,7 +63,7 @@ public class BandwidthProbe extends Probe.Base{
         request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, "name-of-the-file.ext");
 
         // get download service and enqueue file
-        downloadId = manager.enqueue(request);
+       // downloadId = manager.enqueue(request);
     }
 
     /***

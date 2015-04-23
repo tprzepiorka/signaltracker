@@ -1,13 +1,13 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 19
-    buildToolsVersion "21.1.1"
+    compileSdkVersion 21
+    buildToolsVersion "21.1.2"
 
     defaultConfig {
         applicationId "tprz.signaltracker"
         minSdkVersion 19
-        targetSdkVersion 19
+        targetSdkVersion 21
         versionCode 1
         versionName "1.0"
     }
@@ -27,7 +27,7 @@ dependencies {
 }
 
 
-apply plugin: 'android'
+apply plugin: 'com.android.application'
 
 repositories {
     maven {
@@ -37,4 +37,7 @@ repositories {
 
 dependencies {
     compile "com.splunk.mint:mint:4.0.6"
+
+    compile 'com.github.gabrielemariotti.cards:cardslib-core:2.0.1'
+    compile 'com.github.gabrielemariotti.cards:cardslib-cards:2.0.1'
 }

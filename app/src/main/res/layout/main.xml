@@ -1,31 +1,57 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent">
     <TextView android:text="@string/InfoText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"/>
-    <LinearLayout android:layout_width="fill_parent"
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal" >
-        <TextView android:text="@string/enabledBox"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
-        <CheckBox android:id="@+id/enabledCheckbox"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+        android:layout_gravity="center_horizontal">
+
+        <LinearLayout android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal" >
+
+            <ToggleButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textOff="Disabled"
+                android:textOn="Enabled"
+                android:id="@+id/enabledToggle" />
+
+            <Button android:id="@+id/archiveButton"
+                android:text="@string/SaveDataToSd"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+            <Button android:id="@+id/scanNowButton"
+                android:text="@string/scanNow"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"/>
+
+        </LinearLayout>
+
     </LinearLayout>
-    <Button android:id="@+id/archiveButton"
-        android:text="@string/SaveDataToSd"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"/>
+
+    <it.gmariotti.cardslib.library.view.CardView
+        android:id="@+id/carddemo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="12dp"
+        android:layout_marginRight="12dp"
+        android:layout_marginTop="12dp"
+        card:card_layout_resourceID="@layout/cell_signal_thumbnail_layout"/>
+
     <TextView android:id="@+id/dataCountText"
         android:text="@string/DataCount"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"/>
-    <Button android:id="@+id/scanNowButton"
-        android:text="@string/scanNow"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"/>
+
+
 </LinearLayout>

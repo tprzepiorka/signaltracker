@@ -19,11 +19,14 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.ToggleButton;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.splunk.mint.Mint;
+
+import java.util.ArrayList;
 
 import edu.mit.media.funf.FunfManager;
 import edu.mit.media.funf.json.IJsonObject;
@@ -33,6 +36,12 @@ import edu.mit.media.funf.probe.builtin.HardwareInfoProbe;
 import edu.mit.media.funf.probe.builtin.SimpleLocationProbe;
 import edu.mit.media.funf.probe.builtin.WifiProbe;
 import edu.mit.media.funf.storage.NameValueDatabaseHelper;
+import it.gmariotti.cardslib.library.internal.Card;
+import it.gmariotti.cardslib.library.internal.CardHeader;
+import it.gmariotti.cardslib.library.internal.CardThumbnail;
+import it.gmariotti.cardslib.library.view.CardListView;
+import it.gmariotti.cardslib.library.view.CardView;
+import it.gmariotti.cardslib.library.view.CardViewNative;
 
 
 public class MainActivity extends Activity  implements Probe.DataListener{
@@ -44,7 +53,7 @@ public class MainActivity extends Activity  implements Probe.DataListener{
     private CellSignalProbe cellSignalProbe;
     private BandwidthProbe bandwidthProbe;
     private HardwareInfoProbe hardwareInfoProbe;
-    private CheckBox enabledCheckbox;
+    private ToggleButton enabledToggle;
     private Button archiveButton, scanNowButton;
     private TextView dataCountView;
     private Handler handler;
@@ -65,9 +74,9 @@ public class MainActivity extends Activity  implements Probe.DataListener{
             bandwidthProbe.registerListener(MainActivity.this);
 
 
-            // This checkbox enables or disables the pipeline
-            enabledCheckbox.setChecked(pipeline.isEnabled());
-            enabledCheckbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            // This toggle button enables or disables the pipeline
+            enabledToggle.setChecked(pipeline.isEnabled());
+            enabledToggle.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                     if (funfManager != null) {
@@ -84,7 +93,7 @@ public class MainActivity extends Activity  implements Probe.DataListener{
             });
 
             // Set UI ready to use, by enabling buttons
-            enabledCheckbox.setEnabled(true);
+            enabledToggle.setEnabled(true);
             archiveButton.setEnabled(true);
             scanNowButton.setEnabled(true);
         }
@@ -107,8 +116,10 @@ public class MainActivity extends Activity  implements Probe.DataListener{
         // Used to make interface changes on main thread
         handler = new Handler();
 
-        enabledCheckbox = (CheckBox) findViewById(R.id.enabledCheckbox);
-        enabledCheckbox.setEnabled(false);
+        setupCards();
+
+        enabledToggle = (ToggleButton) findViewById(R.id.enabledToggle);
+        enabledToggle.setEnabled(false);
 
         // Runs an archive if pipeline is enabled
         archiveButton = (Button) findViewById(R.id.archiveButton);
@@ -158,7 +169,6 @@ public class MainActivity extends Activity  implements Probe.DataListener{
         // Bind to the service, to create the connection with FunfManager
         bindService(new Intent(this, FunfManager.class), funfManagerConn, BIND_AUTO_CREATE);
 
-
     }
 
     private void stopDownloads() {
@@ -183,6 +193,38 @@ public class MainActivity extends Activity  implements Probe.DataListener{
 //            }
 
             }
+
+    }
+
+    private void setupCards() {
+//        Card card = new Card(getApplicationContext());
+//
+//        CardHeader header = new CardHeader(getApplicationContext());
+//        header.setTitle("Cell Signal Probe");
+//        card.addCardHeader(header);
+//        card.setTitle("Cell Signal Probe");
+//
+
+
+        //Create a Card
+        CellSignalCard card = new CellSignalCard(getApplicationContext(), R.layout.card_inner_layout);
+
+
+        CardThumbnail thumbnail = new CardThumbnail(getApplicationContext());
+        thumbnail.setDrawableResource(R.drawable.ic_signal_cellular_null_grey600_48dp);
+        card.addCardThumbnail(thumbnail);
+
+        //Create a CardHeader
+        CardHeader header = new CardHeader(getApplicationContext());
+        header.setTitle("Cell Signal Probe");
+        //Add Header to card
+        card.addCardHeader(header);
+
+        CardView cardView = (CardView) findViewById(R.id.carddemo);
+
+        cardView.setCard(card);
+        card.setSignal(32);
+
     }
 
 
