@@ -15,7 +15,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -26,22 +25,16 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.splunk.mint.Mint;
 
-import java.util.ArrayList;
-
 import edu.mit.media.funf.FunfManager;
 import edu.mit.media.funf.json.IJsonObject;
 import edu.mit.media.funf.pipeline.BasicPipeline;
 import edu.mit.media.funf.probe.Probe;
 import edu.mit.media.funf.probe.builtin.HardwareInfoProbe;
-import edu.mit.media.funf.probe.builtin.SimpleLocationProbe;
 import edu.mit.media.funf.probe.builtin.WifiProbe;
 import edu.mit.media.funf.storage.NameValueDatabaseHelper;
-import it.gmariotti.cardslib.library.internal.Card;
 import it.gmariotti.cardslib.library.internal.CardHeader;
 import it.gmariotti.cardslib.library.internal.CardThumbnail;
-import it.gmariotti.cardslib.library.view.CardListView;
 import it.gmariotti.cardslib.library.view.CardView;
-import it.gmariotti.cardslib.library.view.CardViewNative;
 
 
 public class MainActivity extends Activity  implements Probe.DataListener{
@@ -223,7 +216,7 @@ public class MainActivity extends Activity  implements Probe.DataListener{
         CardView cardView = (CardView) findViewById(R.id.carddemo);
 
         cardView.setCard(card);
-        card.setSignal(32);
+        card.setSignal(0, true);
 
     }
 
