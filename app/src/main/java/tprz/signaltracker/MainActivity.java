@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -129,7 +130,7 @@ public class MainActivity extends Activity  implements Probe.DataListener{
                         @Override
                         public void run() {
                             Toast.makeText(getBaseContext(), "Archived!", Toast.LENGTH_SHORT).show();
-                            updateScanCount();
+                            //updateScanCount();
                         }
                     }, 1000L);
                 } else {
@@ -173,35 +174,19 @@ public class MainActivity extends Activity  implements Probe.DataListener{
                 Long id = c
                         .getLong(c
                                 .getColumnIndex(DownloadManager.COLUMN_ID));
-                String status = c
-                        .getString(c
-                                .getColumnIndex(DownloadManager.COLUMN_STATUS));
-//            if(status.equals(DownloadManager.STATUS_RUNNING)) {
                 int res = manager.remove(id);
                 if(res == 0) {
                     Log.i("BandwidthProbe", "Item was not removed from Download manager");
                 } else {
                     Log.i("BandwidthProbe", "Removing download with id: " + id);
                 }
-//            }
-
             }
 
     }
 
     private void setupCards() {
-//        Card card = new Card(getApplicationContext());
-//
-//        CardHeader header = new CardHeader(getApplicationContext());
-//        header.setTitle("Cell Signal Probe");
-//        card.addCardHeader(header);
-//        card.setTitle("Cell Signal Probe");
-//
-
-
         //Create a Card
         CellSignalCard card = new CellSignalCard(getApplicationContext(), R.layout.card_inner_layout);
-
 
         CardThumbnail thumbnail = new CardThumbnail(getApplicationContext());
         thumbnail.setDrawableResource(R.drawable.ic_signal_cellular_null_grey600_48dp);
@@ -217,7 +202,6 @@ public class MainActivity extends Activity  implements Probe.DataListener{
 
         cardView.setCard(card);
         card.setSignal(0, true);
-
     }
 
 
@@ -251,7 +235,7 @@ public class MainActivity extends Activity  implements Probe.DataListener{
     @Override
     public void onDataCompleted(IJsonObject probeConfig, JsonElement checkpoint) {
         Log.i("MainActivity", "onDataCompleted");
-        updateScanCount();
+        //updateScanCount();
         // Re-register to keep listening after probe completes.
         wifiProbe.registerPassiveListener(this);
 //        locationProbe.registerPassiveListener(this);
@@ -266,20 +250,23 @@ public class MainActivity extends Activity  implements Probe.DataListener{
      */
     private void updateScanCount() {
         // Query the pipeline db for the count of rows in the data table
-//        SQLiteDatabase db = pipeline.getDb();
-        //if(db.isOpen()) {
-//            db.close();
-       // }
-//        Cursor mcursor = db.rawQuery(TOTAL_COUNT_SQL, null);
-//        mcursor.moveToFirst();
-//        final int count = mcursor.getInt(0);
-//        // Update interface on main thread
-//        runOnUiThread(new Runnable() {
-//            @Override
-//            public void run() {
-//                dataCountView.setText("Data Count: " + count);
-//            }
-//        });
+        SQLiteDatabase db = pipeline.getDb();
+        if(db.isOpen()) {
+            db.close();
+       }
+        Cursor mcursor = db.rawQuery(TOTAL_COUNT_SQL, null);
+        mcursor.moveToFirst();
+        final int count = mcursor.getInt(0);
+        mcursor.close();
+        // Update interface on main thread
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                dataCountView.setText("Data Count: " + count);
+            }
+        });
+
+
     }
 
 

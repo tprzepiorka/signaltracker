@@ -22,12 +22,9 @@ import edu.mit.media.funf.probe.Probe;
 @Schedule.DefaultSchedule(interval=10)
 public class BandwidthProbe extends Probe.Base{
 
-    private final String TAG = "BandwidthProbe";
     private DownloadManager manager;
     private int previousTimestamp = -1;
     private int previousBytesDownloaded = -1;
-    private long downloadId = -1;
-
 
     @Override
     protected void onStart() {
@@ -72,6 +69,7 @@ public class BandwidthProbe extends Probe.Base{
      * @return A JsonObject that has the download difference, estimated speed, and seconds difference
      */
     private JsonObject getBandwidthInfo() {
+        long downloadId = -1;
         DownloadManager.Query query = new DownloadManager.Query().setFilterById(downloadId);
         Cursor c = manager.query(query);
         if (c.moveToFirst()) {
@@ -85,6 +83,7 @@ public class BandwidthProbe extends Probe.Base{
             int timestamp = (int) (System.currentTimeMillis() / 1000L);
             bandwidthData.addProperty("timestamp", timestamp);
             bandwidthData.addProperty("downloadedSoFar", bytesDownloadedSoFar);
+            String TAG = "BandwidthProbe";
             Log.i(TAG, "Data downloaded: " + bytesDownloadedSoFar);
             Log.i(TAG, "Download status: " + status);
 

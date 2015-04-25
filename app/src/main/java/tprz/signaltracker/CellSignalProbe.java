@@ -112,7 +112,7 @@ public class CellSignalProbe extends Probe.Base implements Probe.PassiveProbe {
      * @return A list of maps where each map is a type of cellInfo.
      */
     private List<Map<String, String>> getData() {
-        List<Map<String, String>> cellInfos = new ArrayList<Map<String, String>>();
+        List<Map<String, String>> cellInfos = new ArrayList<>();
 
         List<CellInfo> allCellInfo = telephonyManager.getAllCellInfo();
         if(allCellInfo == null) {
@@ -121,7 +121,7 @@ public class CellSignalProbe extends Probe.Base implements Probe.PassiveProbe {
         }
 
         for(CellInfo cellInfo : allCellInfo) {
-            Map<String, String> map = new HashMap<String, String>();
+            Map<String, String> map = new HashMap<>();
             addCellInfo(map, cellInfo);
             cellInfos.add(map);
         }
@@ -210,7 +210,7 @@ public class CellSignalProbe extends Probe.Base implements Probe.PassiveProbe {
             super.onSignalStrengthsChanged(signalStrength);
             int latestGsmSignalStrength = signalStrength.getGsmSignalStrength();
 
-            HashMap<String, String> map = new HashMap<String, String>();
+            HashMap<String, String> map = new HashMap<>();
             ConnectivityManager cm =
                     (ConnectivityManager)getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
             NetworkInfo activeNetworkInfo = cm.getActiveNetworkInfo();
