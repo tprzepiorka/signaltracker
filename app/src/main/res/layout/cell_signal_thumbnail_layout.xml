@@ -71,6 +71,12 @@
                     android:id="@+id/cell_signal_text"
                     android:layout_gravity="left|top" />
 
+
+                <com.github.mikephil.charting.charts.LineChart
+                    android:id="@+id/chart"
+                    android:layout_width="match_parent"
+                    android:layout_height="100dp" />
+
             </FrameLayout>
 
         </LinearLayout>
