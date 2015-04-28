@@ -147,6 +147,8 @@ public class CellSignalCard extends Card {
         @Override
         public void onSignalStrengthsChanged(SignalStrength signalStrength){
             setSignal(signalStrength.getGsmSignalStrength(), signalStrength.isGsm());
+
+            MultiLogger.log(TAG, String.format("(signalStrength, %d)", signalStrength.getGsmSignalStrength()));
         }
     }
 
