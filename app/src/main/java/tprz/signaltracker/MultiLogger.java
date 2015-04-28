@@ -17,6 +17,7 @@ import ch.qos.logback.core.FileAppender;
 public class MultiLogger {
     private static Logger LOG = null;
     private static boolean logInit = false;
+    public static boolean isEnabled = false;
 
     public static void log(String tag, String text) {
         if(!logInit) {
@@ -25,8 +26,10 @@ public class MultiLogger {
             logInit = true;
         }
 
-        LOG.info(text);
-        Log.i(tag, text);
+        if(isEnabled) {
+            LOG.info(text);
+            Log.i(tag, text);
+        }
     }
 
     private static void configureLogbackDirectly() {

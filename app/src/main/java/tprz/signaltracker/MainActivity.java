@@ -83,6 +83,8 @@ public class MainActivity extends Activity  implements Probe.DataListener{
                             stopDownloads();
                         }
                     }
+
+                    MultiLogger.isEnabled = enabledToggle.isEnabled();
                 }
             });
 
@@ -162,6 +164,8 @@ public class MainActivity extends Activity  implements Probe.DataListener{
 
         // Bind to the service, to create the connection with FunfManager
         bindService(new Intent(this, FunfManager.class), funfManagerConn, BIND_AUTO_CREATE);
+
+        MultiLogger.isEnabled = enabledToggle.isEnabled();
 
     }
 
