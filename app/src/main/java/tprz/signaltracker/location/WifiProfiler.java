@@ -46,7 +46,7 @@ public class WifiProfiler {
 
                         upToDateScan = ssids;
                         Station newCurrentStation = getCurrentStation();
-                        if(!newCurrentStation.equals(currentStation)) {
+                        if(!newCurrentStation.equals(currentStation) && newCurrentStation != null) {
                             currentStation = newCurrentStation;
                             updateCard(newCurrentStation);
                             tubeGraph.addNewStationMapping(newCurrentStation, ssids);
