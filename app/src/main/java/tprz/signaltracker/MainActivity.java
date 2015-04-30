@@ -94,7 +94,6 @@ public class MainActivity extends Activity  implements Probe.DataListener{
             archiveButton.setEnabled(true);
             scanNowButton.setEnabled(true);
 
-            WifiProfiler profiler = new WifiProfiler(getApplicationContext(), new StationLocationCard(getApplicationContext()));
         }
 
         @Override
@@ -209,6 +208,8 @@ public class MainActivity extends Activity  implements Probe.DataListener{
 
         cardView.setCard(card);
         card.setSignal(0, true);
+
+        WifiProfiler profiler = new WifiProfiler(getApplicationContext(), card);
     }
 
 
