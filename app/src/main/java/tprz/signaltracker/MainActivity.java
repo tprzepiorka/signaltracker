@@ -36,6 +36,7 @@ import edu.mit.media.funf.storage.NameValueDatabaseHelper;
 import it.gmariotti.cardslib.library.internal.CardHeader;
 import it.gmariotti.cardslib.library.internal.CardThumbnail;
 import it.gmariotti.cardslib.library.view.CardView;
+import tprz.signaltracker.location.WifiProfiler;
 
 
 public class MainActivity extends Activity  implements Probe.DataListener{
@@ -92,6 +93,8 @@ public class MainActivity extends Activity  implements Probe.DataListener{
             enabledToggle.setEnabled(true);
             archiveButton.setEnabled(true);
             scanNowButton.setEnabled(true);
+
+            WifiProfiler profiler = new WifiProfiler(getApplicationContext(), new StationLocationCard(getApplicationContext()));
         }
 
         @Override
