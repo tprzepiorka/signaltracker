@@ -51,7 +51,8 @@
                     android:textAppearance="?android:attr/textAppearanceMedium"
                     android:text="@string/defaultPreviousStationText"
                     android:id="@+id/location_prev_text"
-                    android:layout_gravity="start|top" />
+                    android:layout_gravity="start|top"
+                    android:textSize="12dp" />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -60,6 +61,13 @@
                     android:text="@string/defaultCurrentStationText"
                     android:id="@+id/location_curr_text"
                     android:layout_gravity="start|center_vertical" />
+
+                <AutoCompleteTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="New AutoCompleteTextView"
+                    android:id="@+id/autoCompleteTextView"
+                    android:layout_gravity="center_horizontal|bottom" />
 
             </FrameLayout>
 

@@ -42,9 +42,11 @@ public class WifiProfiler {
                     Log.i("TubeGraph", "new curr station: " + newCurrentStation);
                     if(newCurrentStation != null && !newCurrentStation.equals(currentStation) ) {
                         currentStation = newCurrentStation;
-                        updateCard(newCurrentStation);
                         tubeGraph.addNewStationMapping(newCurrentStation, ssids);
                     }
+
+                    LocationFingerprint locationFingerprint = new LocationFingerprint(ssids, newCurrentStation == null, tubeGraph);
+                    updateCard(newCurrentStation, locationFingerprint);
                 }
             }
         }
@@ -70,8 +72,8 @@ public class WifiProfiler {
      * station.
      * @param newCurrentStation The current station we are at.
      */
-    private void updateCard(Station newCurrentStation) {
-        card.updateCard(newCurrentStation);
+    private void updateCard(Station newCurrentStation, LocationFingerprint locFingerprint) {
+        card.updateCard(newCurrentStation, locFingerprint);
     }
 
     /**

@@ -1,15 +1,14 @@
 package tprz.signaltracker;
 
 import android.content.Context;
-import android.telephony.PhoneStateListener;
-import android.telephony.SignalStrength;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AutoCompleteTextView;
+import android.widget.SearchView;
 import android.widget.TextView;
 
-import com.github.mikephil.charting.charts.LineChart;
-
 import it.gmariotti.cardslib.library.internal.Card;
+import tprz.signaltracker.location.LocationFingerprint;
 import tprz.signaltracker.location.Station;
 import tprz.signaltracker.location.StationCard;
 
@@ -20,8 +19,10 @@ import tprz.signaltracker.location.StationCard;
 public class StationLocationCard extends Card implements StationCard {
     private TextView prevStationText;
     private TextView currStationText;
+    private AutoCompleteTextView autoCompleteTextView;
 
     private Station lastStation = null;
+    private LocationFingerprint currLocFingerprint = null;
 
     public StationLocationCard(Context context, int innerLayout) {
         super(context, innerLayout);
@@ -32,16 +33,19 @@ public class StationLocationCard extends Card implements StationCard {
         super.setupInnerViewElements(parent, view);
         prevStationText = (TextView) parent.findViewById(R.id.location_prev_text);
         currStationText = (TextView) parent.findViewById(R.id.location_curr_text);
+        autoCompleteTextView = (AutoCompleteTextView) parent.findViewById(R.id.autoCompleteTextView);
+
     }
 
     @Override
-    public void updateCard(Station newCurrentStation) {
+    public void updateCard(Station newCurrentStation, LocationFingerprint locFingerprint) {
         if(newCurrentStation != null && !newCurrentStation.equals(lastStation)) {
             prevStationText.setText("Previous: " + (lastStation == null ? "Unknown" : lastStation.getName()));
             lastStation = newCurrentStation;
         }
 
         currStationText.setText((newCurrentStation == null ? "Unknown" : newCurrentStation.getName()));
+        currLocFingerprint = locFingerprint;
     }
 
 }
