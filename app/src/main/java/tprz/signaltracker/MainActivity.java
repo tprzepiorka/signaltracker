@@ -192,24 +192,36 @@ public class MainActivity extends Activity  implements Probe.DataListener{
 
     private void setupCards() {
         //Create a Card
-        CellSignalCard card = new CellSignalCard(getApplicationContext(), R.layout.card_inner_layout);
+        CellSignalCard cellSignalCard = new CellSignalCard(getApplicationContext(), R.layout.card_inner_layout);
 
         CardThumbnail thumbnail = new CardThumbnail(getApplicationContext());
         thumbnail.setDrawableResource(R.drawable.ic_signal_cellular_null_grey600_48dp);
-        card.addCardThumbnail(thumbnail);
+        cellSignalCard.addCardThumbnail(thumbnail);
 
         //Create a CardHeader
         CardHeader header = new CardHeader(getApplicationContext());
         header.setTitle("Cell Signal Probe");
         //Add Header to card
-        card.addCardHeader(header);
+        cellSignalCard.addCardHeader(header);
 
         CardView cardView = (CardView) findViewById(R.id.carddemo);
 
-        cardView.setCard(card);
-        card.setSignal(0, true);
+        cardView.setCard(cellSignalCard);
+        cellSignalCard.setSignal(0, true);
 
-        WifiProfiler profiler = new WifiProfiler(getApplicationContext(), card);
+        // Station Location Card
+        StationLocationCard stationLocationCard = new StationLocationCard(getApplicationContext(), R.layout.card_location_layout);
+
+        //Create a CardHeader
+        CardHeader locationHeader = new CardHeader(getApplicationContext());
+        header.setTitle("Location");
+        //Add Header to card
+        stationLocationCard.addCardHeader(locationHeader);
+
+        CardView stationLocationCardView = (CardView) findViewById(R.id.location_card);
+        stationLocationCardView.setCard(stationLocationCard);
+
+        WifiProfiler profiler = new WifiProfiler(getApplicationContext(), stationLocationCard);
     }
 
 

@@ -4,8 +4,6 @@ import android.content.Context;
 import android.telephony.PhoneStateListener;
 import android.telephony.SignalStrength;
 import android.telephony.TelephonyManager;
-import android.view.View;
-import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.github.mikephil.charting.charts.LineChart;
@@ -19,7 +17,6 @@ import java.util.List;
 
 import it.gmariotti.cardslib.library.internal.Card;
 import it.gmariotti.cardslib.library.internal.CardThumbnail;
-import tprz.signaltracker.location.Station;
 
 /**
  * This class is a specific Card that is used to display updating information
@@ -29,8 +26,6 @@ import tprz.signaltracker.location.Station;
 public class CellSignalCard extends Card {
     CellSignalListener cellSignalListener;
     private TextView cellSignalTextView;
-    private TextView prevStationText;
-    private TextView currStationText;
     private LineChart chart;
     private int chartWidth = 30;
     private int[] cellSignalDrawables = new int[] {
@@ -41,7 +36,6 @@ public class CellSignalCard extends Card {
             R.drawable.ic_signal_cellular_4_bar_grey600_48dp,
             R.drawable.ic_signal_cellular_null_grey600_48dp
     };
-    private Station lastStation = null;
 
     public CellSignalCard(Context context, int innerLayout) {
         super(context, innerLayout);
@@ -137,25 +131,6 @@ public class CellSignalCard extends Card {
         // Make sure to draw
         chart.notifyDataSetChanged();
         chart.invalidate();
-    }
-
-    @Override
-    public void setupInnerViewElements(ViewGroup parent, View view) {
-        super.setupInnerViewElements(parent, view);
-        cellSignalTextView = (TextView) parent.findViewById(R.id.cell_signal_text);
-        prevStationText = (TextView) parent.findViewById(R.id.location_prev_text);
-        currStationText = (TextView) parent.findViewById(R.id.location_curr_text);
-        this.chart = (LineChart) parent.findViewById(R.id.chart);
-        initChart();
-    }
-
-    public void updateCard(Station newCurrentStation) {
-        if(newCurrentStation != null && !newCurrentStation.equals(lastStation)) {
-            prevStationText.setText("Previous: " + (lastStation == null ? "Unknown" : lastStation.getName()));
-            lastStation = newCurrentStation;
-        }
-
-        currStationText.setText("At : " + (newCurrentStation == null ? "Unknown" : newCurrentStation.getName()));
     }
 
     public class CellSignalListener extends PhoneStateListener {

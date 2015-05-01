@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiManager;
-import android.telephony.TelephonyManager;
 import android.util.Log;
 
 import java.util.HashSet;
@@ -14,18 +13,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import it.gmariotti.cardslib.library.internal.Card;
-import tprz.signaltracker.CellSignalCard;
-import tprz.signaltracker.StationLocationCard;
-
 /**
- * Created by tomprz on 30/04/2015.
+ * The WiFiProfiler listens for changes in the available WiFi networks.
+ * It is able to update a StationCard to provide information about the
+ * current Station we are at.
  */
 public class WifiProfiler {
     private WifiManager wifiManager;
     private Set<String> upToDateScan;
     private Station currentStation = null;
-    private CellSignalCard card;
+    private StationCard card;
     private TubeGraph tubeGraph;
 
     BroadcastReceiver scanResultsReceiver = new BroadcastReceiver() {
@@ -53,9 +50,13 @@ public class WifiProfiler {
         }
     };
 
-    public WifiProfiler(Context context, CellSignalCard card) {
+    /**
+     *
+     * @param context Context under which we want to retrieve the WifiManager
+     * @param card The StationCard that we want to update on change of station.
+     */
+    public WifiProfiler(Context context, StationCard card) {
         this.card = card;
-        TelephonyManager telephonyManager = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
         wifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
         upToDateScan = new HashSet<>();
         tubeGraph = new TubeGraph();
@@ -64,10 +65,21 @@ public class WifiProfiler {
         context.registerReceiver(scanResultsReceiver, new IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
     }
 
+    /**
+     * Update the provided card informing it of a change in the current
+     * station.
+     * @param newCurrentStation The current station we are at.
+     */
     private void updateCard(Station newCurrentStation) {
         card.updateCard(newCurrentStation);
     }
 
+    /**
+     * Return the current station. The current station is obtained by matching
+     * MAC addresses with the Tube Graph which is able to map MAC addresses to
+     * stations.
+     * @return The station we are currently at.
+     */
     private Station getCurrentStation() {
         Map<String, Station> ssidMap = tubeGraph.getSsidsToLocation();
 
@@ -80,6 +92,13 @@ public class WifiProfiler {
         return null;
     }
 
+    /**
+     * The direction of travel.
+     * For lines like the Circle line the actual East/West direction
+     * changes even if the destination of the tube. For our purposes if the
+     * Circle line is going Counter-Clockwise then it is going East and
+     * Clockwise is West.
+     */
     public enum Direction{
         NORTH,
         EAST,
@@ -87,8 +106,4 @@ public class WifiProfiler {
         WEST
     }
 
-    public Set<String> getWifiAccessPointsMac() {
-        wifiManager.startScan();
-        return upToDateScan;
-    }
 }
