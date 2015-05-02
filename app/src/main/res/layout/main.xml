@@ -49,13 +49,13 @@
         card:card_layout_resourceID="@layout/cell_signal_thumbnail_layout"/>
 
     <it.gmariotti.cardslib.library.view.CardView
-        android:id="@+id/location_card"
+        android:id="@+id/location_card_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="12dp"
         android:layout_marginRight="12dp"
-        android:layout_marginTop="12dp"
-        card:card_layout_resourceID="@layout/card_location_layout"/>
+        android:layout_marginTop="12dp" />
+        <!--card:card_layout_resourceID="@layout/card_location_layout"/>-->
 
     <TextView android:id="@+id/dataCountText"
         android:text="@string/DataCount"

@@ -210,7 +210,7 @@ public class MainActivity extends Activity  implements Probe.DataListener{
         cellSignalCard.setSignal(0, true);
 
         // Station Location Card
-        StationLocationCard stationLocationCard = new StationLocationCard(getApplicationContext(), R.layout.card_location_layout);
+        StationLocationCard stationLocationCard = new StationLocationCard(getApplicationContext(), R.layout.card_location_layout, this);
 
         //Create a CardHeader
         CardHeader locationHeader = new CardHeader(getApplicationContext());
@@ -218,10 +218,10 @@ public class MainActivity extends Activity  implements Probe.DataListener{
         //Add Header to card
         stationLocationCard.addCardHeader(locationHeader);
 
-        CardView stationLocationCardView = (CardView) findViewById(R.id.location_card);
-        stationLocationCardView.setCard(stationLocationCard);
+        CardView stationLocationCardView = (CardView) findViewById(R.id.location_card_view);
+       stationLocationCardView.setCard(stationLocationCard);
 
-        WifiProfiler profiler = new WifiProfiler(getApplicationContext(), stationLocationCard);
+       // WifiProfiler profiler = new WifiProfiler(getApplicationContext(), stationLocationCard);
     }
 
 

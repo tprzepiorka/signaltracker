@@ -40,5 +40,11 @@
     </string>
     <string name="defaultPreviousStationText">Previous:</string>
     <string name="defaultCurrentStationText">Unknown</string>
+    <string-array
+        name="stations">
+        <item>South Kensington</item>
+        <item>Sloane Square</item>
+        <item>Victoria</item>
+    </string-array>
 
 </resources>

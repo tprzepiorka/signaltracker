@@ -4,6 +4,8 @@ import android.content.Context;
 import android.telephony.PhoneStateListener;
 import android.telephony.SignalStrength;
 import android.telephony.TelephonyManager;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.github.mikephil.charting.charts.LineChart;
@@ -37,6 +39,14 @@ public class CellSignalCard extends Card {
             R.drawable.ic_signal_cellular_null_grey600_48dp
     };
 
+    public CellSignalCard(Context context) {
+        super(context);
+
+        TelephonyManager telephonyManager = (TelephonyManager) getContext().getSystemService(Context.TELEPHONY_SERVICE);
+        this.cellSignalListener = new CellSignalListener();
+        telephonyManager.listen(cellSignalListener, PhoneStateListener.LISTEN_SIGNAL_STRENGTHS);
+    }
+
     public CellSignalCard(Context context, int innerLayout) {
         super(context, innerLayout);
 
@@ -53,6 +63,7 @@ public class CellSignalCard extends Card {
      */
     public void setSignal(int signalStrength, boolean gsm) {
         String contentsText = String.format("%s\nASU: %d", gsm ? "GSM" : "CDMA", signalStrength);
+        if(cellSignalTextView == null) return;
         cellSignalTextView.setText(contentsText);
 
         int iconLevel;
@@ -95,6 +106,14 @@ public class CellSignalCard extends Card {
         LineDataSet dataSet = new LineDataSet(y, "ASU");
         LineData lineData = new LineData(x, dataSet);
         chart.setData(lineData);
+    }
+
+    @Override
+    public void setupInnerViewElements(ViewGroup parent, View view) {
+        super.setupInnerViewElements(parent, view);
+        cellSignalTextView = (TextView) parent.findViewById(R.id.cell_signal_text);
+        this.chart = (LineChart) parent.findViewById(R.id.chart);
+        initChart();
     }
 
     /***
