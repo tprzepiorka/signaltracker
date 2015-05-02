@@ -40,11 +40,616 @@
     </string>
     <string name="defaultPreviousStationText">Previous:</string>
     <string name="defaultCurrentStationText">Unknown</string>
-    <string-array
-        name="stations">
-        <item>South Kensington</item>
+    <string-array name="stations">
+        <!--http://www.freemaptools.com/find-london-underground-stations-inside-radius.htm-->
+        <item>Abbey Road</item>
+        <item>Abbey Wood</item>
+        <item>Acton</item>
+        <item>Acton Central</item>
+        <item>Acton Town</item>
+        <item>Albany Park</item>
+        <item>Aldgate</item>
+        <item>Aldgate East</item>
+        <item>Alexandra Palace</item>
+        <item>All Saints</item>
+        <item>Alperton</item>
+        <item>Amersham</item>
+        <item>Anerley</item>
+        <item>Angel</item>
+        <item>Angel Road</item>
+        <item>Archway</item>
+        <item>Arnos Grove</item>
+        <item>Arsenal</item>
+        <item>Baker Street</item>
+        <item>Balham</item>
+        <item>Bank</item>
+        <item>Banstead</item>
+        <item>Barbican</item>
+        <item>Barking</item>
+        <item>Barkingside</item>
+        <item>Barnehurst</item>
+        <item>Barnes</item>
+        <item>Barnes Bridge</item>
+        <item>Barons Court</item>
+        <item>Battersea Park</item>
+        <item>Bayswater</item>
+        <item>Beckenham Hill</item>
+        <item>Beckenham Junction</item>
+        <item>Beckton</item>
+        <item>Beckton Park</item>
+        <item>Becontree</item>
+        <item>Bellingham</item>
+        <item>Belmont</item>
+        <item>Belsize Park</item>
+        <item>Belvedere</item>
+        <item>Bermondsey</item>
+        <item>Berrylands</item>
+        <item>Bethnal Green</item>
+        <item>Bethnal Green Rail</item>
+        <item>Bexley</item>
+        <item>Bexleyheath</item>
+        <item>Bickley</item>
+        <item>Birkbeck</item>
+        <item>Blackfriars</item>
+        <item>Blackheath</item>
+        <item>Blackhorse Road</item>
+        <item>Blackwall</item>
+        <item>Bond Street</item>
+        <item>Borough</item>
+        <item>Boston Manor</item>
+        <item>Bounds Green</item>
+        <item>Bow Church</item>
+        <item>Bow Road</item>
+        <item>Bowes Park</item>
+        <item>Brent Cross</item>
+        <item>Brentford</item>
+        <item>Brentwood</item>
+        <item>Brimsdown</item>
+        <item>Brixton</item>
+        <item>Brockley</item>
+        <item>Bromley North</item>
+        <item>Bromley South</item>
+        <item>Bromley-by-Bow</item>
+        <item>Brondesbury</item>
+        <item>Brondesbury Park</item>
+        <item>Broxbourne</item>
+        <item>Bruce Grove</item>
+        <item>Buckhurst Hill</item>
+        <item>Burnt Oak</item>
+        <item>Bush Hill Park</item>
+        <item>Bushey</item>
+        <item>Caledonian Road</item>
+        <item>Caledonian Road and Barnsbury</item>
+        <item>Cambridge Heath</item>
+        <item>Camden Road</item>
+        <item>Camden Town</item>
+        <item>Canada Water</item>
+        <item>Canary Wharf</item>
+        <item>Canning Town</item>
+        <item>Cannon Street</item>
+        <item>Canonbury</item>
+        <item>Canons Park</item>
+        <item>Carpenders Park</item>
+        <item>Carshalton</item>
+        <item>Carshalton Beeches</item>
+        <item>Castle Bar Park</item>
+        <item>Caterham</item>
+        <item>Catford</item>
+        <item>Catford Bridge</item>
+        <item>Chadwell Heath</item>
+        <item>Chafford Hundred</item>
+        <item>Chalfont and Latimer</item>
+        <item>Chalk Farm</item>
+        <item>Chancery Lane</item>
+        <item>Charing Cross</item>
+        <item>Charlton</item>
+        <item>Cheam</item>
+        <item>Chelsfield</item>
+        <item>Chesham</item>
+        <item>Cheshunt</item>
+        <item>Chessington North</item>
+        <item>Chessington South</item>
+        <item>Chigwell</item>
+        <item>Chingford</item>
+        <item>Chipstead</item>
+        <item>Chislehurst</item>
+        <item>Chiswick</item>
+        <item>Chiswick Park</item>
+        <item>Chorleywood</item>
+        <item>City Thameslink</item>
+        <item>Clapham Common</item>
+        <item>Clapham High Street</item>
+        <item>Clapham Junction</item>
+        <item>Clapham North</item>
+        <item>Clapham South</item>
+        <item>Clapton</item>
+        <item>Clock House</item>
+        <item>Cobham and Stoke D\'Abernon</item>
+        <item>Cockfosters</item>
+        <item>Colindale</item>
+        <item>Colliers Wood</item>
+        <item>Coulsdon South</item>
+        <item>Covent Garden</item>
+        <item>Crayford</item>
+        <item>Crews Hill</item>
+        <item>Cricklewood</item>
+        <item>Crofton Park</item>
+        <item>Crossharbour and London Arena</item>
+        <item>Crouch Hill</item>
+        <item>Croxley</item>
+        <item>Crystal Palace</item>
+        <item>Custom House</item>
+        <item>Cutty Sark for Maritime Greenwich</item>
+        <item>Cyprus</item>
+        <item>Dagenham Dock</item>
+        <item>Dagenham East</item>
+        <item>Dagenham Heathway</item>
+        <item>Dalston Junction</item>
+        <item>Dalston Kingsland</item>
+        <item>Dartford</item>
+        <item>Debden</item>
+        <item>Denmark Hill</item>
+        <item>Deptford</item>
+        <item>Deptford Bridge</item>
+        <item>Devons Road</item>
+        <item>Dollis Hill</item>
+        <item>Drayton Green</item>
+        <item>Drayton Park</item>
+        <item>Ealing Broadway</item>
+        <item>Ealing Common</item>
+        <item>Earls Court</item>
+        <item>Earlsfield</item>
+        <item>East Acton</item>
+        <item>East Croydon</item>
+        <item>East Dulwich</item>
+        <item>East Finchley</item>
+        <item>East Ham</item>
+        <item>East India</item>
+        <item>East Putney</item>
+        <item>Eastcote</item>
+        <item>Eden Park</item>
+        <item>Edgware</item>
+        <item>Edgware Road (Bakerloo)</item>
+        <item>Edgware Road (Circle/District/Hammersmith and City)</item>
+        <item>Edmonton Green</item>
+        <item>Elephant and Castle</item>
+        <item>Elm Park</item>
+        <item>Elmers End</item>
+        <item>Elmstead Woods</item>
+        <item>Elstree and Borehamwood</item>
+        <item>Eltham</item>
+        <item>Elverson Road</item>
+        <item>Embankment</item>
+        <item>Emerson Park</item>
+        <item>Enfield Chase</item>
+        <item>Enfield Lock</item>
+        <item>Enfield Town</item>
+        <item>Epping</item>
+        <item>Epsom Downs</item>
+        <item>Erith</item>
+        <item>Essex Road</item>
+        <item>Euston</item>
+        <item>Euston Square</item>
+        <item>Ewell East</item>
+        <item>Ewell West</item>
+        <item>Fairlop</item>
+        <item>Falconwood</item>
+        <item>Farringdon</item>
+        <item>Feltham</item>
+        <item>Fenchurch Street</item>
+        <item>Finchley Central</item>
+        <item>Finchley Road</item>
+        <item>Finchley Road and Frognal</item>
+        <item>Finsbury Park</item>
+        <item>Forest Gate</item>
+        <item>Forest Hill</item>
+        <item>Fulham Broadway</item>
+        <item>Fulwell</item>
+        <item>Gallions Reach</item>
+        <item>Gants Hill</item>
+        <item>Gidea Park</item>
+        <item>Gipsy Hill</item>
+        <item>Gloucester Road</item>
+        <item>Golders Green</item>
+        <item>Goldhawk Road</item>
+        <item>Goodge Street</item>
+        <item>Goodmayes</item>
+        <item>Gordon Hill</item>
+        <item>Gospel Oak</item>
+        <item>Grange Hill</item>
+        <item>Grange Park</item>
+        <item>Great Portland Street</item>
+        <item>Green Park</item>
+        <item>Greenford</item>
+        <item>Greenwich</item>
+        <item>Grove Park</item>
+        <item>Gunnersbury</item>
+        <item>Hackbridge</item>
+        <item>Hackney Central</item>
+        <item>Hackney Downs</item>
+        <item>Hackney Wick</item>
+        <item>Hadley Wood</item>
+        <item>Haggerston</item>
+        <item>Hainault</item>
+        <item>Hammersmith (District)</item>
+        <item>Hammersmith (Met.)</item>
+        <item>Hampstead</item>
+        <item>Hampstead Heath</item>
+        <item>Hampton</item>
+        <item>Hampton Court</item>
+        <item>Hampton Wick</item>
+        <item>Hanger Lane</item>
+        <item>Hanwell</item>
+        <item>Harlesden</item>
+        <item>Harold Wood</item>
+        <item>Harringay</item>
+        <item>Harringay Green Lanes</item>
+        <item>Harrow and Wealdstone</item>
+        <item>Harrow-on-the-Hill</item>
+        <item>Hatch End</item>
+        <item>Hatton Cross</item>
+        <item>Haydons Road</item>
+        <item>Hayes</item>
+        <item>Hayes and Harlington</item>
+        <item>Headstone Lane</item>
+        <item>Heathrow Terminal 4</item>
+        <item>Heathrow Terminal 5</item>
+        <item>Heathrow Terminals 1 2 3</item>
+        <item>Hendon</item>
+        <item>Hendon Central</item>
+        <item>Herne Hill</item>
+        <item>Heron Quays</item>
+        <item>High Barnet</item>
+        <item>High Street Kensington</item>
+        <item>Highams Park</item>
+        <item>Highbury and Islington</item>
+        <item>Highgate</item>
+        <item>Hillingdon</item>
+        <item>Hither Green</item>
+        <item>Holborn</item>
+        <item>Holland Park</item>
+        <item>Holloway Road</item>
+        <item>Homerton</item>
+        <item>Honor Oak Park</item>
+        <item>Hornchurch</item>
+        <item>Hornsey</item>
+        <item>Hounslow</item>
+        <item>Hounslow Central</item>
+        <item>Hounslow East</item>
+        <item>Hounslow West</item>
+        <item>Hoxton</item>
+        <item>Hyde Park Corner</item>
+        <item>Ickenham</item>
+        <item>Ilford</item>
+        <item>Imperial Wharf</item>
+        <item>Island Gardens</item>
+        <item>Isleworth</item>
+        <item>Kenley</item>
+        <item>Kennington</item>
+        <item>Kensal Green</item>
+        <item>Kensal Rise</item>
+        <item>Kensington (Olympia)</item>
+        <item>Kent House</item>
+        <item>Kentish Town</item>
+        <item>Kentish Town West</item>
+        <item>Kenton</item>
+        <item>Kew Bridge</item>
+        <item>Kew Gardens</item>
+        <item>Kidbrooke</item>
+        <item>Kilburn</item>
+        <item>Kilburn High Road</item>
+        <item>Kilburn Park</item>
+        <item>King George V</item>
+        <item>King\'s Cross</item>
+        <item>Kings Cross St. Pancras</item>
+        <item>Kingsbury</item>
+        <item>Kingston</item>
+        <item>Kingswood</item>
+        <item>Knightsbridge</item>
+        <item>Knockholt</item>
+        <item>Ladbroke Grove</item>
+        <item>Ladywell</item>
+        <item>Lambeth North</item>
+        <item>Lancaster Gate</item>
+        <item>Langdon Park</item>
+        <item>Latimer Road</item>
+        <item>Lee</item>
+        <item>Leicester Square</item>
+        <item>Lewisham</item>
+        <item>Leyton</item>
+        <item>Leyton Midland Road</item>
+        <item>Leytonstone</item>
+        <item>Leytonstone High Road</item>
+        <item>Limehouse</item>
+        <item>Liverpool Street</item>
+        <item>London Bridge</item>
+        <item>London City Airport</item>
+        <item>London Fields</item>
+        <item>Loughborough Junction</item>
+        <item>Loughton</item>
+        <item>Lower Sydenham</item>
+        <item>Maida Vale</item>
+        <item>Malden Manor</item>
+        <item>Manor House</item>
+        <item>Manor Park</item>
+        <item>Mansion House</item>
+        <item>Marble Arch</item>
+        <item>Maryland</item>
+        <item>Marylebone</item>
+        <item>Maze Hill</item>
+        <item>Mile End</item>
+        <item>Mill Hill Broadway</item>
+        <item>Mill Hill East</item>
+        <item>Mitcham Eastfields</item>
+        <item>Mitcham Junction</item>
+        <item>Monument</item>
+        <item>Moor Park</item>
+        <item>Moorgate</item>
+        <item>Morden</item>
+        <item>Morden South</item>
+        <item>Mornington Crescent</item>
+        <item>Mortlake</item>
+        <item>Motspur Park</item>
+        <item>Mottingham</item>
+        <item>Mudchute</item>
+        <item>Neasden</item>
+        <item>New Barnet</item>
+        <item>New Beckenham</item>
+        <item>New Cross</item>
+        <item>New Cross Gate</item>
+        <item>New Eltham</item>
+        <item>New Malden</item>
+        <item>New Southgate</item>
+        <item>Newbury Park</item>
+        <item>Norbiton</item>
+        <item>Norbury</item>
+        <item>North Acton</item>
+        <item>North Dulwich</item>
+        <item>North Ealing</item>
+        <item>North Greenwich</item>
+        <item>North Harrow</item>
+        <item>North Sheen</item>
+        <item>North Wembley</item>
+        <item>Northfields</item>
+        <item>Northolt</item>
+        <item>Northolt Park</item>
+        <item>Northwick Park</item>
+        <item>Northwood</item>
+        <item>Northwood Hills</item>
+        <item>Norwood Junction</item>
+        <item>Notting Hill Gate</item>
+        <item>Nunhead</item>
+        <item>Oakleigh Park</item>
+        <item>Oakwood</item>
+        <item>Ockendon</item>
+        <item>Old Street</item>
+        <item>Orpington</item>
+        <item>Osterley</item>
+        <item>Oval</item>
+        <item>Oxford Circus</item>
+        <item>Paddington</item>
+        <item>Palmers Green</item>
+        <item>Park Royal</item>
+        <item>Parsons Green</item>
+        <item>Peckham Rye</item>
+        <item>Penge East</item>
+        <item>Penge West</item>
+        <item>Perivale</item>
+        <item>Petts Wood</item>
+        <item>Piccadilly Circus</item>
+        <item>Pimlico</item>
+        <item>Pinner</item>
+        <item>Plaistow</item>
+        <item>Plumstead</item>
+        <item>Ponders End</item>
+        <item>Pontoon Dock</item>
+        <item>Poplar</item>
+        <item>Preston Road</item>
+        <item>Prince Regent</item>
+        <item>Pudding Mill Lane</item>
+        <item>Purfleet</item>
+        <item>Purley</item>
+        <item>Purley Oaks</item>
+        <item>Putney</item>
+        <item>Putney Bridge</item>
+        <item>Queens Park</item>
+        <item>Queens Road Peckham</item>
+        <item>Queensbury</item>
+        <item>Queenstown Road</item>
+        <item>Queensway</item>
+        <item>Radlett</item>
+        <item>Rainham</item>
+        <item>Ravensbourne</item>
+        <item>Ravenscourt Park</item>
+        <item>Rayners Lane</item>
+        <item>Raynes Park</item>
+        <item>Rectory Road</item>
+        <item>Redbridge</item>
+        <item>Reedham</item>
+        <item>Regents Park</item>
+        <item>Richmond</item>
+        <item>Rickmansworth</item>
+        <item>Riddlesdown</item>
+        <item>Roding Valley</item>
+        <item>Romford</item>
+        <item>Rotherhithe</item>
+        <item>Royal Albert</item>
+        <item>Royal Oak</item>
+        <item>Royal Victoria</item>
+        <item>Ruislip</item>
+        <item>Ruislip Gardens</item>
+        <item>Ruislip Manor</item>
+        <item>Russell Square</item>
+        <item>Sanderstead</item>
+        <item>Selhurst</item>
+        <item>Seven Kings</item>
+        <item>Seven Sisters</item>
+        <item>Shadwell</item>
+        <item>Shenfield</item>
+        <item>Shepherds Bush</item>
+        <item>Shepherds Bush Market</item>
+        <item>Shoreditch High Street</item>
+        <item>Shortlands</item>
+        <item>Sidcup</item>
+        <item>Silver Street</item>
+        <item>Slade Green</item>
         <item>Sloane Square</item>
+        <item>Smitham</item>
+        <item>Snaresbrook</item>
+        <item>South Acton</item>
+        <item>South Bermondsey</item>
+        <item>South Croydon</item>
+        <item>South Ealing</item>
+        <item>South Hampstead</item>
+        <item>South Harrow</item>
+        <item>South Kensington</item>
+        <item>South Kenton</item>
+        <item>South Merton</item>
+        <item>South Quay</item>
+        <item>South Ruislip</item>
+        <item>South Tottenham</item>
+        <item>South Wimbledon</item>
+        <item>South Woodford</item>
+        <item>Southall</item>
+        <item>Southbury</item>
+        <item>Southfields</item>
+        <item>Southgate</item>
+        <item>Southwark</item>
+        <item>St Helier</item>
+        <item>St James Street</item>
+        <item>St Johns</item>
+        <item>St Margarets</item>
+        <item>St Mary Cray</item>
+        <item>St Pancras</item>
+        <item>St. James\'s Park</item>
+        <item>St. Johns Wood</item>
+        <item>St. Pauls</item>
+        <item>Stamford Brook</item>
+        <item>Stamford Hill</item>
+        <item>Stanmore</item>
+        <item>Star Lane</item>
+        <item>Stepney Green</item>
+        <item>Stockwell</item>
+        <item>Stoke Newington</item>
+        <item>Stonebridge Park</item>
+        <item>Stoneleigh</item>
+        <item>Stratford</item>
+        <item>Stratford High Street</item>
+        <item>Stratford International</item>
+        <item>Strawberry Hill</item>
+        <item>Streatham</item>
+        <item>Streatham Common</item>
+        <item>Streatham Hill</item>
+        <item>Sudbury and Harrow Road</item>
+        <item>Sudbury Hill</item>
+        <item>Sudbury Hill Harrow</item>
+        <item>Sudbury Town</item>
+        <item>Sundridge Park</item>
+        <item>Surbiton</item>
+        <item>Surrey Quays</item>
+        <item>Sutton</item>
+        <item>Sutton Common</item>
+        <item>Swiss Cottage</item>
+        <item>Sydenham</item>
+        <item>Sydenham Hill</item>
+        <item>Syon Lane</item>
+        <item>Tadworth</item>
+        <item>Tattenham Corner</item>
+        <item>Teddington</item>
+        <item>Temple</item>
+        <item>Thames Ditton</item>
+        <item>Theobalds Grove</item>
+        <item>Theydon Bois</item>
+        <item>Thornton Heath</item>
+        <item>Tolworth</item>
+        <item>Tooting</item>
+        <item>Tooting Bec</item>
+        <item>Tooting Broadway</item>
+        <item>Tottenham Court Road</item>
+        <item>Tottenham Hale</item>
+        <item>Totteridge and Whetstone</item>
+        <item>Tower Gateway</item>
+        <item>Tower Hill</item>
+        <item>Tufnell Park</item>
+        <item>Tulse Hill</item>
+        <item>Turkey Street</item>
+        <item>Turnham Green</item>
+        <item>Turnpike Lane</item>
+        <item>Twickenham</item>
+        <item>Upminster</item>
+        <item>Upminster Bridge</item>
+        <item>Upney</item>
+        <item>Upper Holloway</item>
+        <item>Upper Warlingham</item>
+        <item>Upton Park</item>
+        <item>Uxbridge</item>
+        <item>Vauxhall</item>
         <item>Victoria</item>
+        <item>Waddon</item>
+        <item>Wallington</item>
+        <item>Waltham Cross</item>
+        <item>Walthamstow Central</item>
+        <item>Walthamstow Queens Road</item>
+        <item>Wandsworth Common</item>
+        <item>Wandsworth Road</item>
+        <item>Wandsworth Town</item>
+        <item>Wanstead</item>
+        <item>Wanstead Park</item>
+        <item>Wapping</item>
+        <item>Warren Street</item>
+        <item>Warwick Avenue</item>
+        <item>Waterloo</item>
+        <item>Watford</item>
+        <item>Watford High Street</item>
+        <item>Watford Junction</item>
+        <item>Welling</item>
+        <item>Wembley Central</item>
+        <item>Wembley Park</item>
+        <item>Wembley Stadium</item>
+        <item>West Acton</item>
+        <item>West Brompton</item>
+        <item>West Croydon</item>
+        <item>West Drayton</item>
+        <item>West Dulwich</item>
+        <item>West Ealing</item>
+        <item>West Finchley</item>
+        <item>West Ham</item>
+        <item>West Hampstead</item>
+        <item>West Hampstead Thameslink</item>
+        <item>West Harrow</item>
+        <item>West India Quay</item>
+        <item>West Kensington</item>
+        <item>West Norwood</item>
+        <item>West Ruislip</item>
+        <item>West Silvertown</item>
+        <item>West Sutton</item>
+        <item>West Wickham</item>
+        <item>Westbourne Park</item>
+        <item>Westcombe Park</item>
+        <item>Westferry</item>
+        <item>Westminster</item>
+        <item>White City</item>
+        <item>White Hart Lane</item>
+        <item>Whitechapel</item>
+        <item>Whitton</item>
+        <item>Whyteleafe</item>
+        <item>Whyteleafe South</item>
+        <item>Willesden Green</item>
+        <item>Willesden Junction</item>
+        <item>Wimbledon</item>
+        <item>Wimbledon Chase</item>
+        <item>Wimbledon Park</item>
+        <item>Winchmore Hill</item>
+        <item>Wood Green</item>
+        <item>Wood Lane</item>
+        <item>Wood Street</item>
+        <item>Woodford</item>
+        <item>Woodgrange Park</item>
+        <item>Woodmansterne</item>
+        <item>Woodside Park</item>
+        <item>Woolwich Arsenal</item>
+        <item>Woolwich Dockyard</item>
+        <item>Worcester Park</item>
     </string-array>
 
 </resources>
