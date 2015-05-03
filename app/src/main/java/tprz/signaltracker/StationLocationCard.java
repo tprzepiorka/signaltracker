@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -98,21 +99,22 @@ public class StationLocationCard extends Card implements StationCard {
             }
         });
 
+        autoCompleteTextView.setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                if(keyCode == KeyEvent.KEYCODE_ENTER) {
+                    newStationSubmitted();
+                    return true;
+                }
+
+                return false;
+            }
+        });
+
         saveIdentificationButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(currLocFingerprint != null) {
-                    // Find the station selected
-                    String selectedSationName = autoCompleteTextView.getText().toString();
-                    Station station = tubeGraph.getStationByName(selectedSationName);
-                    if(station != null) {
-                        if(currLocFingerprint.mapNewStation(station)) {
-                            currStationText.setText(activity.getString(R.string.addingStationText));
-                        }
-                        wifiProfiler.startWifiScan();
-
-                    }
-                }
+                newStationSubmitted();
             }
         });
 
@@ -120,6 +122,21 @@ public class StationLocationCard extends Card implements StationCard {
         ArrayAdapter<String> adapter = new ArrayAdapter<>(activity, android.R.layout.simple_dropdown_item_1line, stationNames);
         autoCompleteTextView.setAdapter(adapter);
         autoCompleteTextView.setThreshold(1);
+    }
+
+    private void newStationSubmitted() {
+        if(currLocFingerprint != null) {
+            // Find the station selected
+            String selectedStationName = autoCompleteTextView.getText().toString();
+            Station station = tubeGraph.getStationByName(selectedStationName);
+            if(station != null) {
+                if(currLocFingerprint.mapNewStation(station)) {
+                    currStationText.setText(activity.getString(R.string.addingStationText));
+                }
+                wifiProfiler.startWifiScan();
+                autoCompleteTextView.setText("");
+            }
+        }
     }
 
     @Override
@@ -133,7 +150,7 @@ public class StationLocationCard extends Card implements StationCard {
         }
 
         currStationText.setText((newCurrentStation == null
-                ? activity.getString(R.string.previousStationTextPrepend)
+                ? activity.getString(R.string.unknownStationText)
                 : newCurrentStation.getName()));
 
         currLocFingerprint = locFingerprint;
