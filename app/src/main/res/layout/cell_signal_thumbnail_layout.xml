@@ -49,9 +49,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textAppearance="?android:attr/textAppearanceMedium"
-                    android:text="Medium Text"
                     android:id="@+id/cell_signal_text"
-                    android:layout_gravity="left|top" />
+                    android:layout_gravity="start|top" />
 
 
                 <com.github.mikephil.charting.charts.LineChart
@@ -64,23 +63,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:id="@+id/imageView"
-                    android:layout_gravity="center_horizontal|bottom" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textAppearance="?android:attr/textAppearanceMedium"
-                    android:text="Unknown curr Loc."
-                    android:id="@+id/location_curr_text"
-                    android:layout_gravity="right|top" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textAppearance="?android:attr/textAppearanceMedium"
-                    android:text="Unkown Last Loc."
-                    android:id="@+id/location_prev_text"
-                    android:layout_gravity="right|bottom" />
+                    android:layout_gravity="center_horizontal|bottom"
+                    android:contentDescription="Signal Indicator Image" />
 
             </FrameLayout>
 
