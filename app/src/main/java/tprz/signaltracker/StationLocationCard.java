@@ -20,6 +20,7 @@ import tprz.signaltracker.location.LocationFingerprint;
 import tprz.signaltracker.location.Station;
 import tprz.signaltracker.location.StationCard;
 import tprz.signaltracker.location.TubeGraph;
+import tprz.signaltracker.location.WifiProfiler;
 
 /**
  * The StationLocationCard provides a card to display information
@@ -28,6 +29,7 @@ import tprz.signaltracker.location.TubeGraph;
 public class StationLocationCard extends Card implements StationCard {
     private final Activity activity;
     private final TubeGraph tubeGraph;
+    private final WifiProfiler wifiProfiler;
     private TextView prevStationText;
     private TextView currStationText;
     private AutoCompleteTextView autoCompleteTextView;
@@ -41,6 +43,8 @@ public class StationLocationCard extends Card implements StationCard {
         super(context, innerLayout);
         this.activity = activity;
         this.tubeGraph = tubeGraph;
+        this.wifiProfiler = new WifiProfiler(getContext(), this, tubeGraph);
+        wifiProfiler.startWifiScan();
     }
 
     @Override
@@ -105,7 +109,11 @@ public class StationLocationCard extends Card implements StationCard {
                     String selectedSationName = autoCompleteTextView.getText().toString();
                     Station station = tubeGraph.getStationByName(selectedSationName);
                     if(station != null) {
-                        currLocFingerprint.mapNewStation(station);
+                        if(currLocFingerprint.mapNewStation(station)) {
+                            currStationText.setText("Adding...");
+                        };
+                        wifiProfiler.startWifiScan();
+
                     }
                 }
             }

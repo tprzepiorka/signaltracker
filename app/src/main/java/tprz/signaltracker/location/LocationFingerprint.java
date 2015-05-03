@@ -29,11 +29,6 @@ public class LocationFingerprint {
      * @param station The station that this location fingerprint belongs to.
      */
     public boolean mapNewStation(Station station) {
-        if(isUnknown) {
-            tubeGraph.addNewStationMapping(station, macAddresses);
-            return true;
-        } else {
-            return false;
-        }
+        return isUnknown && tubeGraph.addNewStationMapping(station, macAddresses);
     }
 }

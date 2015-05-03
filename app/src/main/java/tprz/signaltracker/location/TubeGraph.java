@@ -158,7 +158,7 @@ public class TubeGraph {
         return ret;
     }
 
-    public void addNewStationMapping(Station newCurrentStation, Set<String> ssids) {
+    public boolean addNewStationMapping(Station newCurrentStation, Set<String> ssids) {
         try{
             for (int i = 0; i < stations.length(); i++) {
                 JSONObject stationObject = stations.getJSONObject(i);
@@ -182,6 +182,8 @@ public class TubeGraph {
                         }
 
                         writeTubeGraph();
+                        loadFromFile();
+                        return true;
                     }
 
                 }
@@ -190,6 +192,8 @@ public class TubeGraph {
             Log.i(TAG, "Error: " + e.toString());
             e.printStackTrace();
         }
+
+        return false;
     }
 
     public Station getStationByName(String stationName) {

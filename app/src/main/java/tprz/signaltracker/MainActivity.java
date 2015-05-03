@@ -223,7 +223,6 @@ public class MainActivity extends Activity  implements Probe.DataListener{
         CardView stationLocationCardView = (CardView) findViewById(R.id.location_card_view);
        stationLocationCardView.setCard(stationLocationCard);
 
-       WifiProfiler profiler = new WifiProfiler(getApplicationContext(), stationLocationCard, tubeGraph);
     }
 
 

@@ -68,6 +68,13 @@ public class WifiProfiler {
     }
 
     /**
+     * Start a WifiScan
+     */
+    public void startWifiScan() {
+        wifiManager.startScan();
+    }
+
+    /**
      * Update the provided card informing it of a change in the current
      * station.
      * @param newCurrentStation The current station we are at.
