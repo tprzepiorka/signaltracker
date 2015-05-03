@@ -48,7 +48,7 @@
         android:layout_marginTop="12dp"
         card:card_layout_resourceID="@layout/cell_signal_thumbnail_layout"/>
 
-    <it.gmariotti.cardslib.library.view.CardView
+    <it.gmariotti.cardslib.library.view.CardViewNative
         android:id="@+id/location_card_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

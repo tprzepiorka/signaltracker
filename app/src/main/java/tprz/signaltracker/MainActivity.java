@@ -36,6 +36,7 @@ import edu.mit.media.funf.storage.NameValueDatabaseHelper;
 import it.gmariotti.cardslib.library.internal.CardHeader;
 import it.gmariotti.cardslib.library.internal.CardThumbnail;
 import it.gmariotti.cardslib.library.view.CardView;
+import it.gmariotti.cardslib.library.view.CardViewNative;
 import tprz.signaltracker.location.TubeGraph;
 import tprz.signaltracker.location.WifiProfiler;
 
@@ -218,9 +219,9 @@ public class MainActivity extends Activity  implements Probe.DataListener{
         CardHeader locationHeader = new CardHeader(getApplicationContext());
         header.setTitle("Location");
         //Add Header to card
-        stationLocationCard.addCardHeader(locationHeader);
+       // stationLocationCard.addCardHeader(locationHeader);
 
-        CardView stationLocationCardView = (CardView) findViewById(R.id.location_card_view);
+        CardViewNative stationLocationCardView = (CardViewNative) findViewById(R.id.location_card_view);
        stationLocationCardView.setCard(stationLocationCard);
 
     }

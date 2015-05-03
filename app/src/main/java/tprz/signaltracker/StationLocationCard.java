@@ -11,7 +11,6 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.ImageButton;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import it.gmariotti.cardslib.library.internal.Card;
 import tprz.signaltracker.location.LocationFingerprint;
@@ -48,7 +47,7 @@ public class StationLocationCard extends Card implements StationCard {
 
     @Override
     public void setupInnerViewElements(ViewGroup parent, View view) {
-        //super.setupInnerViewElements(parent, view);
+        super.setupInnerViewElements(parent, view);
         prevStationText = (TextView) parent.findViewById(R.id.location_prev_text);
         currStationText = (TextView) parent.findViewById(R.id.location_curr_text);
         autoCompleteTextView = (AutoCompleteTextView) parent.findViewById(R.id.autoCompleteTextView);

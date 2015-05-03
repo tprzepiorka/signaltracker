@@ -39,10 +39,11 @@
         }
     </string>
     <string name="defaultPreviousStationText">Previous:</string>
-    <string name="defaultCurrentStationText">Unknown</string>
+    <string name="defaultCurrentStationText">Searching...</string>
     <string name="addingStationText">Adding...</string>
     <string name="previousStationTextPrepend">Previous: %s</string>
     <string name="unknownStationText">Unknown</string>
+    <string name="AddStationImageButtonText">Add Station</string>
     <string-array name="stations">
         <!--http://www.freemaptools.com/find-london-underground-stations-inside-radius.htm-->
         <item>Abbey Road</item>
