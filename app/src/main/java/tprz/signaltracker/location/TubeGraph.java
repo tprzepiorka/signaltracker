@@ -192,6 +192,10 @@ public class TubeGraph {
         }
     }
 
+    public Station getStationByName(String stationName) {
+        return stationMap.get(stationName);
+    }
+
     private void writeTubeGraph() throws IOException, JSONException {
         FileWriter file = new FileWriter(tubeGraphPath);
         try {

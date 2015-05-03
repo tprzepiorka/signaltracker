@@ -19,6 +19,7 @@ import it.gmariotti.cardslib.library.internal.Card;
 import tprz.signaltracker.location.LocationFingerprint;
 import tprz.signaltracker.location.Station;
 import tprz.signaltracker.location.StationCard;
+import tprz.signaltracker.location.TubeGraph;
 
 /**
  * The StationLocationCard provides a card to display information
@@ -26,6 +27,7 @@ import tprz.signaltracker.location.StationCard;
  */
 public class StationLocationCard extends Card implements StationCard {
     private final Activity activity;
+    private final TubeGraph tubeGraph;
     private TextView prevStationText;
     private TextView currStationText;
     private AutoCompleteTextView autoCompleteTextView;
@@ -35,9 +37,10 @@ public class StationLocationCard extends Card implements StationCard {
     private Station lastStation = null;
     private LocationFingerprint currLocFingerprint = null;
 
-    public StationLocationCard(Context context, int innerLayout, Activity activity) {
+    public StationLocationCard(Context context, int innerLayout, Activity activity, TubeGraph tubeGraph) {
         super(context, innerLayout);
         this.activity = activity;
+        this.tubeGraph = tubeGraph;
     }
 
     @Override
@@ -97,7 +100,14 @@ public class StationLocationCard extends Card implements StationCard {
         saveIdentificationButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                if(currLocFingerprint != null) {
+                    // Find the station selected
+                    String selectedSationName = autoCompleteTextView.getText().toString();
+                    Station station = tubeGraph.getStationByName(selectedSationName);
+                    if(station != null) {
+                        currLocFingerprint.mapNewStation(station);
+                    }
+                }
             }
         });
 

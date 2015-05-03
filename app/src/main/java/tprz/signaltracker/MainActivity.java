@@ -36,6 +36,7 @@ import edu.mit.media.funf.storage.NameValueDatabaseHelper;
 import it.gmariotti.cardslib.library.internal.CardHeader;
 import it.gmariotti.cardslib.library.internal.CardThumbnail;
 import it.gmariotti.cardslib.library.view.CardView;
+import tprz.signaltracker.location.TubeGraph;
 import tprz.signaltracker.location.WifiProfiler;
 
 
@@ -210,7 +211,8 @@ public class MainActivity extends Activity  implements Probe.DataListener{
         cellSignalCard.setSignal(0, true);
 
         // Station Location Card
-        StationLocationCard stationLocationCard = new StationLocationCard(getApplicationContext(), R.layout.card_location_layout, this);
+        TubeGraph tubeGraph = new TubeGraph();
+        StationLocationCard stationLocationCard = new StationLocationCard(getApplicationContext(), R.layout.card_location_layout, this, tubeGraph);
 
         //Create a CardHeader
         CardHeader locationHeader = new CardHeader(getApplicationContext());
@@ -221,7 +223,7 @@ public class MainActivity extends Activity  implements Probe.DataListener{
         CardView stationLocationCardView = (CardView) findViewById(R.id.location_card_view);
        stationLocationCardView.setCard(stationLocationCard);
 
-       // WifiProfiler profiler = new WifiProfiler(getApplicationContext(), stationLocationCard);
+       WifiProfiler profiler = new WifiProfiler(getApplicationContext(), stationLocationCard, tubeGraph);
     }
 
 

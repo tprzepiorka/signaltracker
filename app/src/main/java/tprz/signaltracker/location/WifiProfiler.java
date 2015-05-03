@@ -57,11 +57,11 @@ public class WifiProfiler {
      * @param context Context under which we want to retrieve the WifiManager
      * @param card The StationCard that we want to update on change of station.
      */
-    public WifiProfiler(Context context, StationCard card) {
+    public WifiProfiler(Context context, StationCard card, TubeGraph tubeGraph) {
         this.card = card;
         wifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
         upToDateScan = new HashSet<>();
-        tubeGraph = new TubeGraph();
+        this.tubeGraph = tubeGraph;
 
 
         context.registerReceiver(scanResultsReceiver, new IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
