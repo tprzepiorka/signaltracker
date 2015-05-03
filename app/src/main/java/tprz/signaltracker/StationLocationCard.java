@@ -4,14 +4,12 @@ import android.app.Activity;
 import android.content.Context;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.ImageButton;
-import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -34,6 +32,7 @@ public class StationLocationCard extends Card implements StationCard {
     private TextView currStationText;
     private AutoCompleteTextView autoCompleteTextView;
     private ImageButton saveIdentificationButton;
+    @SuppressWarnings("UnusedDeclaration")
     private final String TAG = "StationLocationCard";
 
     private Station lastStation = null;
@@ -62,7 +61,6 @@ public class StationLocationCard extends Card implements StationCard {
             @Override
             public void onItemClick(AdapterView<?> parent, View arg1, int pos,
                                     long id) {
-                Toast.makeText(getContext(), " selected", Toast.LENGTH_LONG).show();
                 saveIdentificationButton.setEnabled(true);
                 saveIdentificationButton.setClickable(true);
             }
@@ -110,8 +108,8 @@ public class StationLocationCard extends Card implements StationCard {
                     Station station = tubeGraph.getStationByName(selectedSationName);
                     if(station != null) {
                         if(currLocFingerprint.mapNewStation(station)) {
-                            currStationText.setText("Adding...");
-                        };
+                            currStationText.setText(activity.getString(R.string.addingStationText));
+                        }
                         wifiProfiler.startWifiScan();
 
                     }
@@ -128,11 +126,17 @@ public class StationLocationCard extends Card implements StationCard {
     @Override
     public void updateCard(Station newCurrentStation, LocationFingerprint locFingerprint) {
         if(newCurrentStation != null && !newCurrentStation.equals(lastStation)) {
-            prevStationText.setText("Previous: " + (lastStation == null ? "Unknown" : lastStation.getName()));
+            prevStationText.setText(String.format(activity.getString(R.string.previousStationTextPrepend),
+                    (lastStation == null
+                            ? activity.getString(R.string.unknownStationText)
+                            : lastStation.getName())));
             lastStation = newCurrentStation;
         }
 
-        currStationText.setText((newCurrentStation == null ? "Unknown" : newCurrentStation.getName()));
+        currStationText.setText((newCurrentStation == null
+                ? activity.getString(R.string.previousStationTextPrepend)
+                : newCurrentStation.getName()));
+
         currLocFingerprint = locFingerprint;
     }
 
