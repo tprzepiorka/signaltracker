@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.components.LimitLine;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
@@ -31,8 +32,6 @@ public class CellSignalCard extends Card {
     CellSignalListener cellSignalListener;
     private TextView cellSignalTextView;
     private LineChart chart;
-    private int chartWidth = 30;
-    private long startSystemMillis = -1;
     private int[] cellSignalDrawables = new int[] {
             R.drawable.ic_signal_cellular_0_bar_grey600_48dp,
             R.drawable.ic_signal_cellular_1_bar_grey600_48dp,
@@ -93,28 +92,6 @@ public class CellSignalCard extends Card {
         updateChart(signalStrength);
     }
 
-    private void initChart() {
-//        chart.setVisibleXRange(50);
-//        chart.getAxis(YAxis.AxisDependency.LEFT).setAxisMinValue(0);
-//        chart.getAxis(YAxis.AxisDependency.LEFT).setAxisMaxValue(32);
-//        chart.getAxis(YAxis.AxisDependency.LEFT).setLabelCount(2);
-//        chart.getAxis(YAxis.AxisDependency.RIGHT).setEnabled(false);
-//        chart.setVisibleYRange(32, YAxis.AxisDependency.RIGHT);
-        chart.getXAxis().setDrawGridLines(false);
-//
-        ArrayList<String> x = new ArrayList<>();
-        List<Entry> y = new ArrayList<>();
-        for(int i =0; i<21;i++) {
-//            if(i != 20) {
-//                x.add("" + i);
-//                y.add(new Entry(i, i));
-//            }
-        }
-        LineDataSet dataSet = new LineDataSet(y, "ASU");
-        LineData lineData = new LineData(x, dataSet);
-        chart.setData(new LineData());
-    }
-
     @Override
     public void setupInnerViewElements(ViewGroup parent, View view) {
         super.setupInnerViewElements(parent, view);
@@ -128,6 +105,18 @@ public class CellSignalCard extends Card {
 
             // add empty data
             chart.setData(data);
+
+            YAxis yaxis = chart.getAxisLeft();
+            yaxis.setAxisMinValue(0);
+            yaxis.setAxisMaxValue(33);
+            yaxis.setDrawGridLines(false);
+
+            LimitLine minGood = new LimitLine(8);
+            yaxis.addLimitLine(minGood);
+
+            YAxis rightAxis = chart.getAxisRight();
+            rightAxis.setEnabled(false);
+
             chartSetup = true;
         }
     }
@@ -149,51 +138,32 @@ public class CellSignalCard extends Card {
             data.addDataSet(set);
         }
 
-        if(startSystemMillis == -1) {
-            startSystemMillis = System.currentTimeMillis() / 1000L;
-        }
-
-        long timeDiff = System.currentTimeMillis() / 1000L - startSystemMillis;
-
-//        if(set.getEntryCount() >= 10) {
-////            //set.removeEntry(0);
-////            for (int i=0; i < set.getEntryCount(); i++) {
-////                Entry e = set.getEntryForXIndex(i);
-////                if (e==null) continue;
-////
-////                e.setXIndex(e.getXIndex() - 1);
-////            }
-////
-////            Entry e = new Entry(signalStrength, set.getEntryCount());
-////            e.setXIndex(10);
-////            data.addEntry(e, 0);
-//
-//        } else {
-            data.addXValue("" + set.getEntryCount());
-            Entry e = new Entry(signalStrength, set.getEntryCount());
-            e.setXIndex(set.getEntryCount() + 1);
-            data.addEntry(e, 0);
+        data.addXValue("" + set.getEntryCount());
+        Entry e = new Entry(signalStrength, set.getEntryCount());
+        e.setXIndex(set.getEntryCount() + 1);
+        data.addEntry(e, 0);
         set.setDrawCircles(false);
-//        }
-
-       // data.addXValue("" + timeDiff);
-
 
         chart.notifyDataSetChanged();
 
         // limit the number of visible entries
-       chart.setVisibleXRange(12);
+        chart.setVisibleXRange(12);
         chart.setVisibleYRange(33, YAxis.AxisDependency.LEFT);
+        chart.setVisibleYRange(33, YAxis.AxisDependency.RIGHT);
+
+
 
         // move to the latest entry
         chart.moveViewToX(set.getEntryCount() + 10);
+        chart.moveViewToY(0, YAxis.AxisDependency.LEFT);
+        chart.moveViewToY(0, YAxis.AxisDependency.RIGHT);
         chart.invalidate();
         lock = false;
     }
 
     private LineDataSet createSet() {
 
-        LineDataSet set = new LineDataSet(null, "Dynamic Data");
+        LineDataSet set = new LineDataSet(null, "ASU");
         set.setAxisDependency(YAxis.AxisDependency.LEFT);
         set.setColor(ColorTemplate.getHoloBlue());
         set.setCircleColor(Color.WHITE);
