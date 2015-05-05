@@ -1,6 +1,7 @@
 package tprz.signaltracker;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.telephony.PhoneStateListener;
 import android.telephony.SignalStrength;
 import android.telephony.TelephonyManager;
@@ -13,6 +14,7 @@ import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
+import com.github.mikephil.charting.utils.ColorTemplate;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,6 +32,7 @@ public class CellSignalCard extends Card {
     private TextView cellSignalTextView;
     private LineChart chart;
     private int chartWidth = 30;
+    private long startSystemMillis = -1;
     private int[] cellSignalDrawables = new int[] {
             R.drawable.ic_signal_cellular_0_bar_grey600_48dp,
             R.drawable.ic_signal_cellular_1_bar_grey600_48dp,
@@ -38,6 +41,8 @@ public class CellSignalCard extends Card {
             R.drawable.ic_signal_cellular_4_bar_grey600_48dp,
             R.drawable.ic_signal_cellular_null_grey600_48dp
     };
+    private boolean chartSetup = false;
+    private boolean lock = false;
 
     public CellSignalCard(Context context) {
         super(context);
@@ -89,23 +94,25 @@ public class CellSignalCard extends Card {
     }
 
     private void initChart() {
-        chart.setVisibleXRange(50);
-        chart.getAxis(YAxis.AxisDependency.LEFT).setAxisMinValue(0);
-        chart.getAxis(YAxis.AxisDependency.LEFT).setAxisMaxValue(32);
-        chart.getAxis(YAxis.AxisDependency.LEFT).setLabelCount(2);
-        chart.getAxis(YAxis.AxisDependency.RIGHT).setEnabled(false);
-        chart.setVisibleYRange(32, YAxis.AxisDependency.RIGHT);
+//        chart.setVisibleXRange(50);
+//        chart.getAxis(YAxis.AxisDependency.LEFT).setAxisMinValue(0);
+//        chart.getAxis(YAxis.AxisDependency.LEFT).setAxisMaxValue(32);
+//        chart.getAxis(YAxis.AxisDependency.LEFT).setLabelCount(2);
+//        chart.getAxis(YAxis.AxisDependency.RIGHT).setEnabled(false);
+//        chart.setVisibleYRange(32, YAxis.AxisDependency.RIGHT);
         chart.getXAxis().setDrawGridLines(false);
-
+//
         ArrayList<String> x = new ArrayList<>();
         List<Entry> y = new ArrayList<>();
-        for(int i =0; i<30;i++) {
-            x.add("" + i);
-            y.add(new Entry(0, i));
+        for(int i =0; i<21;i++) {
+//            if(i != 20) {
+//                x.add("" + i);
+//                y.add(new Entry(i, i));
+//            }
         }
         LineDataSet dataSet = new LineDataSet(y, "ASU");
         LineData lineData = new LineData(x, dataSet);
-        chart.setData(lineData);
+        chart.setData(new LineData());
     }
 
     @Override
@@ -113,7 +120,16 @@ public class CellSignalCard extends Card {
         super.setupInnerViewElements(parent, view);
         cellSignalTextView = (TextView) parent.findViewById(R.id.cell_signal_text);
         this.chart = (LineChart) parent.findViewById(R.id.chart);
-        initChart();
+      // initChart();
+
+        if(!this.chartSetup) {
+            LineData data = new LineData();
+            data.setValueTextColor(Color.WHITE);
+
+            // add empty data
+            chart.setData(data);
+            chartSetup = true;
+        }
     }
 
     /***
@@ -122,34 +138,74 @@ public class CellSignalCard extends Card {
      * @param signalStrength
      */
     private void updateChart(int signalStrength) {
-        LineData lineData = chart.getData();
-        LineDataSet lineDataSet = lineData.getDataSetByIndex(0);
-        int count = lineDataSet.getEntryCount();
-
-
-        if (lineData.getXValCount() <= count) {
-            // Remove/Add XVal
-//            lineData.getXVals().add("" + count);
-//            lineData.getXVals().remove(0);
-
-            // Move all entries 1 to the left..
-            for (int i=0; i < count; i++) {
-                Entry e = lineDataSet.getEntryForXIndex(i);
-                if (e==null) continue;
-
-                e.setXIndex(e.getXIndex() - 1);
-            }
-
-            // Set correct index to add value
-            count = chartWidth;
+        if(this.lock) {
+            return;
+        }
+        lock = true;
+        LineData data = chart.getData();
+        LineDataSet set = data.getDataSetByIndex(0);
+        if (set == null) {
+            set = createSet();
+            data.addDataSet(set);
         }
 
-        // Add new value
-        lineData.addEntry(new Entry(signalStrength, count), 0);
+        if(startSystemMillis == -1) {
+            startSystemMillis = System.currentTimeMillis() / 1000L;
+        }
 
-        // Make sure to draw
+        long timeDiff = System.currentTimeMillis() / 1000L - startSystemMillis;
+
+//        if(set.getEntryCount() >= 10) {
+////            //set.removeEntry(0);
+////            for (int i=0; i < set.getEntryCount(); i++) {
+////                Entry e = set.getEntryForXIndex(i);
+////                if (e==null) continue;
+////
+////                e.setXIndex(e.getXIndex() - 1);
+////            }
+////
+////            Entry e = new Entry(signalStrength, set.getEntryCount());
+////            e.setXIndex(10);
+////            data.addEntry(e, 0);
+//
+//        } else {
+            data.addXValue("" + set.getEntryCount());
+            Entry e = new Entry(signalStrength, set.getEntryCount());
+            e.setXIndex(set.getEntryCount() + 1);
+            data.addEntry(e, 0);
+        set.setDrawCircles(false);
+//        }
+
+       // data.addXValue("" + timeDiff);
+
+
         chart.notifyDataSetChanged();
+
+        // limit the number of visible entries
+       chart.setVisibleXRange(12);
+        chart.setVisibleYRange(33, YAxis.AxisDependency.LEFT);
+
+        // move to the latest entry
+        chart.moveViewToX(set.getEntryCount() + 10);
         chart.invalidate();
+        lock = false;
+    }
+
+    private LineDataSet createSet() {
+
+        LineDataSet set = new LineDataSet(null, "Dynamic Data");
+        set.setAxisDependency(YAxis.AxisDependency.LEFT);
+        set.setColor(ColorTemplate.getHoloBlue());
+        set.setCircleColor(Color.WHITE);
+        set.setLineWidth(2f);
+        set.setCircleSize(4f);
+        set.setFillAlpha(65);
+        set.setFillColor(ColorTemplate.getHoloBlue());
+        set.setHighLightColor(Color.rgb(244, 117, 117));
+        set.setValueTextColor(Color.WHITE);
+        set.setValueTextSize(9f);
+        set.setDrawValues(false);
+        return set;
     }
 
     public class CellSignalListener extends PhoneStateListener {

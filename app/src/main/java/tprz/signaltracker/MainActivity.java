@@ -38,7 +38,6 @@ import it.gmariotti.cardslib.library.internal.CardThumbnail;
 import it.gmariotti.cardslib.library.view.CardView;
 import it.gmariotti.cardslib.library.view.CardViewNative;
 import tprz.signaltracker.location.TubeGraph;
-import tprz.signaltracker.location.WifiProfiler;
 
 
 public class MainActivity extends Activity  implements Probe.DataListener{

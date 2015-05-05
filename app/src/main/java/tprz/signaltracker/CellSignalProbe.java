@@ -45,14 +45,14 @@ public class CellSignalProbe extends Probe.Base implements Probe.PassiveProbe {
     private TelephonyManager telephonyManager;
     private PowerManager.WakeLock wakeLock;
 
-    private final String celSignalProbe = "CellSignalProbe";
+    private final String TAG = "CellSignalProbe";
 
     @Override
     protected void onStart() {
         super.onStart();
 
         if(supportsCellInfo) {
-            Log.i(celSignalProbe, "Using getAllCellInfo()");
+            Log.i(TAG, "Using getAllCellInfo()");
 
             List<Map<String, String>> maps = getData();
             JsonObject cellInfoData = new JsonObject();
@@ -60,14 +60,14 @@ public class CellSignalProbe extends Probe.Base implements Probe.PassiveProbe {
             for(Map<String, String> map : maps) {
                 JsonObject cellInfo = getGson().toJsonTree(map).getAsJsonObject();
                 cellInfoData.add("" + count++, cellInfo);
-                Log.v(celSignalProbe, "Adding cellInfo Data from getAllCellInfo().");
+                Log.v(TAG, "Adding cellInfo Data from getAllCellInfo().");
             }
-            Log.v(celSignalProbe, "Sending getAllCellInfo() data.");
+            Log.v(TAG, "Sending getAllCellInfo() data.");
             sendData(cellInfoData);
 
             stop();
         } else {
-            Log.i(celSignalProbe, "Using cellSignalChangedListener()");
+            Log.i(TAG, "Using cellSignalChangedListener()");
 
             // Setup wake lock
             if(wakeLock == null) {
@@ -86,7 +86,7 @@ public class CellSignalProbe extends Probe.Base implements Probe.PassiveProbe {
 
     @Override
     protected void onEnable() {
-        Log.v(celSignalProbe, "onEnable().");
+        Log.v(TAG, "onEnable().");
         super.onEnable();
 
         // Initialise telephony manager
@@ -99,7 +99,7 @@ public class CellSignalProbe extends Probe.Base implements Probe.PassiveProbe {
 
     @Override
     protected void onDisable() {
-        Log.v(celSignalProbe, "onDisable().");
+        Log.v(TAG, "onDisable().");
         super.onDisable();
 
         if(wakeLock != null && wakeLock.isHeld()) {
@@ -116,7 +116,7 @@ public class CellSignalProbe extends Probe.Base implements Probe.PassiveProbe {
 
         List<CellInfo> allCellInfo = telephonyManager.getAllCellInfo();
         if(allCellInfo == null) {
-            Log.w("CellSignalProbe", "allCellInfo is null. SupportsCellInfo: " + supportsCellInfo + ".");
+            Log.w(TAG, "allCellInfo is null. SupportsCellInfo: " + supportsCellInfo + ".");
             return cellInfos;
         }
 
@@ -139,7 +139,7 @@ public class CellSignalProbe extends Probe.Base implements Probe.PassiveProbe {
         } else if(cellInfo instanceof CellInfoCdma) {
             addCellInfo(map, (CellInfoCdma)cellInfo);
         } else {
-            Log.w(celSignalProbe, "Unsupported type of cellInfo.");
+            Log.w(TAG, "Unsupported type of cellInfo.");
         }
     }
 
@@ -229,7 +229,7 @@ public class CellSignalProbe extends Probe.Base implements Probe.PassiveProbe {
             map.put("connectionType", typeName);
             map.put("connectionSubType", subTypeName);
 
-            Log.v(celSignalProbe, "Sending data using onSignalStrengthsChanged");
+            Log.v(TAG, "Sending data using onSignalStrengthsChanged");
             sendData(getGson().toJsonTree(map).getAsJsonObject());
         }
 
