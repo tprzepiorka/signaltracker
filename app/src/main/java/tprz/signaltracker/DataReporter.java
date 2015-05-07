@@ -11,10 +11,13 @@ import com.google.gson.JsonPrimitive;
 
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStreamReader;
 
 import retrofit.Callback;
 import retrofit.RestAdapter;
@@ -31,11 +34,13 @@ public class DataReporter {
     private String macMappingFilePath = Environment.getExternalStorageDirectory() + "/macMapping.json";
     private JsonArray signalReadings;
     private JsonArray macMapping;
+    private TubeGraph tubeGraph;
 
     private static DataReporter instance = null;
     private final String TAG = "DataReporter";
 
     private DataReporter() {
+        tubeGraph = new TubeGraph();
         try {
             File signalReadingsFile = new File(signalReadingsFilePath);
             if(signalReadingsFile.exists()){
@@ -171,6 +176,10 @@ public class DataReporter {
         }
     }
 
+    public TubeGraph getTubeGraph() {
+        return tubeGraph;
+    }
+
     public static DataReporter getInstance() {
         if(instance == null) {
             instance = new DataReporter();
@@ -181,11 +190,39 @@ public class DataReporter {
 
 
     public void sync() {
+
         service.addSignals(signalReadings, new Callback<JsonObject>() {
             @Override
             public void success(JsonObject integer, Response response) {
                 Log.i(TAG, "Successfully added signals to " + integer + " stations.");
                 clearSignals();
+
+                service.addStations(macMapping, new Callback<JsonObject>() {
+                    @Override
+                    public void success(JsonObject jsonObject, Response response) {
+                        Log.i(TAG, "Successfully added station macs");
+                        clearStationsMappingFiles();
+
+                        service.getLatestTubeGraph(new Callback<JsonElement>() {
+                            @Override
+                            public void success(JsonElement result, Response response) {
+                                Log.i(TAG, "Successfully got new tubegraph");
+
+                                updateTubeGraph(result.getAsJsonObject().getAsJsonArray("elements"));
+                            }
+
+                            @Override
+                            public void failure(RetrofitError retrofitError) {
+                                Log.e(TAG, "Failed to update tubegraph: " + retrofitError);
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void failure(RetrofitError retrofitError) {
+                        Log.e(TAG, "Failed to add station mac mapping: " + retrofitError);
+                    }
+                });
             }
 
             @Override
@@ -194,18 +231,13 @@ public class DataReporter {
             }
         });
 
-        service.addStations(macMapping, new Callback<JsonObject>() {
-            @Override
-            public void success(JsonObject jsonObject, Response response) {
-                Log.i(TAG, "Successfully added station macs");
-                clearStationsMappingFiles();
-            }
 
-            @Override
-            public void failure(RetrofitError retrofitError) {
-                Log.e(TAG, "Failed to add station mac mapping: " + retrofitError);
-            }
-        });
+    }
+
+    private void updateTubeGraph(JsonArray newTubeGraph) {
+        JsonObject holderObject = new JsonObject();
+        holderObject.add("stations", newTubeGraph);
+        tubeGraph.update(holderObject);
     }
 
     /**

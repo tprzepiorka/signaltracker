@@ -205,7 +205,7 @@ public class MainActivity extends Activity  implements Probe.DataListener{
     private void setupCards() {
 
         // Station Location Card
-        TubeGraph tubeGraph = new TubeGraph();
+        TubeGraph tubeGraph = DataReporter.getInstance().getTubeGraph();
         StationLocationCard stationLocationCard = new StationLocationCard(getApplicationContext(), R.layout.card_location_layout, this, tubeGraph);
 
         CardViewNative stationLocationCardView = (CardViewNative) findViewById(R.id.location_card_view);

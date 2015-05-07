@@ -4,6 +4,7 @@ import android.os.Environment;
 import android.util.Log;
 
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -132,7 +133,14 @@ public class TubeGraph {
 
         for(int i = 0; i < signalStrengths.length(); i++) {
             JSONObject entry = signalStrengths.getJSONObject(i);
-            signalStrengthsMap.put(entry.getString("operator"), entry.getDouble("strength"));
+            if(entry.has("total") && entry.has("count")) {
+                int total = entry.getInt("total");
+                int count = entry.getInt("count");
+                double averageSignalStrength = total/count;
+                signalStrengthsMap.put(entry.getString("operator"), averageSignalStrength);
+            } else if(entry.has("strength")) {
+                signalStrengthsMap.put(entry.getString("operator"), entry.getDouble("strength"));
+            }
         }
 
         return signalStrengthsMap;
@@ -181,7 +189,7 @@ public class TubeGraph {
                             ssidsJson.put(ssid);
                         }
 
-                        writeTubeGraph();
+                        writeTubeGraph(tubeGraph.toString(4));
                         loadFromFile();
                         return true;
                     }
@@ -200,10 +208,10 @@ public class TubeGraph {
         return stationMap.get(stationName);
     }
 
-    private void writeTubeGraph() throws IOException, JSONException {
+    private void writeTubeGraph(String graphStringToWrite) throws IOException, JSONException {
         FileWriter file = new FileWriter(tubeGraphPath);
         try {
-            file.write(tubeGraph.toString(4));
+            file.write(graphStringToWrite);
             Log.i(TAG, "Successfully wrote update to file.");
 
             System.out.println("Successfully Copied JSON Object to File...");
@@ -214,6 +222,16 @@ public class TubeGraph {
         } finally {
             file.flush();
             file.close();
+        }
+    }
+
+    public void update(JsonObject newGraph) {
+        try {
+            writeTubeGraph(newGraph.toString());
+            loadFromFile();
+        } catch (IOException | JSONException e) {
+            Log.e(TAG, "Error: " + e);
+            e.printStackTrace();
         }
     }
 }
