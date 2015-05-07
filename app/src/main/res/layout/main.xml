@@ -32,8 +32,14 @@
 
             <Button android:id="@+id/scanNowButton"
                 android:text="@string/scanNow"
-                android:layout_width="fill_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/sync_button_text"
+                android:id="@+id/sync_button" />
 
         </LinearLayout>
 

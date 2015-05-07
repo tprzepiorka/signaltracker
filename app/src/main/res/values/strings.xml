@@ -8,7 +8,7 @@
     <string name="enabledBox">Enabled</string>
     <string name="SaveDataToSd">Save</string>
     <string name="DataCount">None</string>
-    <string name="scanNow">Scan Now</string>
+    <string name="scanNow">Scan</string>
 
 
     <string name="default_pipeline">
@@ -44,6 +44,7 @@
     <string name="previousStationTextPrepend">Previous: %s</string>
     <string name="unknownStationText">Unknown</string>
     <string name="AddStationImageButtonText">Add Station</string>
+    <string name="sync_button_text">Sync</string>
     <string-array name="stations">
         <!--http://www.freemaptools.com/find-london-underground-stations-inside-radius.htm-->
         <item>Abbey Road</item>

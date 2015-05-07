@@ -123,7 +123,7 @@ public class CellSignalCard extends Card {
 
     /***
      *
-     * http://stackoverflow.com/questions/28105547/how-to-make-a-realtime-rollingwindow-graph-using-mpandroidchart
+     *
      * @param signalStrength
      */
     private void updateChart(int signalStrength) {

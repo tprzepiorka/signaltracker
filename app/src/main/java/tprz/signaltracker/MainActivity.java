@@ -11,6 +11,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
+import android.provider.ContactsContract;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -51,6 +52,7 @@ public class MainActivity extends Activity  implements Probe.DataListener{
     private HardwareInfoProbe hardwareInfoProbe;
     private ToggleButton enabledToggle;
     private Button archiveButton, scanNowButton;
+    private Button syncButton;
     private TextView dataCountView;
     private Handler handler;
     private ServiceConnection funfManagerConn = new ServiceConnection() {
@@ -162,6 +164,15 @@ public class MainActivity extends Activity  implements Probe.DataListener{
                 } else {
                     Toast.makeText(getBaseContext(), "Pipeline is not enabled.", Toast.LENGTH_SHORT).show();
                 }
+            }
+        });
+
+        syncButton = (Button) findViewById(R.id.sync_button);
+        syncButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                DataReporter dataReporter = DataReporter.getInstance();
+                dataReporter.sync();
             }
         });
 
