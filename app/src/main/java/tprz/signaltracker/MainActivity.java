@@ -203,8 +203,16 @@ public class MainActivity extends Activity  implements Probe.DataListener{
     }
 
     private void setupCards() {
+
+        // Station Location Card
+        TubeGraph tubeGraph = new TubeGraph();
+        StationLocationCard stationLocationCard = new StationLocationCard(getApplicationContext(), R.layout.card_location_layout, this, tubeGraph);
+
+        CardViewNative stationLocationCardView = (CardViewNative) findViewById(R.id.location_card_view);
+       stationLocationCardView.setCard(stationLocationCard);
+
         //Create a Card
-        CellSignalCard cellSignalCard = new CellSignalCard(getApplicationContext(), R.layout.card_inner_layout);
+        CellSignalCard cellSignalCard = new CellSignalCard(getApplicationContext(), R.layout.card_inner_layout, stationLocationCard);
 
         CardThumbnail thumbnail = new CardThumbnail(getApplicationContext());
         thumbnail.setDrawableResource(R.drawable.ic_signal_cellular_null_grey600_48dp);
@@ -220,13 +228,6 @@ public class MainActivity extends Activity  implements Probe.DataListener{
 
         cardView.setCard(cellSignalCard);
         cellSignalCard.setSignal(0, true);
-
-        // Station Location Card
-        TubeGraph tubeGraph = new TubeGraph();
-        StationLocationCard stationLocationCard = new StationLocationCard(getApplicationContext(), R.layout.card_location_layout, this, tubeGraph);
-
-        CardViewNative stationLocationCardView = (CardViewNative) findViewById(R.id.location_card_view);
-       stationLocationCardView.setCard(stationLocationCard);
 
     }
 

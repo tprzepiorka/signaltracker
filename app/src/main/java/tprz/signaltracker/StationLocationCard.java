@@ -15,6 +15,7 @@ import android.widget.TextView;
 
 import it.gmariotti.cardslib.library.internal.Card;
 import tprz.signaltracker.location.LocationFingerprint;
+import tprz.signaltracker.location.LocationProvider;
 import tprz.signaltracker.location.Station;
 import tprz.signaltracker.location.StationCard;
 import tprz.signaltracker.location.TubeGraph;
@@ -24,7 +25,7 @@ import tprz.signaltracker.location.WifiProfiler;
  * The StationLocationCard provides a card to display information
  * about our current position/station as well as the previous station.
  */
-public class StationLocationCard extends Card implements StationCard {
+public class StationLocationCard extends Card implements StationCard, LocationProvider {
     private final Activity activity;
     private final TubeGraph tubeGraph;
     private final WifiProfiler wifiProfiler;
@@ -37,6 +38,7 @@ public class StationLocationCard extends Card implements StationCard {
 
     private Station lastStation = null;
     private LocationFingerprint currLocFingerprint = null;
+    private Station currStation;
 
     public StationLocationCard(Context context, int innerLayout, Activity activity, TubeGraph tubeGraph) {
         super(context, innerLayout);
@@ -152,8 +154,13 @@ public class StationLocationCard extends Card implements StationCard {
         currStationText.setText((newCurrentStation == null
                 ? activity.getString(R.string.unknownStationText)
                 : newCurrentStation.getName()));
+        currStation = newCurrentStation;
 
         currLocFingerprint = locFingerprint;
+    }
+
+    public Station getCurrentStation() {
+        return currStation;
     }
 
 }

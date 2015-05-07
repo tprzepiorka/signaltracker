@@ -68,6 +68,8 @@ public class DataReporter {
     }
 
     public void addSignalReading(String stationName, String operator, int signalStrength) {
+        Log.i(TAG, "Adding signal reading: " + stationName + " " + operator + " " + signalStrength);
+
         JsonObject stationObject = null;
         for(JsonElement elem : signalReadings) {
             if(elem instanceof JsonObject) {
@@ -137,7 +139,7 @@ public class DataReporter {
             @Override
             public void success(JsonObject integer, Response response) {
                 Log.i(TAG, "Successfully added signals to " + integer + " stations.");
-                
+                clearSignals();
             }
 
             @Override
@@ -145,5 +147,19 @@ public class DataReporter {
                 Log.i(TAG, "Failed to add signals: " + error);
             }
         });
+    }
+
+    /**
+     * On successfully sending the signal readings to server clear the persisted data file
+     * and the current data object.
+     */
+    private void clearSignals() {
+        try {
+            writeJson(new JsonArray(), signalReadingsFilePath);
+            signalReadings = new JsonArray();
+        } catch (IOException | JSONException e) {
+            e.printStackTrace();
+            Log.i(TAG, "Failed to clear file");
+        }
     }
 }

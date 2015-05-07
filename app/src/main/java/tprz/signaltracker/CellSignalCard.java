@@ -22,6 +22,8 @@ import java.util.List;
 
 import it.gmariotti.cardslib.library.internal.Card;
 import it.gmariotti.cardslib.library.internal.CardThumbnail;
+import tprz.signaltracker.location.LocationProvider;
+import tprz.signaltracker.location.Station;
 
 /**
  * This class is a specific Card that is used to display updating information
@@ -29,6 +31,9 @@ import it.gmariotti.cardslib.library.internal.CardThumbnail;
  * displaying information about the current connection state.
  */
 public class CellSignalCard extends Card {
+    private final DataReporter dataReporter;
+    private final TelephonyManager telephonyManager;
+    private LocationProvider locationProvider;
     CellSignalListener cellSignalListener;
     private TextView cellSignalTextView;
     private LineChart chart;
@@ -43,20 +48,22 @@ public class CellSignalCard extends Card {
     private boolean chartSetup = false;
     private boolean lock = false;
 
-    public CellSignalCard(Context context) {
-        super(context);
+//    public CellSignalCard(Context context) {
+//        super(context);
+//
+//        TelephonyManager telephonyManager = (TelephonyManager) getContext().getSystemService(Context.TELEPHONY_SERVICE);
+//        this.cellSignalListener = new CellSignalListener();
+//        telephonyManager.listen(cellSignalListener, PhoneStateListener.LISTEN_SIGNAL_STRENGTHS);
+//    }
 
-        TelephonyManager telephonyManager = (TelephonyManager) getContext().getSystemService(Context.TELEPHONY_SERVICE);
-        this.cellSignalListener = new CellSignalListener();
-        telephonyManager.listen(cellSignalListener, PhoneStateListener.LISTEN_SIGNAL_STRENGTHS);
-    }
-
-    public CellSignalCard(Context context, int innerLayout) {
+    public CellSignalCard(Context context, int innerLayout, LocationProvider locationProvider) {
         super(context, innerLayout);
 
-        TelephonyManager telephonyManager = (TelephonyManager) getContext().getSystemService(Context.TELEPHONY_SERVICE);
+        telephonyManager = (TelephonyManager) getContext().getSystemService(Context.TELEPHONY_SERVICE);
         this.cellSignalListener = new CellSignalListener();
         telephonyManager.listen(cellSignalListener, PhoneStateListener.LISTEN_SIGNAL_STRENGTHS);
+        this.locationProvider = locationProvider;
+        this.dataReporter = DataReporter.getInstance();
     }
 
     /**
@@ -184,6 +191,10 @@ public class CellSignalCard extends Card {
             setSignal(signalStrength.getGsmSignalStrength(), signalStrength.isGsm());
 
             MultiLogger.log(TAG, String.format("(signalStrength, %d)", signalStrength.getGsmSignalStrength()));
+            Station currStation = locationProvider.getCurrentStation();
+            if(currStation != null) {
+                dataReporter.addSignalReading(currStation.getName(), "O2", signalStrength.getGsmSignalStrength());
+            }
         }
     }
 
