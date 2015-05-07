@@ -14,4 +14,7 @@ import retrofit.http.PUT;
 public interface SigTrackWebService {
     @POST("/api/things/signals")
     void addSignals(@Body JsonElement signalData, Callback<JsonObject> callback);
+
+    @POST("/api/things/station")
+    void addStations(@Body JsonElement stationData, Callback<JsonObject> callback);
 }

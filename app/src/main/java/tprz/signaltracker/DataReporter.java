@@ -7,6 +7,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.google.gson.JsonPrimitive;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -29,7 +30,7 @@ public class DataReporter {
     private String signalReadingsFilePath = Environment.getExternalStorageDirectory() + "/signals.json";
     private String macMappingFilePath = Environment.getExternalStorageDirectory() + "/macMapping.json";
     private JsonArray signalReadings;
-    private JsonObject macMapping;
+    private JsonArray macMapping;
 
     private static DataReporter instance = null;
     private final String TAG = "DataReporter";
@@ -44,15 +45,26 @@ public class DataReporter {
             }
             else{
                 // create an new file
-                File urlconfig = new File(Environment.getExternalStorageDirectory(), "signals.json");
+                File urlconfig = new File(Environment.getExternalStorageDirectory(), "/signals.json");
                 urlconfig.createNewFile();
                 signalReadings = new JsonArray();
             }
 
-
-            //content = TubeGraph.getStringFromFile(macMappingFilePath);
-          //  macMapping = (JsonObject)parser.parse(content);
-
+            File macMappingReadingsFile = new File(macMappingFilePath);
+            if(macMappingReadingsFile.exists()){
+                String content = TubeGraph.getStringFromFile(macMappingFilePath);
+                JsonParser parser = new JsonParser();
+                macMapping = (JsonArray)parser.parse(content);
+                if(macMapping == null) {
+                    macMapping = new JsonArray();
+                }
+            }
+            else{
+                // create an new file
+                File urlconfig = new File(Environment.getExternalStorageDirectory(), "/macMapping.json");
+                urlconfig.createNewFile();
+                macMapping = new JsonArray();
+            }
 
         } catch (Exception e) {
             MultiLogger.log(TAG, "Error setting up.");
@@ -64,6 +76,42 @@ public class DataReporter {
                 .build();
 
         service = restAdapter.create(SigTrackWebService.class);
+
+    }
+
+    public void addStationMacs(String stationName, String[] macs) {
+        Log.i(TAG, "Adding station mac mapping");
+
+        JsonObject stationObject = null;
+        for(JsonElement elem : macMapping) {
+            if(elem instanceof JsonObject) {
+                JsonObject potentialStation = (JsonObject)elem;
+                String name = potentialStation.get("name").getAsString();
+                if(name.equals(stationName)) {
+                    stationObject = potentialStation;
+                    break;
+                }
+            }
+        }
+
+        if(stationObject == null) {
+            stationObject = new JsonObject();
+            stationObject.addProperty("name", stationName);
+            stationObject.add("macs", new JsonArray());
+            macMapping.add(stationObject);
+        }
+
+        JsonArray macArray = stationObject.getAsJsonArray("macs");
+        for(String mac : macs) {
+            macArray.add(new JsonPrimitive(mac));
+        }
+
+        // Save changes
+        try {
+            writeJson(macMapping, macMappingFilePath);
+        } catch (IOException | JSONException e) {
+            e.printStackTrace();
+        }
 
     }
 
@@ -142,7 +190,20 @@ public class DataReporter {
 
             @Override
             public void failure(RetrofitError error) {
-                Log.i(TAG, "Failed to add signals: " + error);
+                Log.e(TAG, "Failed to add signals: " + error);
+            }
+        });
+
+        service.addStations(macMapping, new Callback<JsonObject>() {
+            @Override
+            public void success(JsonObject jsonObject, Response response) {
+                Log.i(TAG, "Successfully added station macs");
+                clearStationsMappingFiles();
+            }
+
+            @Override
+            public void failure(RetrofitError retrofitError) {
+                Log.e(TAG, "Failed to add station mac mapping: " + retrofitError);
             }
         });
     }
@@ -157,7 +218,17 @@ public class DataReporter {
             signalReadings = new JsonArray();
         } catch (IOException | JSONException e) {
             e.printStackTrace();
-            Log.i(TAG, "Failed to clear file");
+            Log.i(TAG, "Failed to clear file for signals.");
+        }
+    }
+
+    private void clearStationsMappingFiles() {
+        try {
+            writeJson(new JsonArray(), macMappingFilePath);
+            macMapping = new JsonArray();
+        } catch (IOException | JSONException e) {
+            e.printStackTrace();
+            Log.i(TAG, "Failed to clear file for macs.");
         }
     }
 }

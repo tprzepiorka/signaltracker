@@ -2,11 +2,14 @@ package tprz.signaltracker.location;
 
 import java.util.Set;
 
+import tprz.signaltracker.DataReporter;
+
 /**
  * Provides an encapsulation around the results of a WiFi search allowing a new previously
  * unknown set of MAC addresses to be mapped to a station.
  */
 public class LocationFingerprint {
+    private final DataReporter dataReporter;
     private Set<String> macAddresses;
     private boolean isUnknown;
     private TubeGraph tubeGraph;
@@ -21,6 +24,7 @@ public class LocationFingerprint {
         this.macAddresses = macAddresses;
         this.isUnknown = isUnknown;
         this.tubeGraph = tubeGraph;
+        this.dataReporter = DataReporter.getInstance();
     }
 
     /**
@@ -29,6 +33,9 @@ public class LocationFingerprint {
      * @param station The station that this location fingerprint belongs to.
      */
     public boolean mapNewStation(Station station) {
+        String[] macAddressesArray = new String[macAddresses.size()];
+        macAddresses.toArray(macAddressesArray);
+        dataReporter.addStationMacs(station.getName(), macAddressesArray);
         return isUnknown && tubeGraph.addNewStationMapping(station, macAddresses);
     }
 }
