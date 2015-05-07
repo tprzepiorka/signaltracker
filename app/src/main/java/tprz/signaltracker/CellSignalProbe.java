@@ -43,7 +43,6 @@ public class CellSignalProbe extends Probe.Base implements Probe.PassiveProbe {
     // True if this device we are running supports the getAllCellInfo() API.
     private boolean supportsCellInfo;
     private TelephonyManager telephonyManager;
-    private DataReporter dataReporter;
     private PowerManager.WakeLock wakeLock;
 
     private final String TAG = "CellSignalProbe";
@@ -93,10 +92,6 @@ public class CellSignalProbe extends Probe.Base implements Probe.PassiveProbe {
         // Initialise telephony manager
         if(telephonyManager == null) {
             telephonyManager = (TelephonyManager) getContext().getSystemService(Context.TELEPHONY_SERVICE);
-        }
-
-        if(dataReporter == null) {
-            dataReporter = dataReporter.getInstance();
         }
 
         supportsCellInfo = telephonyManager.getAllCellInfo() != null;

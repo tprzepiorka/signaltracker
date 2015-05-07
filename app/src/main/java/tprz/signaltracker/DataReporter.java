@@ -133,8 +133,6 @@ public class DataReporter {
 
 
     public void sync() {
-        addSignalReading("South Kensington", "O2", 12);
-
         service.addSignals(signalReadings, new Callback<JsonObject>() {
             @Override
             public void success(JsonObject integer, Response response) {
