@@ -3,7 +3,6 @@ package tprz.signaltracker.location;
 import android.os.Environment;
 import android.util.Log;
 
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 import org.json.JSONArray;
@@ -197,7 +196,7 @@ public class TubeGraph {
                 }
             }
         } catch (JSONException | IOException e) {
-            Log.i(TAG, "Error: " + e.toString());
+            Log.i(TAG, "Error: " + e);
             e.printStackTrace();
         }
 

@@ -1,20 +1,17 @@
 package tprz.signaltracker;
 
-import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
-import org.json.JSONObject;
-
 import retrofit.Callback;
-import retrofit.client.Response;
 import retrofit.http.Body;
 import retrofit.http.GET;
 import retrofit.http.POST;
-import retrofit.http.PUT;
 
 /**
- * Created by tomprz on 07/05/2015.
+ * Interface to allow interaction with the SigTrackWeb API which provides
+ * access to new tube graph information and a way to upload the results from
+ * the app to the web server.
  */
 public interface SigTrackWebService {
     @POST("/api/things/signals")

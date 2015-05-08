@@ -17,9 +17,6 @@ import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.utils.ColorTemplate;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import it.gmariotti.cardslib.library.internal.Card;
 import it.gmariotti.cardslib.library.internal.CardThumbnail;
 import tprz.signaltracker.location.LocationProvider;
@@ -74,7 +71,9 @@ public class CellSignalCard extends Card {
      */
     public void setSignal(int signalStrength, boolean gsm) {
         String contentsText = String.format("%s\nASU: %d", gsm ? "GSM" : "CDMA", signalStrength);
-        if(cellSignalTextView == null) return;
+        if(cellSignalTextView == null) {
+            return;
+        }
         cellSignalTextView.setText(contentsText);
 
         int iconLevel;
@@ -129,9 +128,9 @@ public class CellSignalCard extends Card {
     }
 
     /***
+     * Updates the chart with a new signal strength reading
      *
-     *
-     * @param signalStrength
+     * @param signalStrength The signal strength in ASU
      */
     private void updateChart(int signalStrength) {
         if(this.lock) {
