@@ -45,14 +45,6 @@ public class CellSignalCard extends Card {
     private boolean chartSetup = false;
     private boolean lock = false;
 
-//    public CellSignalCard(Context context) {
-//        super(context);
-//
-//        TelephonyManager telephonyManager = (TelephonyManager) getContext().getSystemService(Context.TELEPHONY_SERVICE);
-//        this.cellSignalListener = new CellSignalListener();
-//        telephonyManager.listen(cellSignalListener, PhoneStateListener.LISTEN_SIGNAL_STRENGTHS);
-//    }
-
     public CellSignalCard(Context context, int innerLayout, LocationProvider locationProvider) {
         super(context, innerLayout);
 

@@ -30,23 +30,23 @@ public class WifiProfiler {
         public void onReceive(Context context, Intent intent) {
             if (WifiManager.SCAN_RESULTS_AVAILABLE_ACTION.equals(intent.getAction())) {
                 List<ScanResult> results = wifiManager.getScanResults();
-                Set<String> ssids = new HashSet<>();
+                Set<String> macs = new HashSet<>();
                 if (results != null) {
                     for (ScanResult result : results) {
-                        ssids.add(result.BSSID);
+                        macs.add(result.BSSID);
                     }
 
-                    upToDateScan = ssids;
+                    upToDateScan = macs;
                     Log.i("TubeGraph", "Scan results arrived");
                     Station newCurrentStation = getCurrentStation();
                     Log.i("TubeGraph", "new curr station: " + newCurrentStation);
                     if(newCurrentStation != null && !newCurrentStation.equals(currentStation) ) {
                         currentStation = newCurrentStation;
-                        tubeGraph.addNewStationMapping(newCurrentStation, ssids);
+                        tubeGraph.addNewStationMapping(newCurrentStation, macs);
                     }
 
                     LocationFingerprint locationFingerprint =
-                            new LocationFingerprint(ssids, newCurrentStation == null, tubeGraph, context);
+                            new LocationFingerprint(macs, newCurrentStation == null, tubeGraph, context);
                     updateCard(newCurrentStation, locationFingerprint);
                 }
             }
@@ -91,11 +91,11 @@ public class WifiProfiler {
      * @return The station we are currently at.
      */
     private Station getCurrentStation() {
-        Map<String, Station> ssidMap = tubeGraph.getSsidsToLocation();
+        Map<String, Station> macMap = tubeGraph.getMacsToLocation();
 
-        for(String ssid : upToDateScan) {
-            if (ssidMap.containsKey(ssid)) {
-                return ssidMap.get(ssid);
+        for(String mac : upToDateScan) {
+            if (macMap.containsKey(mac)) {
+                return macMap.get(mac);
             }
         }
 

@@ -28,24 +28,25 @@ import java.util.Set;
  */
 public class TubeGraph {
     private static final String TAG = "TubeGraph";
-    private Map<String, Station> ssidsToLocation;
+    private Map<String, Station> macsToLocation;
     private Map<String, Station> stationMap;
     private JSONArray stations;
     private String tubeGraphPath;
     private JSONObject tubeGraph;
 
     public TubeGraph() {
-        ssidsToLocation = new HashMap<>();
+        macsToLocation = new HashMap<>();
         stationMap = new HashMap<>();
         tubeGraphPath = Environment.getExternalStorageDirectory() + "/tubeGraphTest.json";
         loadFromFile();
     }
 
-    public Map<String, Station> getSsidsToLocation() {
-        return ssidsToLocation;
-    }
-
-    public void loadFromFile() {
+    /**
+     * Load the tubegraph from a file into the data structures of the class.
+     * Can be called at any point to refresh the state of the instance with new contents
+     * from the json file.
+     */
+    private void loadFromFile() {
         try {
             String content = getStringFromFile(tubeGraphPath);
             tubeGraph = new JSONObject(content);
@@ -58,6 +59,11 @@ public class TubeGraph {
         }
     }
 
+    /**
+     * Build the edges of the graph, representing linking stations.
+     * @param tubeGraph The JsonObject with Edge data. It should be the plain object
+     *                  in the form read in from the file on storage.
+     */
     private void buildEdges(JSONObject tubeGraph) {
         try {
             stations = tubeGraph.getJSONArray("stations");
@@ -78,6 +84,13 @@ public class TubeGraph {
         }
     }
 
+    /**
+     * Build a single edge from a starting station
+     * @param edges The edges for the given station
+     * @param start The starting station for this directed edge
+     * @return A list of edge objects for the starting station.
+     * @throws JSONException
+     */
     private List<Edge> buildEachEdge(JSONArray edges, Station start) throws JSONException {
         List<Edge> edgesSet = new ArrayList<>();
 
@@ -94,19 +107,23 @@ public class TubeGraph {
         return edgesSet;
     }
 
+    /**
+     * Build the station objects for this tubegraph
+     * @param tubeGraph The raw tubegraph json object.
+     */
     private void buildStations(JSONObject tubeGraph) {
         try {
             stations = tubeGraph.getJSONArray("stations");
             for(int i = 0; i < stations.length(); i++) {
                 JSONObject stationJson = stations.getJSONObject(i);
                 Map<String, Double> signalStrengths =  getSignalStrengths(stationJson.getJSONArray("signalStrengths"));
-                Set<String> ssids = getSsids(stationJson.getJSONArray("ssids"));
+                Set<String> ssids = getMacs(stationJson.getJSONArray("ssids"));
 
                 Station station = new Station(stationJson.getString("name"), signalStrengths, ssids);
                 stationMap.put(station.name, station);
 
                 for(String ssid : ssids) {
-                    ssidsToLocation.put(ssid, station);
+                    macsToLocation.put(ssid, station);
                 }
             }
 
@@ -116,17 +133,39 @@ public class TubeGraph {
 
     }
 
-    private Set<String> getSsids(JSONArray ssids) throws JSONException {
-        Set<String> ssidsSet = new HashSet<>();
-
-        for(int i = 0; i < ssids.length(); i++) {
-            String ssid = ssids.getString(i);
-            ssidsSet.add(ssid);
-        }
-
-        return ssidsSet;
+    /**
+     * Get the mapping of Macs to Locations allowing quick finding of our current location.
+     * @return Map of MAC addresses to locations.
+     */
+    public Map<String, Station> getMacsToLocation() {
+        return macsToLocation;
     }
 
+    /**
+     * Build the Set of MAC addresses from a JSON array of Strings where each element is a SSID
+     * @param macs JSONArray of MAC addresses stored as String primatives
+     * @return A set of Stings where each String is a MAC address
+     * @throws JSONException
+     */
+    private Set<String> getMacs(JSONArray macs) throws JSONException {
+        Set<String> macSet = new HashSet<>();
+
+        for(int i = 0; i < macs.length(); i++) {
+            String mac = macs.getString(i);
+            macSet.add(mac);
+        }
+
+        return macSet;
+    }
+
+    /**
+     * Build the signal strength mapping object from JSON. Will use the average signal strength
+     * if it exists, falling back on the single given signal strength.
+     * @param signalStrengths JSONArray containing the signal strength readings and operators for
+     *                        a given station.
+     * @return Mapping of operator to signal strength for a given location.
+     * @throws JSONException
+     */
     private Map<String, Double> getSignalStrengths(JSONArray signalStrengths) throws JSONException {
         Map<String, Double> signalStrengthsMap = new HashMap<>();
 
@@ -145,7 +184,13 @@ public class TubeGraph {
         return signalStrengthsMap;
     }
 
-    public static String convertStreamToString(InputStream is) throws Exception {
+    /**
+     * Used to read the contents of the json file in.
+     * @param is Input stream
+     * @return Sring of the input stream
+     * @throws Exception
+     */
+    private static String convertStreamToString(InputStream is) throws Exception {
         BufferedReader reader = new BufferedReader(new InputStreamReader(is));
         StringBuilder sb = new StringBuilder();
         String line;
@@ -156,6 +201,12 @@ public class TubeGraph {
         return sb.toString();
     }
 
+    /**
+     * Read a file in as a String
+     * @param filePath Path to file to be read.
+     * @return String contents of a file.
+     * @throws Exception
+     */
     public static String getStringFromFile (String filePath) throws Exception {
         File fl = new File(filePath);
         FileInputStream fin = new FileInputStream(fl);
@@ -165,27 +216,35 @@ public class TubeGraph {
         return ret;
     }
 
-    public boolean addNewStationMapping(Station newCurrentStation, Set<String> ssids) {
+    /**
+     * Add a new mapping of a station to a set of MAC addresses. The station may already have a
+     * mapping and this will simply append on the newly identified MAC addresses to this mapping.
+     * Mapping is persisted and kept and may be uploaded through the DataReporter.
+     * @param newCurrentStation The station being mapped
+     * @param macs The MAC addresses associated with this station.
+     * @return True if added succesfully, false otherwise
+     */
+    public boolean addNewStationMapping(Station newCurrentStation, Set<String> macs) {
         try{
             for (int i = 0; i < stations.length(); i++) {
                 JSONObject stationObject = stations.getJSONObject(i);
                 if(newCurrentStation.name.equals(stationObject.getString("name"))) {
-                    Log.i(TAG, "Matched station name. Attempting to add other matching ssids");
+                    Log.i(TAG, "Matched station name. Attempting to add other matching macs");
 
-                    JSONArray ssidsJson = stationObject.getJSONArray("ssids");
-                    Set<String> oldSsids = new HashSet<>(ssidsJson.length());
-                    Log.i(TAG, "Adding " + ssids.size() + " possible ssids");
+                    JSONArray macsJson = stationObject.getJSONArray("macs");
+                    Set<String> oldMacs = new HashSet<>(macsJson.length());
+                    Log.i(TAG, "Adding " + macs.size() + " possible macs");
 
-                    for(int j = 0; j < ssidsJson.length(); j++) {
-                        oldSsids.add(ssidsJson.getString(j));
+                    for(int j = 0; j < macsJson.length(); j++) {
+                        oldMacs.add(macsJson.getString(j));
                     }
 
-                    // Update with new ssids
-                    ssids.removeAll(oldSsids);
-                    if(!ssids.isEmpty()) {
-                        Log.i(TAG, "New ssids found. ");
-                        for(String ssid : ssids) {
-                            ssidsJson.put(ssid);
+                    // Update with new macs
+                    macs.removeAll(oldMacs);
+                    if(!macs.isEmpty()) {
+                        Log.i(TAG, "New macs found. ");
+                        for(String mac : macs) {
+                            macsJson.put(mac);
                         }
 
                         writeTubeGraph(tubeGraph.toString(4));
@@ -203,10 +262,21 @@ public class TubeGraph {
         return false;
     }
 
+    /**
+     * Return a Station object that has the same name as the provided string.
+     * @param stationName The name of the station, with exact match
+     * @return A station object if it exists, false otherwise.
+     */
     public Station getStationByName(String stationName) {
         return stationMap.get(stationName);
     }
 
+    /**
+     * Overwrite the existing tube graph
+     * @param graphStringToWrite New tubegraph to write to storage.
+     * @throws IOException
+     * @throws JSONException
+     */
     private void writeTubeGraph(String graphStringToWrite) throws IOException, JSONException {
         FileWriter file = new FileWriter(tubeGraphPath);
         try {
@@ -224,6 +294,10 @@ public class TubeGraph {
         }
     }
 
+    /**
+     * Update the tubegraph with a new one.
+     * @param newGraph New graph to take the place of the existing one.
+     */
     public void update(JsonObject newGraph) {
         try {
             writeTubeGraph(newGraph.toString());

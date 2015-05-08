@@ -85,6 +85,11 @@ public class DataReporter {
 
     }
 
+    /**
+     * Add station MACs and send these to the server.
+     * @param stationName Name of station to add to.
+     * @param macs MAC addresses for this station.
+     */
     public void addStationMacs(String stationName, String[] macs) {
         Log.i(TAG, "Adding station mac mapping");
 
@@ -121,6 +126,12 @@ public class DataReporter {
 
     }
 
+    /**
+     * Send signal readings for a given operator at a given station to the server.
+     * @param stationName Name of station
+     * @param operator Operator name
+     * @param signalStrength Signal strength in ASU
+     */
     public void addSignalReading(String stationName, String operator, int signalStrength) {
         Log.i(TAG, "Adding signal reading: " + stationName + " " + operator + " " + signalStrength);
 
@@ -160,6 +171,13 @@ public class DataReporter {
         }
     }
 
+    /**
+     * Write json file to a given filepath.
+     * @param json json to write.
+     * @param filePath path to file to write to.
+     * @throws IOException
+     * @throws JSONException
+     */
     private void writeJson(JsonElement json, String filePath) throws IOException, JSONException {
         FileWriter file = new FileWriter(filePath);
         try {
@@ -177,10 +195,18 @@ public class DataReporter {
         }
     }
 
+    /**
+     * @return The tubeGraph Json representation. This will be updated on sync results from server.
+     */
     public TubeGraph getTubeGraph() {
         return tubeGraph;
     }
 
+    /**
+     * Get an instance of the singleton DataReporter
+     * @param context Context of application to start Wifi scan and make Toasts
+     * @return An instance of DataReporter.
+     */
     public static DataReporter getInstance(Context context) {
         if(instance == null) {
             instance = new DataReporter(context);
@@ -189,7 +215,11 @@ public class DataReporter {
         return instance;
     }
 
-
+    /**
+     * Send new Location MAC mappings and Signal Strengths to the server. If these have been sent
+     * successfully then we clear their files on storage and update our TubeGraph representation
+     * with one from the server.
+     */
     public void sync() {
 
         service.addSignals(signalReadings, new Callback<JsonObject>() {
@@ -265,6 +295,10 @@ public class DataReporter {
         }
     }
 
+    /**
+     * On successfully sending the station MAC mapping readings to server clear the persisted data file
+     * and the current data object.
+     */
     private void clearStationsMappingFiles() {
         try {
             writeJson(new JsonArray(), macMappingFilePath);
