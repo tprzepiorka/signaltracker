@@ -171,7 +171,7 @@ public class MainActivity extends Activity  implements Probe.DataListener{
         syncButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                DataReporter dataReporter = DataReporter.getInstance();
+                DataReporter dataReporter = DataReporter.getInstance(getApplicationContext());
                 dataReporter.sync();
             }
         });
@@ -205,7 +205,7 @@ public class MainActivity extends Activity  implements Probe.DataListener{
     private void setupCards() {
 
         // Station Location Card
-        TubeGraph tubeGraph = DataReporter.getInstance().getTubeGraph();
+        TubeGraph tubeGraph = DataReporter.getInstance(getApplicationContext()).getTubeGraph();
         StationLocationCard stationLocationCard = new StationLocationCard(getApplicationContext(), R.layout.card_location_layout, this, tubeGraph);
 
         CardViewNative stationLocationCardView = (CardViewNative) findViewById(R.id.location_card_view);

@@ -1,5 +1,7 @@
 package tprz.signaltracker.location;
 
+import android.content.Context;
+
 import java.util.Set;
 
 import tprz.signaltracker.DataReporter;
@@ -20,11 +22,11 @@ public class LocationFingerprint {
      * @param isUnknown Is there already a known station associated with this fingerprint.
      * @param tubeGraph The graph of stations and MAC address mappings.
      */
-    public LocationFingerprint(Set<String> macAddresses, boolean isUnknown, TubeGraph tubeGraph) {
+    public LocationFingerprint(Set<String> macAddresses, boolean isUnknown, TubeGraph tubeGraph, Context context) {
         this.macAddresses = macAddresses;
         this.isUnknown = isUnknown;
         this.tubeGraph = tubeGraph;
-        this.dataReporter = DataReporter.getInstance();
+        this.dataReporter = DataReporter.getInstance(context);
     }
 
     /**

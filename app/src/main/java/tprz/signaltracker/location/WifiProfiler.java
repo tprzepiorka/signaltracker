@@ -45,7 +45,8 @@ public class WifiProfiler {
                         tubeGraph.addNewStationMapping(newCurrentStation, ssids);
                     }
 
-                    LocationFingerprint locationFingerprint = new LocationFingerprint(ssids, newCurrentStation == null, tubeGraph);
+                    LocationFingerprint locationFingerprint =
+                            new LocationFingerprint(ssids, newCurrentStation == null, tubeGraph, context);
                     updateCard(newCurrentStation, locationFingerprint);
                 }
             }

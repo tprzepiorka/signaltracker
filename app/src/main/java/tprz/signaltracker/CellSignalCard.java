@@ -63,7 +63,7 @@ public class CellSignalCard extends Card {
         this.cellSignalListener = new CellSignalListener();
         telephonyManager.listen(cellSignalListener, PhoneStateListener.LISTEN_SIGNAL_STRENGTHS);
         this.locationProvider = locationProvider;
-        this.dataReporter = DataReporter.getInstance();
+        this.dataReporter = DataReporter.getInstance(context);
     }
 
     /**

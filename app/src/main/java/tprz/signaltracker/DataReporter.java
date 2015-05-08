@@ -1,7 +1,10 @@
 package tprz.signaltracker;
 
+import android.content.Context;
+import android.net.wifi.WifiManager;
 import android.os.Environment;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -30,6 +33,7 @@ import tprz.signaltracker.location.TubeGraph;
  */
 public class DataReporter {
     private final SigTrackWebService service;
+    private final Context context;
     private String signalReadingsFilePath = Environment.getExternalStorageDirectory() + "/signals.json";
     private String macMappingFilePath = Environment.getExternalStorageDirectory() + "/macMapping.json";
     private JsonArray signalReadings;
@@ -39,8 +43,9 @@ public class DataReporter {
     private static DataReporter instance = null;
     private final String TAG = "DataReporter";
 
-    private DataReporter() {
+    private DataReporter(Context context) {
         tubeGraph = new TubeGraph();
+        this.context = context;
         try {
             File signalReadingsFile = new File(signalReadingsFilePath);
             if(signalReadingsFile.exists()){
@@ -180,9 +185,9 @@ public class DataReporter {
         return tubeGraph;
     }
 
-    public static DataReporter getInstance() {
+    public static DataReporter getInstance(Context context) {
         if(instance == null) {
-            instance = new DataReporter();
+            instance = new DataReporter(context);
         }
 
         return instance;
@@ -209,11 +214,14 @@ public class DataReporter {
                                 Log.i(TAG, "Successfully got new tubegraph");
 
                                 updateTubeGraph(result.getAsJsonObject().getAsJsonArray("elements"));
+                                Toast.makeText(context, "Sync Complete.", Toast.LENGTH_SHORT).show();
+                                startWifiScan();
                             }
 
                             @Override
                             public void failure(RetrofitError retrofitError) {
                                 Log.e(TAG, "Failed to update tubegraph: " + retrofitError);
+                                Toast.makeText(context, "Sync failed (tubegraph).", Toast.LENGTH_SHORT).show();
                             }
                         });
                     }
@@ -221,6 +229,7 @@ public class DataReporter {
                     @Override
                     public void failure(RetrofitError retrofitError) {
                         Log.e(TAG, "Failed to add station mac mapping: " + retrofitError);
+                        Toast.makeText(context, "Sync failed (macmapping).", Toast.LENGTH_SHORT).show();
                     }
                 });
             }
@@ -228,10 +237,16 @@ public class DataReporter {
             @Override
             public void failure(RetrofitError error) {
                 Log.e(TAG, "Failed to add signals: " + error);
+                Toast.makeText(context, "Sync failed(signals).", Toast.LENGTH_SHORT).show();
             }
         });
 
 
+    }
+
+    private void startWifiScan() {
+        WifiManager wifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
+        wifiManager.startScan();
     }
 
     private void updateTubeGraph(JsonArray newTubeGraph) {
