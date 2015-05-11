@@ -183,7 +183,7 @@ public class TubeGraph {
             if(entry.has("total") && entry.has("count")) {
                 int total = entry.getInt("total");
                 int count = entry.getInt("count");
-                double averageSignalStrength = total/count;
+                double averageSignalStrength = count != 0 ? total/count : 0;
                 signalStrengthsMap.put(entry.getString("operator"), averageSignalStrength);
             } else if(entry.has("strength")) {
                 signalStrengthsMap.put(entry.getString("operator"), entry.getDouble("strength"));
