@@ -5,6 +5,7 @@ import android.graphics.Color;
 import android.telephony.PhoneStateListener;
 import android.telephony.SignalStrength;
 import android.telephony.TelephonyManager;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -136,6 +137,10 @@ public class CellSignalCard extends Card {
             data.addDataSet(set);
         }
 
+//        if(data.getXValCount() > 20) {
+//            data.clearValues();
+//        }
+
         data.addXValue("" + set.getEntryCount());
         Entry e = new Entry(signalStrength, set.getEntryCount());
         e.setXIndex(set.getEntryCount() + 1);
@@ -145,16 +150,19 @@ public class CellSignalCard extends Card {
         chart.notifyDataSetChanged();
 
         // limit the number of visible entries
-        chart.setVisibleXRange(12);
-        chart.setVisibleYRange(33, YAxis.AxisDependency.LEFT);
-        chart.setVisibleYRange(33, YAxis.AxisDependency.RIGHT);
+//        chart.setVisibleXRange(12);
+//        chart.setVisibleYRange(33, YAxis.AxisDependency.LEFT);
+//        chart.setVisibleYRange(33, YAxis.AxisDependency.RIGHT);
 
 
 
         // move to the latest entry
-        chart.moveViewToX(set.getEntryCount() + 10);
-        chart.moveViewToY(0, YAxis.AxisDependency.LEFT);
-        chart.moveViewToY(0, YAxis.AxisDependency.RIGHT);
+        int xCount = set.getEntryCount() - 30;
+//        chart.moveViewToX(xCount < 0 ? 0 : xCount);
+       // chart.moveViewToY(0, YAxis.AxisDependency.LEFT);
+       // chart.moveViewToY(0, YAxis.AxisDependency.RIGHT);
+//        chart.zoomOut();
+       chart.fitScreen();
         chart.invalidate();
         lock = false;
     }
@@ -177,15 +185,21 @@ public class CellSignalCard extends Card {
     }
 
     public class CellSignalListener extends PhoneStateListener {
+        private int lastReading = 0;
         @Override
         public void onSignalStrengthsChanged(SignalStrength signalStrength){
-            setSignal(signalStrength.getGsmSignalStrength(), signalStrength.isGsm());
+            int signalStrengthInt = signalStrength.getGsmSignalStrength() == 99 ? 0 : signalStrength.getGsmSignalStrength();
+            if(signalStrengthInt != 0 || lastReading == 0) {
+                setSignal(signalStrengthInt, signalStrength.isGsm());
 
-            MultiLogger.log(TAG, String.format("(signalStrength, %d)", signalStrength.getGsmSignalStrength()));
-            Station currStation = locationProvider.getCurrentStation();
-            if(currStation != null) {
-                dataReporter.addSignalReading(currStation.getName(), telephonyManager.getNetworkOperatorName(), signalStrength.getGsmSignalStrength());
+                MultiLogger.log(TAG, String.format("(signalStrength, %d)", signalStrength.getGsmSignalStrength()));
+                Station currStation = locationProvider.getCurrentStation();
+                if (currStation != null) {
+                    dataReporter.addSignalReading(currStation.getName(), telephonyManager.getNetworkOperatorName(), signalStrengthInt);
+                }
             }
+            Log.i("SigStrengthChange", "sig: " +  signalStrengthInt);
+            lastReading = signalStrengthInt;
         }
     }
 
