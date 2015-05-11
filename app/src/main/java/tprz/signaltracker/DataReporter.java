@@ -132,7 +132,7 @@ public class DataReporter {
      * @param operator Operator name
      * @param signalStrength Signal strength in ASU
      */
-    public void addSignalReading(String stationName, String operator, int signalStrength) {
+    public void addSignalReading(String stationName, String operator, String operatorNumber, int signalStrength) {
         Log.i(TAG, "Adding signal reading: " + stationName + " " + operator + " " + signalStrength);
 
         JsonObject stationObject = null;
@@ -155,6 +155,10 @@ public class DataReporter {
             stationObject.addProperty("total", 0);
             stationObject.addProperty("count", 0);
             signalReadings.add(stationObject);
+        }
+
+        if(!stationObject.has("operatorNumber")) {
+            stationObject.addProperty("operatorNumber", operatorNumber);
         }
 
         int existingTotal = stationObject.get("total").getAsInt();

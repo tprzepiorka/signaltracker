@@ -195,7 +195,7 @@ public class CellSignalCard extends Card {
                 MultiLogger.log(TAG, String.format("(signalStrength, %d)", signalStrength.getGsmSignalStrength()));
                 Station currStation = locationProvider.getCurrentStation();
                 if (currStation != null) {
-                    dataReporter.addSignalReading(currStation.getName(), telephonyManager.getNetworkOperatorName(), signalStrengthInt);
+                    dataReporter.addSignalReading(currStation.getName(), telephonyManager.getNetworkOperatorName(), telephonyManager.getNetworkOperator(), signalStrengthInt);
                 }
             }
             Log.i("SigStrengthChange", "sig: " +  signalStrengthInt);
