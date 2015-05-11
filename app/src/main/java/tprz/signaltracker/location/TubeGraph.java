@@ -66,7 +66,12 @@ public class TubeGraph {
      */
     private void buildEdges(JSONObject tubeGraph) {
         try {
-            stations = tubeGraph.getJSONArray("stations");
+            if(tubeGraph.has("elements")) {
+                stations = tubeGraph.getJSONArray("elements");
+            } else {
+                stations = tubeGraph.getJSONArray("stations");
+            }
+
             for(int i = 0; i < stations.length(); i++) {
                 JSONObject stationJson = stations.getJSONObject(i);
                 String stationName = stationJson.getString("name");
@@ -113,11 +118,15 @@ public class TubeGraph {
      */
     private void buildStations(JSONObject tubeGraph) {
         try {
-            stations = tubeGraph.getJSONArray("stations");
+            if(tubeGraph.has("elements")) {
+                stations = tubeGraph.getJSONArray("elements");
+            } else {
+                stations = tubeGraph.getJSONArray("stations");
+            }
             for(int i = 0; i < stations.length(); i++) {
                 JSONObject stationJson = stations.getJSONObject(i);
                 Map<String, Double> signalStrengths =  getSignalStrengths(stationJson.getJSONArray("signalStrengths"));
-                Set<String> ssids = getMacs(stationJson.getJSONArray("ssids"));
+                Set<String> ssids = getMacs(stationJson.getJSONArray("macs"));
 
                 Station station = new Station(stationJson.getString("name"), signalStrengths, ssids);
                 stationMap.put(station.name, station);
