@@ -2,6 +2,7 @@ package tprz.signaltracker;
 
 import android.content.Context;
 import android.net.wifi.WifiManager;
+import android.os.Build;
 import android.os.Environment;
 import android.util.Log;
 import android.widget.Toast;
@@ -13,6 +14,7 @@ import com.google.gson.JsonParser;
 import com.google.gson.JsonPrimitive;
 
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -31,8 +33,10 @@ public class DataReporter {
     private final SigTrackWebService service;
     private final Context context;
     private String signalReadingsFilePath = Environment.getExternalStorageDirectory() + "/signals.json";
+    private String signalReadingsDetailsFilePath = Environment.getExternalStorageDirectory() + "/signalsDetails.json";
     private String macMappingFilePath = Environment.getExternalStorageDirectory() + "/macMapping.json";
     private JsonArray signalReadings;
+    private JsonArray signalReadingsDetailed;
     private JsonArray macMapping;
     private TubeGraph tubeGraph;
 
@@ -56,6 +60,19 @@ public class DataReporter {
                 signalReadings = new JsonArray();
             }
 
+            File signalReadingsDetailsFile = new File(signalReadingsDetailsFilePath);
+            if(signalReadingsDetailsFile.exists()){
+                String content = TubeGraph.getStringFromFile(signalReadingsDetailsFilePath);
+                JsonParser parser = new JsonParser();
+                signalReadingsDetailed = content.isEmpty() ? new JsonArray() : (JsonArray)parser.parse(content);
+            }
+            else{
+                // create an new file
+                File urlconfig = new File(signalReadingsDetailsFilePath);
+                urlconfig.createNewFile();
+                signalReadingsDetailed = new JsonArray();
+            }
+
             File macMappingReadingsFile = new File(macMappingFilePath);
             if(macMappingReadingsFile.exists()){
                 String content = TubeGraph.getStringFromFile(macMappingFilePath);
@@ -71,6 +88,8 @@ public class DataReporter {
                 urlconfig.createNewFile();
                 macMapping = new JsonArray();
             }
+
+
 
         } catch (Exception e) {
             MultiLogger.log(TAG, "Error setting up.");
@@ -157,9 +176,16 @@ public class DataReporter {
             signalReadings.add(stationObject);
         }
 
-        if(!stationObject.has("operatorNumber")) {
-            stationObject.addProperty("operatorNumber", operatorNumber);
-        }
+        stationObject.addProperty("operatorNumber", operatorNumber);
+
+        stationObject.addProperty("device", Build.DEVICE);
+        stationObject.addProperty("brand", Build.BRAND);
+        stationObject.addProperty("fingerprint", Build.FINGERPRINT);
+        stationObject.addProperty("hardware", Build.HARDWARE);
+        stationObject.addProperty("manufacturer", Build.MANUFACTURER);
+        stationObject.addProperty("model", Build.MODEL);
+        stationObject.addProperty("radio", Build.getRadioVersion());
+        stationObject.addProperty("serial", Build.SERIAL);
 
         int existingTotal = stationObject.get("total").getAsInt();
         int existingCount = stationObject.get("count").getAsInt();
@@ -167,9 +193,25 @@ public class DataReporter {
         stationObject.addProperty("total", existingTotal + signalStrength);
         stationObject.addProperty("count", existingCount + 1);
 
+
         // Save changes
         try {
             writeJson(signalReadings, signalReadingsFilePath);
+        } catch (IOException | JSONException e) {
+            e.printStackTrace();
+        }
+
+        // Save changes for details
+        try {
+            JsonParser parser = new JsonParser();
+            JsonObject detailedStationObject = (JsonObject)parser.parse(stationObject.toString());
+
+            detailedStationObject.remove("total");
+            detailedStationObject.remove("count");
+            detailedStationObject.addProperty("signalStrength", signalStrength);
+            detailedStationObject.addProperty("timestamp", System.currentTimeMillis() / 1000L);
+            signalReadingsDetailed.add(detailedStationObject);
+            writeJson(signalReadingsDetailed, signalReadingsDetailsFilePath);
         } catch (IOException | JSONException e) {
             e.printStackTrace();
         }
@@ -271,8 +313,23 @@ public class DataReporter {
             }
         });
 
+        service.addSignalsDetails(signalReadingsDetailed, new Callback<JsonObject>() {
+            @Override
+            public void success(JsonObject integer, Response response) {
+                Log.i(TAG, "Successfully added signals details to " + integer + " stations.");
+                clearSignalsDetails();
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                Log.e(TAG, "Failed to add signals Details: " + error);
+                Toast.makeText(context, "Sync failed(signalsDetails).", Toast.LENGTH_SHORT).show();
+            }
+        });
 
     }
+
+
 
     private void startWifiScan() {
         WifiManager wifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
@@ -296,6 +353,16 @@ public class DataReporter {
         } catch (IOException | JSONException e) {
             e.printStackTrace();
             Log.i(TAG, "Failed to clear file for signals.");
+        }
+    }
+
+    private void clearSignalsDetails() {
+        try {
+            writeJson(new JsonArray(), signalReadingsDetailsFilePath);
+            signalReadingsDetailed = new JsonArray();
+        } catch (IOException | JSONException e) {
+            e.printStackTrace();
+            Log.i(TAG, "Failed to clear file for signals details.");
         }
     }
 
