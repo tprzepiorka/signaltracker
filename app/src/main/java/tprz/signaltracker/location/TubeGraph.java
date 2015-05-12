@@ -37,7 +37,7 @@ public class TubeGraph {
     public TubeGraph() {
         macsToLocation = new HashMap<>();
         stationMap = new HashMap<>();
-        tubeGraphPath = Environment.getExternalStorageDirectory() + "/tubeGraphTest.json";
+        tubeGraphPath = Environment.getExternalStorageDirectory() + "/signalTracker" + "/tubeGraphTest.json";
         loadFromFile();
     }
 
@@ -48,6 +48,13 @@ public class TubeGraph {
      */
     private void loadFromFile() {
         try {
+            File tubeGraphFile = new File(tubeGraphPath);
+            if(!tubeGraphFile.exists()) {
+                File theDir = new File(tubeGraphFile.getParent());
+                theDir.mkdir();
+
+                createTubeGraphFile();
+            }
             String content = getStringFromFile(tubeGraphPath);
             tubeGraph = new JSONObject(content);
 
@@ -55,6 +62,15 @@ public class TubeGraph {
             buildEdges(tubeGraph);
 
         } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void createTubeGraphFile() {
+        File fileToCreate = new File(tubeGraphPath);
+        try {
+            fileToCreate.createNewFile();
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
