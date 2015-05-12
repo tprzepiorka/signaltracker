@@ -22,7 +22,7 @@ import tprz.signaltracker.location.TubeGraph;
  */
 public class SignalLog {
     private static final int MAX_FILES = 400;
-    private static final long MAX_FILE_SIZE = 50 * 1024; // Bytes
+    private static final long MAX_FILE_SIZE = 500 * 1024; // Bytes
     private String signalReadingsDetailsFileDir;
     private int currentFileCount = 0;
     private String fileNameBase = "signalLog_";
