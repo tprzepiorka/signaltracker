@@ -38,7 +38,7 @@ public class TubeGraph {
     private String tubeGraphPath;
     private JSONObject tubeGraph;
 
-    public TubeGraph() {
+    public TubeGraph(Context context) {
         this.context = context;
         macsToLocation = new HashMap<>();
         stationMap = new HashMap<>();
