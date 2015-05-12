@@ -120,8 +120,7 @@ public class StationLocationCard extends Card implements StationCard, LocationPr
             }
         });
 
-        String[] stationNames = getContext().getResources().getStringArray(R.array.stations);
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(activity, android.R.layout.simple_dropdown_item_1line, stationNames);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(activity, android.R.layout.simple_dropdown_item_1line, tubeGraph.getStationNames());
         autoCompleteTextView.setAdapter(adapter);
         autoCompleteTextView.setThreshold(1);
     }
