@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
@@ -32,7 +33,7 @@ public class StationLocationCard extends Card implements StationCard, LocationPr
     private TextView prevStationText;
     private TextView currStationText;
     private AutoCompleteTextView autoCompleteTextView;
-    private ImageButton saveIdentificationButton;
+    private Button saveIdentificationButton;
     @SuppressWarnings("UnusedDeclaration")
     private final String TAG = "StationLocationCard";
 
@@ -54,7 +55,7 @@ public class StationLocationCard extends Card implements StationCard, LocationPr
         prevStationText = (TextView) parent.findViewById(R.id.location_prev_text);
         currStationText = (TextView) parent.findViewById(R.id.location_curr_text);
         autoCompleteTextView = (AutoCompleteTextView) parent.findViewById(R.id.autoCompleteTextView);
-        saveIdentificationButton = (ImageButton) parent.findViewById(R.id.imageButton);
+        saveIdentificationButton = (Button) parent.findViewById(R.id.imageButton);
         saveIdentificationButton.setEnabled(false);
         saveIdentificationButton.setClickable(false);
 
