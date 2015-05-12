@@ -79,7 +79,7 @@ public class StationLocationCard extends Card implements StationCard, LocationPr
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 match = null;
-                String[] stationNames = getContext().getResources().getStringArray(R.array.stations);
+                String[] stationNames = tubeGraph.getStationNames();
                 for(String station : stationNames) {
                     if(station.equalsIgnoreCase(s.toString().trim()) && !station.equals(s.toString())) {
                         match = station;

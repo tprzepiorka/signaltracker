@@ -44,7 +44,7 @@ public class DataReporter {
     private final String TAG = "DataReporter";
 
     private DataReporter(Context context) {
-        tubeGraph = new TubeGraph();
+        tubeGraph = new TubeGraph(context);
         this.context = context;
         this.signalLog = new SignalLog(Environment.getExternalStorageDirectory().toString());
 

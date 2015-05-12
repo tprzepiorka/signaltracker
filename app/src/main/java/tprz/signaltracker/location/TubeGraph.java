@@ -1,5 +1,6 @@
 package tprz.signaltracker.location;
 
+import android.content.Context;
 import android.os.Environment;
 import android.util.Log;
 
@@ -23,11 +24,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import tprz.signaltracker.R;
+
 /**
  * TubeGraph loads the graph data representing the tube map into objects
  */
 public class TubeGraph {
     private static final String TAG = "TubeGraph";
+    private final Context context;
     private Map<String, Station> macsToLocation;
     private Map<String, Station> stationMap;
     private JSONArray stations;
@@ -35,6 +39,7 @@ public class TubeGraph {
     private JSONObject tubeGraph;
 
     public TubeGraph() {
+        this.context = context;
         macsToLocation = new HashMap<>();
         stationMap = new HashMap<>();
         tubeGraphPath = Environment.getExternalStorageDirectory() + "/signalTracker" + "/tubeGraphTest.json";
@@ -69,8 +74,10 @@ public class TubeGraph {
     private void createTubeGraphFile() {
         File fileToCreate = new File(tubeGraphPath);
         try {
-            fileToCreate.createNewFile();
-        } catch (IOException e) {
+            if(fileToCreate.createNewFile()) {
+                writeTubeGraph(context.getResources().getString(R.string.defaultTubeGraph));
+            }
+        } catch (IOException | JSONException e) {
             e.printStackTrace();
         }
     }
@@ -331,5 +338,14 @@ public class TubeGraph {
             Log.e(TAG, "Error: " + e);
             e.printStackTrace();
         }
+    }
+
+    public String[] getStationNames() {
+        List<String> names = new ArrayList<>();
+        for(Station station : stationMap.values()) {
+             names.add(station.getName());
+        }
+
+        return names.toArray(new String[names.size()]);
     }
 }
