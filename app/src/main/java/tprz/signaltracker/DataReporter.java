@@ -13,6 +13,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonPrimitive;
+import com.splunk.mint.Mint;
 
 import org.json.JSONException;
 
@@ -64,7 +65,13 @@ public class DataReporter {
                 urlconfig.createNewFile();
                 signalReadings = new JsonArray();
             }
+        } catch (Exception e) {
+            MultiLogger.log(TAG, "Error setting up.");
+            e.printStackTrace();
+            Mint.logExceptionMessage("level", "Error setting up signalReadings file", e);
+        }
 
+        try{
             File macMappingReadingsFile = new File(macMappingFilePath);
             if(macMappingReadingsFile.exists()){
                 String content = TubeGraph.getStringFromFile(macMappingFilePath);
@@ -81,11 +88,10 @@ public class DataReporter {
                 macMapping = new JsonArray();
             }
 
-
-
         } catch (Exception e) {
-            MultiLogger.log(TAG, "Error setting up.");
+            MultiLogger.log(TAG, "Error setting up .");
             e.printStackTrace();
+            Mint.logExceptionMessage("level", "Error setting up MacMapping file", e);
         }
 
         RestAdapter restAdapter = new RestAdapter.Builder()
@@ -133,6 +139,7 @@ public class DataReporter {
             writeJson(macMapping, macMappingFilePath);
         } catch (IOException | JSONException e) {
             e.printStackTrace();
+            Mint.logException(e);
         }
 
     }
@@ -195,6 +202,7 @@ public class DataReporter {
             writeJson(signalReadings, signalReadingsFilePath);
         } catch (IOException | JSONException e) {
             e.printStackTrace();
+            Mint.logException(e);
         }
 
         // Save changes for details
@@ -226,6 +234,7 @@ public class DataReporter {
         } catch (IOException e) {
             Log.i(TAG, "Error: " + e);
             e.printStackTrace();
+            Mint.logException(e);
         } finally {
             file.flush();
             file.close();
@@ -351,6 +360,7 @@ public class DataReporter {
         } catch (IOException | JSONException e) {
             e.printStackTrace();
             Log.i(TAG, "Failed to clear file for signals.");
+            Mint.logException(e);
         }
     }
 
@@ -365,6 +375,7 @@ public class DataReporter {
         } catch (IOException | JSONException e) {
             e.printStackTrace();
             Log.i(TAG, "Failed to clear file for macs.");
+            Mint.logException(e);
         }
     }
 }

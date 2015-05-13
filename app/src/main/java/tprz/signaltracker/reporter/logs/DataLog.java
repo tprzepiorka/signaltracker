@@ -6,6 +6,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.splunk.mint.Mint;
 
 import org.json.JSONException;
 
@@ -46,6 +47,7 @@ public class DataLog {
             }
         } catch (IOException e) {
             e.printStackTrace();
+            Mint.logException(e);
         }
     }
 
@@ -115,6 +117,7 @@ public class DataLog {
         } catch (IOException e) {
             Log.i(TAG, "Error: " + e);
             e.printStackTrace();
+            Mint.logException(e);
         } finally {
             file.flush();
             file.close();
@@ -131,6 +134,7 @@ public class DataLog {
                     logs.add(new ObjectFilePair(item, filePath));
                 } catch (Exception e) {
                     e.printStackTrace();
+                    Mint.logException(e);
                 }
 
             }
@@ -156,6 +160,7 @@ public class DataLog {
             writeJson(signalLogs, getFile(currentFileCount));
         } catch (Exception e) {
             e.printStackTrace();
+            Mint.logException(e);
         }
 
     }
