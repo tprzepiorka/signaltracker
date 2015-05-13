@@ -33,7 +33,9 @@ public class WifiProfiler {
                 Set<String> macs = new HashSet<>();
                 if (results != null) {
                     for (ScanResult result : results) {
-                        macs.add(result.BSSID);
+                        if(result.SSID.equalsIgnoreCase("Virgin Media WiFi")) {
+                            macs.add(result.BSSID);
+                        }
                     }
 
                     upToDateScan = macs;

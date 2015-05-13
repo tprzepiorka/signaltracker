@@ -33,7 +33,6 @@ public class DataReporter {
     private final SigTrackWebService service;
     private final Context context;
     private String signalReadingsFilePath = Environment.getExternalStorageDirectory() + "/signals.json";
-    private String signalReadingsDetailsFilePath = Environment.getExternalStorageDirectory() + "/signalsDetails.json";
     private String macMappingFilePath = Environment.getExternalStorageDirectory() + "/macMapping.json";
     private JsonArray signalReadings;
     private JsonArray macMapping;

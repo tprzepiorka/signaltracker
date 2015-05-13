@@ -3,6 +3,7 @@ package tprz.signaltracker.location;
 import android.content.Context;
 import android.os.Environment;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.google.gson.JsonObject;
 
@@ -257,6 +258,12 @@ public class TubeGraph {
      * @return True if added succesfully, false otherwise
      */
     public boolean addNewStationMapping(Station newCurrentStation, Set<String> macs) {
+
+        if(macs.isEmpty()) {
+            Toast.makeText(context, context.getString(R.string.no_wifi_to_map), Toast.LENGTH_SHORT).show();
+            return false;
+        }
+
         try{
             for (int i = 0; i < stations.length(); i++) {
                 JSONObject stationObject = stations.getJSONObject(i);
