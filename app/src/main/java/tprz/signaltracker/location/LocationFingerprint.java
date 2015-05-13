@@ -4,7 +4,7 @@ import android.content.Context;
 
 import java.util.Set;
 
-import tprz.signaltracker.DataReporter;
+import tprz.signaltracker.reporter.DataReporter;
 
 /**
  * Provides an encapsulation around the results of a WiFi search allowing a new previously

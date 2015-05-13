@@ -1,4 +1,4 @@
-package tprz.signaltracker;
+package tprz.signaltracker.reporter;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;

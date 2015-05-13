@@ -25,6 +25,9 @@ import retrofit.RestAdapter;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
 import tprz.signaltracker.location.TubeGraph;
+import tprz.signaltracker.reporter.SigTrackWebService;
+import tprz.signaltracker.reporter.logs.DataLog;
+import tprz.signaltracker.reporter.logs.ObjectFilePair;
 
 /**
  * Connect and send data to the server and update the tubegraph to contain the most recent results.
@@ -32,12 +35,12 @@ import tprz.signaltracker.location.TubeGraph;
 public class DataReporter {
     private final SigTrackWebService service;
     private final Context context;
-    private String signalReadingsFilePath = Environment.getExternalStorageDirectory() + "/signals.json";
-    private String macMappingFilePath = Environment.getExternalStorageDirectory() + "/macMapping.json";
+    private String signalReadingsFilePath = Environment.getExternalStorageDirectory() + "/signalTracker" + "/signals.json";
+    private String macMappingFilePath = Environment.getExternalStorageDirectory() + "/signalTracker" + "/macMapping.json";
     private JsonArray signalReadings;
     private JsonArray macMapping;
     private TubeGraph tubeGraph;
-    private SignalLog signalLog;
+    private DataLog signalLog;
 
     private static DataReporter instance = null;
     private final String TAG = "DataReporter";
@@ -45,7 +48,8 @@ public class DataReporter {
     private DataReporter(Context context) {
         tubeGraph = new TubeGraph(context);
         this.context = context;
-        this.signalLog = new SignalLog(Environment.getExternalStorageDirectory().toString());
+        String envPath = Environment.getExternalStorageDirectory() + "/signalTracker";
+        this.signalLog = new DataLog(envPath, "signalLog");
 
         try {
             File signalReadingsFile = new File(signalReadingsFilePath);
@@ -56,7 +60,7 @@ public class DataReporter {
             }
             else{
                 // create an new file
-                File urlconfig = new File(Environment.getExternalStorageDirectory(), "/signals.json");
+                File urlconfig = new File(signalReadingsFilePath);
                 urlconfig.createNewFile();
                 signalReadings = new JsonArray();
             }
@@ -72,7 +76,7 @@ public class DataReporter {
             }
             else{
                 // create an new file
-                File urlconfig = new File(Environment.getExternalStorageDirectory(), "/macMapping.json");
+                File urlconfig = new File(signalReadingsFilePath);
                 urlconfig.createNewFile();
                 macMapping = new JsonArray();
             }
@@ -300,10 +304,10 @@ public class DataReporter {
             }
         });
 
-        SignalLog.ObjectFilePair[] signalLogSets = signalLog.getSignalLogObjects();
+        ObjectFilePair[] signalLogSets = signalLog.getSignalLogObjects();
         for(int i = 0; i < signalLogSets.length; i++) {
             final int fileNumber = i;
-            final SignalLog.ObjectFilePair currLogSet = signalLogSets[i];
+            final ObjectFilePair currLogSet = signalLogSets[i];
             if(currLogSet == null) continue;
 
             service.addSignalsDetails(currLogSet.getJson(), new Callback<JsonObject>() {

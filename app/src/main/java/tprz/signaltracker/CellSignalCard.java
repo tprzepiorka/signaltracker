@@ -22,6 +22,7 @@ import it.gmariotti.cardslib.library.internal.Card;
 import it.gmariotti.cardslib.library.internal.CardThumbnail;
 import tprz.signaltracker.location.LocationProvider;
 import tprz.signaltracker.location.Station;
+import tprz.signaltracker.reporter.DataReporter;
 
 /**
  * This class is a specific Card that is used to display updating information
