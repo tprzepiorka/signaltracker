@@ -80,10 +80,16 @@ public class MainActivity extends Activity  implements Probe.DataListener{
                         if (isChecked) {
                             funfManager.enablePipeline(PIPELINE_NAME);
                             pipeline = (BasicPipeline) funfManager.getRegisteredPipeline(PIPELINE_NAME);
+                            if(cellSignalCard != null) {
+                                cellSignalCard.enableCard();
+                            }
                         } else {
                             funfManager.disablePipeline(PIPELINE_NAME);
                             BandwidthProbe.cancelDownloads((DownloadManager) getApplicationContext().getSystemService(Context.DOWNLOAD_SERVICE));
                             stopDownloads();
+                            if(cellSignalCard != null) {
+                                cellSignalCard.disableCard();
+                            }
                         }
                     }
 
@@ -95,6 +101,7 @@ public class MainActivity extends Activity  implements Probe.DataListener{
             enabledToggle.setEnabled(true);
             archiveButton.setEnabled(true);
             scanNowButton.setEnabled(true);
+            setupCards();
 
         }
 
@@ -103,6 +110,7 @@ public class MainActivity extends Activity  implements Probe.DataListener{
             funfManager = null;
         }
     };
+    private CellSignalCard cellSignalCard;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -116,10 +124,10 @@ public class MainActivity extends Activity  implements Probe.DataListener{
         // Used to make interface changes on main thread
         handler = new Handler();
 
-        setupCards();
 
         enabledToggle = (ToggleButton) findViewById(R.id.enabledToggle);
         enabledToggle.setEnabled(false);
+
 
         // Runs an archive if pipeline is enabled
         archiveButton = (Button) findViewById(R.id.archiveButton);
@@ -178,6 +186,7 @@ public class MainActivity extends Activity  implements Probe.DataListener{
         // Bind to the service, to create the connection with FunfManager
         bindService(new Intent(this, FunfManager.class), funfManagerConn, BIND_AUTO_CREATE);
 
+
         MultiLogger.isEnabled = enabledToggle.isEnabled();
 
     }
@@ -211,7 +220,7 @@ public class MainActivity extends Activity  implements Probe.DataListener{
        stationLocationCardView.setCard(stationLocationCard);
 
         //Create a Card
-        CellSignalCard cellSignalCard = new CellSignalCard(getApplicationContext(), R.layout.card_inner_layout, stationLocationCard);
+        cellSignalCard = new CellSignalCard(getApplicationContext(), R.layout.card_inner_layout, stationLocationCard, pipeline.isEnabled());
 
         CardThumbnail thumbnail = new CardThumbnail(getApplicationContext());
         thumbnail.setDrawableResource(R.drawable.ic_signal_cellular_null_grey600_48dp);
@@ -226,8 +235,7 @@ public class MainActivity extends Activity  implements Probe.DataListener{
         CardView cardView = (CardView) findViewById(R.id.carddemo);
 
         cardView.setCard(cellSignalCard);
-        cellSignalCard.setSignal(0, true);
-
+//        cellSignalCard.setSignal(0, true);
     }
 
 

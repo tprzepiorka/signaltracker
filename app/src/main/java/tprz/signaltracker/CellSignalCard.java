@@ -8,6 +8,7 @@ import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CompoundButton;
 import android.widget.TextView;
 
 import com.github.mikephil.charting.charts.LineChart;
@@ -46,14 +47,22 @@ public class CellSignalCard extends Card {
     private boolean chartSetup = false;
     private boolean lock = false;
 
-    public CellSignalCard(Context context, int innerLayout, LocationProvider locationProvider) {
+    public CellSignalCard(Context context, int innerLayout, LocationProvider locationProvider, boolean isEnabled) {
         super(context, innerLayout);
 
         telephonyManager = (TelephonyManager) getContext().getSystemService(Context.TELEPHONY_SERVICE);
         this.cellSignalListener = new CellSignalListener();
-        telephonyManager.listen(cellSignalListener, PhoneStateListener.LISTEN_SIGNAL_STRENGTHS);
         this.locationProvider = locationProvider;
         this.dataReporter = DataReporter.getInstance(context);
+        Log.d(TAG, "Creating cell signal card, isenabled: " + isEnabled);
+        CardThumbnail thumbnail = new CardThumbnail(getContext());
+        thumbnail.setDrawableResource(cellSignalDrawables[5]);
+        addCardThumbnail(thumbnail);
+        if(isEnabled) {
+            enableCard();
+        } else {
+            disableCard();
+        }
     }
 
     /**
@@ -118,6 +127,7 @@ public class CellSignalCard extends Card {
 
             chartSetup = true;
         }
+
     }
 
     /***
@@ -137,10 +147,6 @@ public class CellSignalCard extends Card {
             data.addDataSet(set);
         }
 
-//        if(data.getXValCount() > 20) {
-//            data.clearValues();
-//        }
-
         data.addXValue("" + set.getEntryCount());
         Entry e = new Entry(signalStrength, set.getEntryCount());
         e.setXIndex(set.getEntryCount() + 1);
@@ -149,20 +155,8 @@ public class CellSignalCard extends Card {
 
         chart.notifyDataSetChanged();
 
-        // limit the number of visible entries
-//        chart.setVisibleXRange(12);
-//        chart.setVisibleYRange(33, YAxis.AxisDependency.LEFT);
-//        chart.setVisibleYRange(33, YAxis.AxisDependency.RIGHT);
-
-
-
         // move to the latest entry
-        int xCount = set.getEntryCount() - 30;
-//        chart.moveViewToX(xCount < 0 ? 0 : xCount);
-       // chart.moveViewToY(0, YAxis.AxisDependency.LEFT);
-       // chart.moveViewToY(0, YAxis.AxisDependency.RIGHT);
-//        chart.zoomOut();
-       chart.fitScreen();
+        chart.fitScreen();
         chart.invalidate();
         lock = false;
     }
@@ -182,6 +176,23 @@ public class CellSignalCard extends Card {
         set.setValueTextSize(9f);
         set.setDrawValues(false);
         return set;
+    }
+
+    public void enableCard() {
+        telephonyManager.listen(cellSignalListener, PhoneStateListener.LISTEN_SIGNAL_STRENGTHS);
+    }
+
+    public void disableCard() {
+        telephonyManager.listen(cellSignalListener, PhoneStateListener.LISTEN_NONE);
+        if(cellSignalTextView != null) {
+            cellSignalTextView.setText("OFF");
+        }
+        CardThumbnail thumbnail = new CardThumbnail(getContext());
+        thumbnail.setDrawableResource(cellSignalDrawables[5]);
+        addCardThumbnail(thumbnail);
+        if(chartSetup) {
+            notifyDataSetChanged();
+        }
     }
 
     public class CellSignalListener extends PhoneStateListener {
