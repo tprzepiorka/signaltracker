@@ -45,13 +45,15 @@ public class StationLocationCard extends Card implements StationCard, LocationPr
     private LocationFingerprint currLocFingerprint = null;
     private Station currStation;
     private ImageButton refreshButton;
+    private boolean isEnabled = false;
 
-    public StationLocationCard(Context context, int innerLayout, Activity activity, TubeGraph tubeGraph) {
+    public StationLocationCard(Context context, int innerLayout, Activity activity, TubeGraph tubeGraph, boolean isEnabled) {
         super(context, innerLayout);
         this.activity = activity;
         this.tubeGraph = tubeGraph;
         this.wifiProfiler = new WifiProfiler(getContext(), this, tubeGraph);
         wifiProfiler.startWifiScan();
+        this.isEnabled = isEnabled;
     }
 
     @Override
@@ -139,6 +141,13 @@ public class StationLocationCard extends Card implements StationCard, LocationPr
         ArrayAdapter<String> adapter = new ArrayAdapter<>(activity, android.R.layout.simple_dropdown_item_1line, tubeGraph.getStationNames());
         autoCompleteTextView.setAdapter(adapter);
         autoCompleteTextView.setThreshold(1);
+
+
+        if(isEnabled) {
+            enableCard();
+        } else {
+            disableCard();
+        }
     }
 
     private void newStationSubmitted() {
@@ -161,6 +170,28 @@ public class StationLocationCard extends Card implements StationCard, LocationPr
         } else {
             logAndNotify("Could not add: No location footprint.", true);
         }
+    }
+
+    public void enableCard() {
+        refreshButton.setEnabled(true);
+        autoCompleteTextView.setEnabled(true);
+        wifiProfiler.setIsEnabled(true);
+        prevStationText.setText("Previous: ");
+        currStationText.setText("Searching...");
+        wifiProfiler.startWifiScan();
+
+        this.isEnabled = true;
+    }
+
+    public void disableCard() {
+        refreshButton.setEnabled(false);
+        autoCompleteTextView.setEnabled(false);
+        wifiProfiler.setIsEnabled(false);
+        prevStationText.setText("Previous: ");
+        currStationText.setText("Disabled");
+        autoCompleteTextView.setText("");
+
+        this.isEnabled = false;
     }
 
     private void logAndNotify(String text, boolean shouldNotify) {

@@ -24,32 +24,35 @@ public class WifiProfiler {
     private Station currentStation = null;
     private StationCard card;
     private TubeGraph tubeGraph;
+    private boolean isEnabled;
 
     BroadcastReceiver scanResultsReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             if (WifiManager.SCAN_RESULTS_AVAILABLE_ACTION.equals(intent.getAction())) {
-                List<ScanResult> results = wifiManager.getScanResults();
-                Set<String> macs = new HashSet<>();
-                if (results != null) {
-                    for (ScanResult result : results) {
-                        if(result.SSID.equalsIgnoreCase("Virgin Media WiFi")) {
-                            macs.add(result.BSSID);
+                if(isEnabled) {
+                    List<ScanResult> results = wifiManager.getScanResults();
+                    Set<String> macs = new HashSet<>();
+                    if (results != null) {
+                        for (ScanResult result : results) {
+                            if (result.SSID.equalsIgnoreCase("Virgin Media WiFi")) {
+                                macs.add(result.BSSID);
+                            }
                         }
-                    }
 
-                    upToDateScan = macs;
-                    Log.i("TubeGraph", "Scan results arrived");
-                    Station newCurrentStation = getCurrentStation();
-                    Log.i("TubeGraph", "new curr station: " + newCurrentStation);
-                    if(newCurrentStation != null && !newCurrentStation.equals(currentStation) ) {
-                        currentStation = newCurrentStation;
-                        tubeGraph.addNewStationMapping(newCurrentStation, macs);
-                    }
+                        upToDateScan = macs;
+                        Log.i("TubeGraph", "Scan results arrived");
+                        Station newCurrentStation = getCurrentStation();
+                        Log.i("TubeGraph", "new curr station: " + newCurrentStation);
+                        if (newCurrentStation != null && !newCurrentStation.equals(currentStation)) {
+                            currentStation = newCurrentStation;
+                            tubeGraph.addNewStationMapping(newCurrentStation, macs);
+                        }
 
-                    LocationFingerprint locationFingerprint =
-                            new LocationFingerprint(macs, newCurrentStation == null, tubeGraph, context);
-                    updateCard(newCurrentStation, locationFingerprint);
+                        LocationFingerprint locationFingerprint =
+                                new LocationFingerprint(macs, newCurrentStation == null, tubeGraph, context);
+                        updateCard(newCurrentStation, locationFingerprint);
+                    }
                 }
             }
         }
@@ -102,6 +105,14 @@ public class WifiProfiler {
         }
 
         return null;
+    }
+
+    public boolean isEnabled() {
+        return isEnabled;
+    }
+
+    public void setIsEnabled(boolean isEnabled) {
+        this.isEnabled = isEnabled;
     }
 
     /**

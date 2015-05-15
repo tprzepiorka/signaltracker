@@ -54,7 +54,6 @@ public class CellSignalCard extends Card {
         this.cellSignalListener = new CellSignalListener();
         this.locationProvider = locationProvider;
         this.dataReporter = DataReporter.getInstance(context);
-        Log.d(TAG, "Creating cell signal card, isenabled: " + isEnabled);
         CardThumbnail thumbnail = new CardThumbnail(getContext());
         thumbnail.setDrawableResource(cellSignalDrawables[5]);
         addCardThumbnail(thumbnail);

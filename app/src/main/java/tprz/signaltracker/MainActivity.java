@@ -83,12 +83,18 @@ public class MainActivity extends Activity  implements Probe.DataListener{
                             if(cellSignalCard != null) {
                                 cellSignalCard.enableCard();
                             }
+                            if(stationLocationCard != null) {
+                                stationLocationCard.enableCard();
+                            }
                         } else {
                             funfManager.disablePipeline(PIPELINE_NAME);
                             BandwidthProbe.cancelDownloads((DownloadManager) getApplicationContext().getSystemService(Context.DOWNLOAD_SERVICE));
                             stopDownloads();
                             if(cellSignalCard != null) {
                                 cellSignalCard.disableCard();
+                            }
+                            if(stationLocationCard != null) {
+                                stationLocationCard.disableCard();
                             }
                         }
                     }
@@ -111,6 +117,7 @@ public class MainActivity extends Activity  implements Probe.DataListener{
         }
     };
     private CellSignalCard cellSignalCard;
+    private StationLocationCard stationLocationCard;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -214,7 +221,7 @@ public class MainActivity extends Activity  implements Probe.DataListener{
 
         // Station Location Card
         TubeGraph tubeGraph = DataReporter.getInstance(getApplicationContext()).getTubeGraph();
-        StationLocationCard stationLocationCard = new StationLocationCard(getApplicationContext(), R.layout.card_location_layout, this, tubeGraph);
+        stationLocationCard = new StationLocationCard(getApplicationContext(), R.layout.card_location_layout, this, tubeGraph, pipeline.isEnabled());
 
         CardViewNative stationLocationCardView = (CardViewNative) findViewById(R.id.location_card_view);
        stationLocationCardView.setCard(stationLocationCard);
