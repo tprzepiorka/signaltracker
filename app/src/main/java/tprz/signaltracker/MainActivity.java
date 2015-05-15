@@ -2,6 +2,7 @@ package tprz.signaltracker;
 
 import android.app.Activity;
 import android.app.DownloadManager;
+import android.app.usage.UsageEvents;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -26,6 +27,9 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.mixpanel.android.mpmetrics.MixpanelAPI;
 import com.splunk.mint.Mint;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import edu.mit.media.funf.FunfManager;
 import edu.mit.media.funf.json.IJsonObject;
@@ -100,6 +104,16 @@ public class MainActivity extends Activity  implements Probe.DataListener{
                     }
 
                     MultiLogger.isEnabled = enabledToggle.isEnabled();
+
+                    JSONObject enabledToggleData = new JSONObject();
+                    try {
+                        enabledToggleData.put("enabled", enabledToggle.isEnabled());
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    eventLogger.logEvent("Enable Toggle Click", enabledToggleData);
+
+                    eventLogger.logEvent("Enabled button clicked" );
                 }
             });
 
@@ -118,12 +132,15 @@ public class MainActivity extends Activity  implements Probe.DataListener{
     };
     private CellSignalCard cellSignalCard;
     private StationLocationCard stationLocationCard;
+    private EventLogger eventLogger;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Mint.initAndStartSession(MainActivity.this, "65ac44bd");
         setContentView(R.layout.main);
+
+        eventLogger = EventLogger.getInstance(getApplicationContext());
 
         // Displays the count of rows in the data
         dataCountView = (TextView) findViewById(R.id.dataCountText);
@@ -142,6 +159,15 @@ public class MainActivity extends Activity  implements Probe.DataListener{
         archiveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                JSONObject archiveClickData = new JSONObject();
+                try {
+                    archiveClickData.put("pipeline_enabled", pipeline.isEnabled());
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                eventLogger.logEvent("Archive Button Click", archiveClickData);
+
                 if (pipeline.isEnabled()) {
                     pipeline.onRun(BasicPipeline.ACTION_ARCHIVE, null);
 
@@ -166,6 +192,14 @@ public class MainActivity extends Activity  implements Probe.DataListener{
         scanNowButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                JSONObject archiveClickData = new JSONObject();
+                try {
+                    archiveClickData.put("pipeline_enabled", pipeline.isEnabled());
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                eventLogger.logEvent("Scan Now Button Click", archiveClickData);
+
                 if (pipeline.isEnabled()) {
 
                     // Manually register the pipeline
@@ -187,12 +221,19 @@ public class MainActivity extends Activity  implements Probe.DataListener{
             public void onClick(View v) {
                 DataReporter dataReporter = DataReporter.getInstance(getApplicationContext());
                 dataReporter.sync();
+
+                JSONObject archiveClickData = new JSONObject();
+                try {
+                    archiveClickData.put("pipeline_enabled", pipeline.isEnabled());
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                eventLogger.logEvent("Sync Button Click", archiveClickData);
             }
         });
 
         // Bind to the service, to create the connection with FunfManager
         bindService(new Intent(this, FunfManager.class), funfManagerConn, BIND_AUTO_CREATE);
-
 
         MultiLogger.isEnabled = enabledToggle.isEnabled();
 

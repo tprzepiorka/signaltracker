@@ -7,7 +7,7 @@
     <string name="InfoText">Signal Tracker will measure the cell signal as you travel and also measure against Wifi locations.</string>
     <string name="enabledBox">Enabled</string>
     <string name="SaveDataToSd">Save</string>
-    <string name="DataCount">None</string>
+    <string name="DataCount"></string>
     <string name="scanNow">Scan</string>
 
     <string name="default_pipeline">
