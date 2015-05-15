@@ -38,7 +38,6 @@ import tprz.signaltracker.reporter.logs.ObjectFilePair;
 public class DataReporter {
     private final SigTrackWebService service;
     private final Context context;
-    private final MixpanelAPI mixpanel;
     private String signalReadingsFilePath = Environment.getExternalStorageDirectory() + "/signalTracker" + "/signals.json";
     private String macMappingFilePath = Environment.getExternalStorageDirectory() + "/signalTracker" + "/macMapping.json";
     private JsonArray signalReadings;
@@ -55,8 +54,7 @@ public class DataReporter {
         String envPath = Environment.getExternalStorageDirectory() + "/signalTracker";
         this.signalLog = new DataLog(envPath, "signalLog");
 
-        this.mixpanel =
-                MixpanelAPI.getInstance(context, MainActivity.MIXPANEL_TOKEN);
+
 
         try {
             File signalReadingsFile = new File(signalReadingsFilePath);
@@ -274,25 +272,29 @@ public class DataReporter {
      */
     public void sync() {
 
-        Mint.logEvent("Sync started");
-        mixpanel.track("Sync Started", new JSONObject());
+        final EventLogger eventLogger = EventLogger.getInstance(context);
+
+        eventLogger.logEvent("Sync started");
 
         service.addSignals(signalReadings, new Callback<JsonObject>() {
             @Override
             public void success(JsonObject integer, Response response) {
                 Log.i(TAG, "Successfully added signals to " + integer + " stations.");
+                eventLogger.logEvent("Successfully added signals to stations");
                 clearSignals();
 
                 service.addStations(macMapping, new Callback<JsonObject>() {
                     @Override
                     public void success(JsonObject jsonObject, Response response) {
                         Log.i(TAG, "Successfully added station macs");
+                        eventLogger.logEvent("Successfully added station macs");
                         clearStationsMappingFiles();
 
                         service.getLatestTubeGraph(new Callback<JsonElement>() {
                             @Override
                             public void success(JsonElement result, Response response) {
                                 Log.i(TAG, "Successfully got new tubegraph");
+                                eventLogger.logEvent("Succesfully got new tubegraph");
 
                                 updateTubeGraph(result.getAsJsonObject().getAsJsonArray("elements"));
                                 Toast.makeText(context, "Sync Complete.", Toast.LENGTH_SHORT).show();
@@ -335,6 +337,7 @@ public class DataReporter {
                 @Override
                 public void success(JsonObject integer, Response response) {
                     Log.i(TAG, "Successfully added signals details to " + integer + " stations.");
+                    eventLogger.logEvent("Successfully added signal details to " + integer + " stations.");
                     signalLog.clearFile(currLogSet.getFileName());
                 }
 
@@ -342,13 +345,12 @@ public class DataReporter {
                 public void failure(RetrofitError error) {
                     Log.e(TAG, "Failed to add signals Details: " + error);
                     Toast.makeText(context, "Sync failed(signalsDetails).", Toast.LENGTH_SHORT).show();
+                    Mint.logException(error);
                 }
             });
         }
 
     }
-
-
 
     private void startWifiScan() {
         WifiManager wifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);

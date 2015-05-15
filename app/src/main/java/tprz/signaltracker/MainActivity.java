@@ -54,7 +54,6 @@ public class MainActivity extends Activity  implements Probe.DataListener{
     private Button syncButton;
     private TextView dataCountView;
     private Handler handler;
-    public static final String MIXPANEL_TOKEN = "39c031666be76f621a1fbfcc407840bd";
     private ServiceConnection funfManagerConn = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
@@ -256,7 +255,7 @@ public class MainActivity extends Activity  implements Probe.DataListener{
 
     @Override
     protected void onDestroy() {
-        MixpanelAPI.getInstance(getApplicationContext(), MainActivity.MIXPANEL_TOKEN).flush();
+        MixpanelAPI.getInstance(getApplicationContext(), EventLogger.MIXPANEL_TOKEN).flush();
         super.onDestroy();
     }
 

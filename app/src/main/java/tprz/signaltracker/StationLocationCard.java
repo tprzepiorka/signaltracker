@@ -132,6 +132,7 @@ public class StationLocationCard extends Card implements StationCard, LocationPr
             @Override
             public void onClick(View v) {
                 wifiProfiler.startWifiScan();
+                logAndNotify("Manual WiFi scan started", false);
             }
         });
 
@@ -141,6 +142,7 @@ public class StationLocationCard extends Card implements StationCard, LocationPr
     }
 
     private void newStationSubmitted() {
+        EventLogger.getInstance(getContext()).logEvent("New station submitted");
         if(currLocFingerprint != null) {
             // Find the station selected
             String selectedStationName = autoCompleteTextView.getText().toString();
@@ -149,22 +151,24 @@ public class StationLocationCard extends Card implements StationCard, LocationPr
                 if(currLocFingerprint.mapNewStation(station)) {
                     currStationText.setText(activity.getString(R.string.addingStationText));
                 } else {
-                    logAndNotify("Mapping new station failed.");
+                    logAndNotify("Mapping new station failed.", true);
                 }
                 wifiProfiler.startWifiScan();
                 autoCompleteTextView.setText("");
             } else {
-                logAndNotify("Could not add station: Station not found.");
+                logAndNotify("Could not add station: Station not found.", true);
             }
         } else {
-            logAndNotify("Could not add: No location footprint.");
+            logAndNotify("Could not add: No location footprint.", true);
         }
     }
 
-    private void logAndNotify(String text) {
+    private void logAndNotify(String text, boolean shouldNotify) {
         Log.i(TAG, text);
-        Mint.logEvent(text);
-        Toast.makeText(getContext(), text, Toast.LENGTH_SHORT).show();
+        EventLogger.getInstance(getContext()).logEvent(text);
+        if(shouldNotify) {
+            Toast.makeText(getContext(), text, Toast.LENGTH_SHORT).show();
+        }
     }
 
     @Override

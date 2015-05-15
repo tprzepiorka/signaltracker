@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import tprz.signaltracker.EventLogger;
 import tprz.signaltracker.R;
 
 /**
@@ -266,7 +267,7 @@ public class TubeGraph {
 
         if(macs.isEmpty()) {
             Toast.makeText(context, context.getString(R.string.no_wifi_to_map), Toast.LENGTH_SHORT).show();
-            Mint.logEvent(context.getString(R.string.no_wifi_to_map));
+            EventLogger.getInstance(context).logEvent(context.getString(R.string.no_wifi_to_map));
             return false;
         }
 
