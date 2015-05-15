@@ -39,7 +39,7 @@ repositories {
 }
 
 dependencies {
-    compile "com.splunk.mint:mint:4.0.6"
+    compile "com.splunk.mint:mint:4.2"
     compile 'com.github.PhilJay:MPAndroidChart:v2.0.9'
     compile 'com.github.gabrielemariotti.cards:cardslib-core:2.0.1'
     compile 'com.github.gabrielemariotti.cards:cardslib-cards:2.0.1'
