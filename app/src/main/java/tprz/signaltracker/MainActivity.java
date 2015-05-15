@@ -157,8 +157,8 @@ public class MainActivity extends Activity  implements Probe.DataListener{
                     wifiProbe.registerListener(pipeline);
 //                    locationProbe.registerListener(pipeline);
 ////                    cellTowerProbe.registerListener(pipeline);
-//                    cellSignalProbe.registerListener(pipeline);
-                    bandwidthProbe.registerListener(pipeline);
+                    cellSignalProbe.registerListener(pipeline);
+//                    bandwidthProbe.registerListener(pipeline);
 //                    hardwareInfoProbe.registerListener(pipeline);
                 } else {
                     Toast.makeText(getBaseContext(), "Pipeline is not enabled.", Toast.LENGTH_SHORT).show();
@@ -271,8 +271,8 @@ public class MainActivity extends Activity  implements Probe.DataListener{
         // Re-register to keep listening after probe completes.
         wifiProbe.registerPassiveListener(this);
 //        locationProbe.registerPassiveListener(this);
-//        cellSignalProbe.registerPassiveListener(this);
-        bandwidthProbe.registerPassiveListener(this);
+        cellSignalProbe.registerPassiveListener(this);
+//        bandwidthProbe.registerPassiveListener(this);
 //        hardwareInfoProbe.registerPassiveListener(this);
     }
 
