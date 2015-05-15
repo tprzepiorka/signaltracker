@@ -40,6 +40,7 @@ public class StationLocationCard extends Card implements StationCard, LocationPr
     private Station lastStation = null;
     private LocationFingerprint currLocFingerprint = null;
     private Station currStation;
+    private ImageButton refreshButton;
 
     public StationLocationCard(Context context, int innerLayout, Activity activity, TubeGraph tubeGraph) {
         super(context, innerLayout);
@@ -58,6 +59,7 @@ public class StationLocationCard extends Card implements StationCard, LocationPr
         saveIdentificationButton = (Button) parent.findViewById(R.id.imageButton);
         saveIdentificationButton.setEnabled(false);
         saveIdentificationButton.setClickable(false);
+        refreshButton = (ImageButton) parent.findViewById(R.id.refreshButton);
 
         autoCompleteTextView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
@@ -72,6 +74,7 @@ public class StationLocationCard extends Card implements StationCard, LocationPr
 
         autoCompleteTextView.addTextChangedListener(new TextWatcher() {
             String match = null;
+
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
@@ -81,8 +84,8 @@ public class StationLocationCard extends Card implements StationCard, LocationPr
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 match = null;
                 String[] stationNames = tubeGraph.getStationNames();
-                for(String station : stationNames) {
-                    if(station.equalsIgnoreCase(s.toString().trim()) && !station.equals(s.toString())) {
+                for (String station : stationNames) {
+                    if (station.equalsIgnoreCase(s.toString().trim()) && !station.equals(s.toString())) {
                         match = station;
                     }
                 }
@@ -92,7 +95,7 @@ public class StationLocationCard extends Card implements StationCard, LocationPr
 
             @Override
             public void afterTextChanged(Editable s) {
-                if(match != null) {
+                if (match != null) {
                     s.replace(0, Math.max(s.length(), match.length()), match);
                     match = null;
 
@@ -105,7 +108,7 @@ public class StationLocationCard extends Card implements StationCard, LocationPr
         autoCompleteTextView.setOnKeyListener(new View.OnKeyListener() {
             @Override
             public boolean onKey(View v, int keyCode, KeyEvent event) {
-                if(keyCode == KeyEvent.KEYCODE_ENTER) {
+                if (keyCode == KeyEvent.KEYCODE_ENTER) {
                     newStationSubmitted();
                     return true;
                 }
@@ -118,6 +121,13 @@ public class StationLocationCard extends Card implements StationCard, LocationPr
             @Override
             public void onClick(View v) {
                 newStationSubmitted();
+            }
+        });
+
+        refreshButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                wifiProfiler.startWifiScan();
             }
         });
 
