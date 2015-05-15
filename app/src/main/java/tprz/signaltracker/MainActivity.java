@@ -24,6 +24,7 @@ import android.widget.ToggleButton;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.mixpanel.android.mpmetrics.MixpanelAPI;
 import com.splunk.mint.Mint;
 
 import edu.mit.media.funf.FunfManager;
@@ -53,6 +54,7 @@ public class MainActivity extends Activity  implements Probe.DataListener{
     private Button syncButton;
     private TextView dataCountView;
     private Handler handler;
+    public static final String MIXPANEL_TOKEN = "39c031666be76f621a1fbfcc407840bd";
     private ServiceConnection funfManagerConn = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
@@ -250,6 +252,12 @@ public class MainActivity extends Activity  implements Probe.DataListener{
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onDestroy() {
+        MixpanelAPI.getInstance(getApplicationContext(), MainActivity.MIXPANEL_TOKEN).flush();
+        super.onDestroy();
     }
 
     @Override

@@ -44,4 +44,6 @@ dependencies {
     compile 'com.github.gabrielemariotti.cards:cardslib-core:2.0.1'
     compile 'com.github.gabrielemariotti.cards:cardslib-cards:2.0.1'
     compile 'com.googlecode.json-simple:json-simple:1.1'
+    compile "com.mixpanel.android:mixpanel-android:4.5.3"
+    compile "com.google.android.gms:play-services:3.1+"
 }

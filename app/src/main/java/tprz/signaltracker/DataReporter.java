@@ -13,9 +13,11 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonPrimitive;
+import com.mixpanel.android.mpmetrics.MixpanelAPI;
 import com.splunk.mint.Mint;
 
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -36,6 +38,7 @@ import tprz.signaltracker.reporter.logs.ObjectFilePair;
 public class DataReporter {
     private final SigTrackWebService service;
     private final Context context;
+    private final MixpanelAPI mixpanel;
     private String signalReadingsFilePath = Environment.getExternalStorageDirectory() + "/signalTracker" + "/signals.json";
     private String macMappingFilePath = Environment.getExternalStorageDirectory() + "/signalTracker" + "/macMapping.json";
     private JsonArray signalReadings;
@@ -51,6 +54,9 @@ public class DataReporter {
         this.context = context;
         String envPath = Environment.getExternalStorageDirectory() + "/signalTracker";
         this.signalLog = new DataLog(envPath, "signalLog");
+
+        this.mixpanel =
+                MixpanelAPI.getInstance(context, MainActivity.MIXPANEL_TOKEN);
 
         try {
             File signalReadingsFile = new File(signalReadingsFilePath);
@@ -269,6 +275,7 @@ public class DataReporter {
     public void sync() {
 
         Mint.logEvent("Sync started");
+        mixpanel.track("Sync Started", new JSONObject());
 
         service.addSignals(signalReadings, new Callback<JsonObject>() {
             @Override
