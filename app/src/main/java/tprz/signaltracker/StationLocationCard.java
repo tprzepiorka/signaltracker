@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +14,9 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.splunk.mint.Mint;
 
 import it.gmariotti.cardslib.library.internal.Card;
 import tprz.signaltracker.location.LocationFingerprint;
@@ -144,11 +148,23 @@ public class StationLocationCard extends Card implements StationCard, LocationPr
             if(station != null) {
                 if(currLocFingerprint.mapNewStation(station)) {
                     currStationText.setText(activity.getString(R.string.addingStationText));
+                } else {
+                    logAndNotify("Mapping new station failed.");
                 }
                 wifiProfiler.startWifiScan();
                 autoCompleteTextView.setText("");
+            } else {
+                logAndNotify("Could not add station: Station not found.");
             }
+        } else {
+            logAndNotify("Could not add: No location footprint.");
         }
+    }
+
+    private void logAndNotify(String text) {
+        Log.i(TAG, text);
+        Mint.logEvent(text);
+        Toast.makeText(getContext(), text, Toast.LENGTH_SHORT).show();
     }
 
     @Override

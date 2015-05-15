@@ -268,6 +268,8 @@ public class DataReporter {
      */
     public void sync() {
 
+        Mint.logEvent("Sync started");
+
         service.addSignals(signalReadings, new Callback<JsonObject>() {
             @Override
             public void success(JsonObject integer, Response response) {
@@ -294,6 +296,7 @@ public class DataReporter {
                             public void failure(RetrofitError retrofitError) {
                                 Log.e(TAG, "Failed to update tubegraph: " + retrofitError);
                                 Toast.makeText(context, "Sync failed (tubegraph).", Toast.LENGTH_SHORT).show();
+                                Mint.logException(retrofitError);
                             }
                         });
                     }
@@ -302,6 +305,7 @@ public class DataReporter {
                     public void failure(RetrofitError retrofitError) {
                         Log.e(TAG, "Failed to add station mac mapping: " + retrofitError);
                         Toast.makeText(context, "Sync failed (macmapping).", Toast.LENGTH_SHORT).show();
+                        Mint.logException(retrofitError);
                     }
                 });
             }
@@ -310,6 +314,7 @@ public class DataReporter {
             public void failure(RetrofitError error) {
                 Log.e(TAG, "Failed to add signals: " + error);
                 Toast.makeText(context, "Sync failed(signals).", Toast.LENGTH_SHORT).show();
+                Mint.logException(error);
             }
         });
 

@@ -6,6 +6,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.google.gson.JsonObject;
+import com.splunk.mint.Mint;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -69,6 +70,7 @@ public class TubeGraph {
 
         } catch (Exception e) {
             e.printStackTrace();
+            Mint.logException(e);
         }
     }
 
@@ -80,6 +82,7 @@ public class TubeGraph {
             }
         } catch (IOException | JSONException e) {
             e.printStackTrace();
+            Mint.logException(e);
         }
     }
 
@@ -110,6 +113,7 @@ public class TubeGraph {
 
         } catch (JSONException e) {
             e.printStackTrace();
+            Mint.logException(e);
         }
     }
 
@@ -162,6 +166,7 @@ public class TubeGraph {
 
         } catch (JSONException e) {
             e.printStackTrace();
+            Mint.logException(e);
         }
 
     }
@@ -261,6 +266,7 @@ public class TubeGraph {
 
         if(macs.isEmpty()) {
             Toast.makeText(context, context.getString(R.string.no_wifi_to_map), Toast.LENGTH_SHORT).show();
+            Mint.logEvent(context.getString(R.string.no_wifi_to_map));
             return false;
         }
 
@@ -295,6 +301,7 @@ public class TubeGraph {
             }
         } catch (JSONException | IOException e) {
             Log.i(TAG, "Error: " + e);
+            Mint.logException(e);
             e.printStackTrace();
         }
 
@@ -327,6 +334,7 @@ public class TubeGraph {
         } catch (IOException e) {
             Log.i(TAG, "Error: " + e);
             e.printStackTrace();
+            Mint.logException(e);
         } finally {
             file.flush();
             file.close();
@@ -343,6 +351,7 @@ public class TubeGraph {
             loadFromFile();
         } catch (IOException | JSONException e) {
             Log.e(TAG, "Error: " + e);
+            Mint.logException(e);
             e.printStackTrace();
         }
     }
