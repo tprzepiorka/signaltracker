@@ -144,6 +144,7 @@ public class CellSignalCard extends Card {
         if (set == null) {
             set = createSet();
             data.addDataSet(set);
+            set.setColor(getContext().getResources().getColor(R.color.accent));
         }
 
         data.addXValue("" + set.getEntryCount());
