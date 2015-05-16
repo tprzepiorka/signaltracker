@@ -268,7 +268,7 @@ public class MainActivity extends Activity  implements Probe.DataListener{
        stationLocationCardView.setCard(stationLocationCard);
 
         //Create a Card
-        cellSignalCard = new CellSignalCard(getApplicationContext(), R.layout.card_inner_layout, stationLocationCard, pipeline.isEnabled());
+        cellSignalCard = new CellSignalCard(getApplicationContext(), R.layout.cell_signal_thumbnail_layout, stationLocationCard, pipeline.isEnabled());
 
         CardThumbnail thumbnail = new CardThumbnail(getApplicationContext());
         thumbnail.setDrawableResource(R.drawable.ic_signal_cellular_null_grey600_48dp);
@@ -280,7 +280,7 @@ public class MainActivity extends Activity  implements Probe.DataListener{
         //Add Header to card
         cellSignalCard.addCardHeader(header);
 
-        CardView cardView = (CardView) findViewById(R.id.carddemo);
+        CardViewNative cardView = (CardViewNative) findViewById(R.id.carddemo);
 
         cardView.setCard(cellSignalCard);
 //        cellSignalCard.setSignal(0, true);

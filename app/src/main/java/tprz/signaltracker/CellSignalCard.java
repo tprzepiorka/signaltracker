@@ -8,7 +8,7 @@ import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CompoundButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.github.mikephil.charting.charts.LineChart;
@@ -46,6 +46,7 @@ public class CellSignalCard extends Card {
     };
     private boolean chartSetup = false;
     private boolean lock = false;
+    private ImageView imageView;
 
     public CellSignalCard(Context context, int innerLayout, LocationProvider locationProvider, boolean isEnabled) {
         super(context, innerLayout);
@@ -93,6 +94,11 @@ public class CellSignalCard extends Card {
         CardThumbnail thumbnail = new CardThumbnail(getContext());
         thumbnail.setDrawableResource(cellSignalDrawables[iconLevel]);
         addCardThumbnail(thumbnail);
+
+        if(imageView != null) {
+            imageView.setImageDrawable(getContext().getResources().getDrawable(cellSignalDrawables[iconLevel]));
+        }
+
         notifyDataSetChanged();
 
         // Charting
@@ -104,6 +110,7 @@ public class CellSignalCard extends Card {
         super.setupInnerViewElements(parent, view);
         cellSignalTextView = (TextView) parent.findViewById(R.id.cell_signal_text);
         this.chart = (LineChart) parent.findViewById(R.id.chart);
+        this.imageView = (ImageView) parent.findViewById(R.id.imageView2);
       // initChart();
 
         if(!this.chartSetup) {
@@ -123,6 +130,8 @@ public class CellSignalCard extends Card {
 
             YAxis rightAxis = chart.getAxisRight();
             rightAxis.setEnabled(false);
+
+            chart.setDescription("");
 
             chartSetup = true;
         }

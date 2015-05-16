@@ -16,8 +16,6 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.splunk.mint.Mint;
-
 import it.gmariotti.cardslib.library.internal.Card;
 import tprz.signaltracker.location.LocationFingerprint;
 import tprz.signaltracker.location.LocationProvider;
@@ -38,7 +36,7 @@ public class StationLocationCard extends Card implements StationCard, LocationPr
     private TextView currStationText;
     private AutoCompleteTextView autoCompleteTextView;
     private Button saveIdentificationButton;
-    @SuppressWarnings("UnusedDeclaration")
+    @SuppressWarnings({"UnusedDeclaration", "FieldCanBeLocal"})
     private final String TAG = "StationLocationCard";
 
     private Station lastStation = null;

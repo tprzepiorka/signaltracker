@@ -23,7 +23,8 @@
             android:id="@+id/card_header_layout"
             android:layout_width="match_parent"
             card:card_header_layout_resourceID="@layout/native_base_header_layout"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            android:visibility="gone"/>
 
         <LinearLayout
             android:id="@+id/card_thumb_and_content_layout"
@@ -31,32 +32,39 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <it.gmariotti.cardslib.library.view.component.CardThumbnailView
-                style="@style/card.native.card_thumbnail_outer_layout"
-                android:id="@+id/card_thumbnail_layout"
+            <LinearLayout
                 android:layout_width="wrap_content"
-                card:card_thumbnail_layout_resourceID="@layout/native_base_thumbnail_layout"
-                android:layout_height="match_parent"/>
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_gravity="center">
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/imageView2"
+                    android:layout_gravity="start|center"/>
+
+                <TextView
+                    android:layout_width="65dp"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:id="@+id/cell_signal_text"
+                    android:layout_gravity="start|center"
+                    android:text="@string/DefaultCellSignalProbeText"/>
+            </LinearLayout>
+
+
 
             <!-- Main Content View -->
             <FrameLayout
                 android:id="@+id/card_main_content_layout"
                 style="@style/card.native.content_outer_layout"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
                 <LinearLayout
                     android:id="@+id/info_layout"
                     android:orientation="horizontal"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
-
-                    <TextView
-                        android:layout_width="65dp"
-                        android:layout_height="wrap_content"
-                        android:textAppearance="?android:attr/textAppearanceMedium"
-                        android:id="@+id/cell_signal_text"
-                        android:layout_gravity="start|top" />
-
 
                     <com.github.mikephil.charting.charts.LineChart
                         android:id="@+id/chart"
@@ -71,7 +79,7 @@
                     android:layout_height="wrap_content"
                     android:id="@+id/imageView"
                     android:layout_gravity="center_horizontal|bottom"
-                    android:contentDescription="Signal Indicator Image" />
+                    android:contentDescription="@string/signal_indicator_image_description" />
 
             </FrameLayout>
 
@@ -85,6 +93,7 @@
         style="@style/card.native.main_contentExpand"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:visibility="gone"
         >
     </FrameLayout>
 
