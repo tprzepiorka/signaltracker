@@ -13,11 +13,9 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonPrimitive;
-import com.mixpanel.android.mpmetrics.MixpanelAPI;
 import com.splunk.mint.Mint;
 
 import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -48,6 +46,19 @@ public class DataReporter {
     private static DataReporter instance = null;
     private final String TAG = "DataReporter";
 
+    /**
+     * Get an instance of the singleton DataReporter
+     * @param context Context of application to start Wifi scan and make Toasts
+     * @return An instance of DataReporter.
+     */
+    public static DataReporter getInstance(Context context) {
+        if(instance == null) {
+            instance = new DataReporter(context);
+        }
+
+        return instance;
+    }
+
     private DataReporter(Context context) {
         tubeGraph = new TubeGraph(context);
         this.context = context;
@@ -55,9 +66,20 @@ public class DataReporter {
         this.signalLog = new DataLog(envPath, "signalLog");
 
 
+        initFiles();
 
+        RestAdapter restAdapter = new RestAdapter.Builder()
+                .setEndpoint("https://sigtrackweb.herokuapp.com/")
+                .build();
+
+        service = restAdapter.create(SigTrackWebService.class);
+
+    }
+
+    @SuppressWarnings("ResultOfMethodCallIgnored")
+    private void initFiles() {
+        File signalReadingsFile = new File(signalReadingsFilePath);
         try {
-            File signalReadingsFile = new File(signalReadingsFilePath);
             if(signalReadingsFile.exists()){
                 String content = TubeGraph.getStringFromFile(signalReadingsFilePath);
                 JsonParser parser = new JsonParser();
@@ -68,11 +90,61 @@ public class DataReporter {
                 File urlconfig = new File(signalReadingsFilePath);
                 urlconfig.createNewFile();
                 signalReadings = new JsonArray();
+                writeJson(signalReadings, signalReadingsFilePath);
             }
-        } catch (Exception e) {
+        } catch(ClassCastException e) {
+            MultiLogger.log(TAG, "Error casting loaded file.");
+            e.printStackTrace();
+            Mint.logExceptionMessage("level", "Error setting up signalReadings file. ", e);
+            try {
+                signalReadingsFile.createNewFile();
+                signalReadings = new JsonArray();
+                writeJson(signalReadings, signalReadingsFilePath);
+            } catch (IOException | JSONException e1) {
+                e1.printStackTrace();
+                MultiLogger.log(TAG, "Error casting creating blank array file.");
+                e.printStackTrace();
+                Mint.logExceptionMessage("level", "Error setting up blank signalReadings file. ", e);
+            }
+        }
+        catch (Exception e) {
             MultiLogger.log(TAG, "Error setting up.");
             e.printStackTrace();
             Mint.logExceptionMessage("level", "Error setting up signalReadings file", e);
+        }
+
+        File macMappingFile = new File(macMappingFilePath);
+        try {
+            if(macMappingFile.exists()){
+                String content = TubeGraph.getStringFromFile(macMappingFilePath);
+                JsonParser parser = new JsonParser();
+                macMapping = (JsonArray)parser.parse(content);
+            }
+            else{
+                // create an new file
+                macMappingFile.createNewFile();
+                macMapping = new JsonArray();
+                writeJson(macMapping, macMappingFilePath);
+            }
+        } catch(ClassCastException e) {
+            MultiLogger.log(TAG, "Error casting loaded file.");
+            e.printStackTrace();
+            Mint.logExceptionMessage("level", "Error loading MacMapping file. Probably corrupted data.", e);
+            try {
+                macMappingFile.createNewFile();
+                macMapping = new JsonArray();
+                writeJson(macMapping, macMappingFilePath);
+            } catch (IOException | JSONException e1) {
+                e1.printStackTrace();
+                MultiLogger.log(TAG, "Error casting creating blank array file.");
+                e.printStackTrace();
+                Mint.logExceptionMessage("level", "Error setting up blank macMapping file. ", e);
+            }
+        }
+        catch (Exception e) {
+            MultiLogger.log(TAG, "Error setting up.");
+            e.printStackTrace();
+            Mint.logExceptionMessage("level", "Error setting up macMapping file", e);
         }
 
         try{
@@ -97,13 +169,6 @@ public class DataReporter {
             e.printStackTrace();
             Mint.logExceptionMessage("level", "Error setting up MacMapping file", e);
         }
-
-        RestAdapter restAdapter = new RestAdapter.Builder()
-                .setEndpoint("https://sigtrackweb.herokuapp.com/")
-                .build();
-
-        service = restAdapter.create(SigTrackWebService.class);
-
     }
 
     /**
@@ -253,19 +318,6 @@ public class DataReporter {
     }
 
     /**
-     * Get an instance of the singleton DataReporter
-     * @param context Context of application to start Wifi scan and make Toasts
-     * @return An instance of DataReporter.
-     */
-    public static DataReporter getInstance(Context context) {
-        if(instance == null) {
-            instance = new DataReporter(context);
-        }
-
-        return instance;
-    }
-
-    /**
      * Send new Location MAC mappings and Signal Strengths to the server. If these have been sent
      * successfully then we clear their files on storage and update our TubeGraph representation
      * with one from the server.
@@ -328,10 +380,10 @@ public class DataReporter {
         });
 
         ObjectFilePair[] signalLogSets = signalLog.getSignalLogObjects();
-        for(int i = 0; i < signalLogSets.length; i++) {
-            final int fileNumber = i;
-            final ObjectFilePair currLogSet = signalLogSets[i];
-            if(currLogSet == null) continue;
+        for (final ObjectFilePair currLogSet : signalLogSets) {
+            if (currLogSet == null) {
+                continue;
+            }
 
             service.addSignalsDetails(currLogSet.getJson(), new Callback<JsonObject>() {
                 @Override
