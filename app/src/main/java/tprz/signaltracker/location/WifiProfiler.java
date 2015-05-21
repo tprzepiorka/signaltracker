@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiManager;
+import android.os.Handler;
 import android.util.Log;
 
 import java.util.HashSet;
@@ -25,6 +26,8 @@ public class WifiProfiler {
     private StationCard card;
     private TubeGraph tubeGraph;
     private boolean isEnabled;
+    private Handler handler;
+    private long SCAN_INTERVAL = 7 * 1000;
 
     BroadcastReceiver scanResultsReceiver = new BroadcastReceiver() {
         @Override
@@ -57,6 +60,8 @@ public class WifiProfiler {
             }
         }
     };
+    private WifiScannerRunnable periodicScanner;
+    private static final String TAG =  "WifiProfiler";
 
     /**
      *
@@ -68,9 +73,28 @@ public class WifiProfiler {
         wifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
         upToDateScan = new HashSet<>();
         this.tubeGraph = tubeGraph;
+        this.handler = new Handler();
 
+        setupPeriodicWifiScan();
 
         context.registerReceiver(scanResultsReceiver, new IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
+    }
+
+    private void setupPeriodicWifiScan() {
+        periodicScanner = new WifiScannerRunnable();
+        handler.postDelayed(periodicScanner, SCAN_INTERVAL);
+    }
+
+    private class WifiScannerRunnable implements Runnable {
+
+        @Override
+        public void run() {
+            if(isEnabled) {
+                startWifiScan();
+                Log.i(TAG, "Periodic Wifi Scan Started.");
+                handler.postDelayed(this, SCAN_INTERVAL);
+            }
+        }
     }
 
     /**
@@ -113,6 +137,10 @@ public class WifiProfiler {
 
     public void setIsEnabled(boolean isEnabled) {
         this.isEnabled = isEnabled;
+
+        if(isEnabled) {
+            periodicScanner.run();
+        }
     }
 
     /**
