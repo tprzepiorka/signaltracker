@@ -12,6 +12,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
+import android.os.PowerManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -90,6 +91,7 @@ public class MainActivity extends Activity  implements Probe.DataListener{
                             if(stationLocationCard != null) {
                                 stationLocationCard.enableCard();
                             }
+                            wakeLock.acquire();
                         } else {
                             funfManager.disablePipeline(PIPELINE_NAME);
                             BandwidthProbe.cancelDownloads((DownloadManager) getApplicationContext().getSystemService(Context.DOWNLOAD_SERVICE));
@@ -100,6 +102,7 @@ public class MainActivity extends Activity  implements Probe.DataListener{
                             if(stationLocationCard != null) {
                                 stationLocationCard.disableCard();
                             }
+                            wakeLock.release();
                         }
                     }
 
@@ -133,6 +136,7 @@ public class MainActivity extends Activity  implements Probe.DataListener{
     private CellSignalCard cellSignalCard;
     private StationLocationCard stationLocationCard;
     private EventLogger eventLogger;
+    private PowerManager.WakeLock wakeLock;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -236,6 +240,10 @@ public class MainActivity extends Activity  implements Probe.DataListener{
         bindService(new Intent(this, FunfManager.class), funfManagerConn, BIND_AUTO_CREATE);
 
         MultiLogger.isEnabled = enabledToggle.isEnabled();
+
+        PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
+        this.wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK,
+                "MyWakelockTag");
 
     }
 
