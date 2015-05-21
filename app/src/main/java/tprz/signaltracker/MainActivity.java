@@ -90,6 +90,15 @@ public class MainActivity extends Activity  implements Probe.DataListener{
 
             // This toggle button enables or disables the pipeline
             enabledToggle.setChecked(pipeline.isEnabled());
+            if(enabledToggle.isChecked()) {
+                if(!wakeLock.isHeld()) {
+                    wakeLock.acquire();
+                }
+            } else {
+                if(wakeLock.isHeld()) {
+                    wakeLock.release();
+                }
+            }
             enabledToggle.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -103,7 +112,9 @@ public class MainActivity extends Activity  implements Probe.DataListener{
                             if(stationLocationCard != null) {
                                 stationLocationCard.enableCard();
                             }
-                            wakeLock.acquire();
+                            if(!wakeLock.isHeld()) {
+                                wakeLock.acquire();
+                            }
                         } else {
                             funfManager.disablePipeline(PIPELINE_NAME);
                             BandwidthProbe.cancelDownloads((DownloadManager) getApplicationContext().getSystemService(Context.DOWNLOAD_SERVICE));
@@ -114,7 +125,9 @@ public class MainActivity extends Activity  implements Probe.DataListener{
                             if(stationLocationCard != null) {
                                 stationLocationCard.disableCard();
                             }
-                            wakeLock.release();
+                            if(wakeLock.isHeld()) {
+                                wakeLock.release();
+                            }
                         }
                     }
 

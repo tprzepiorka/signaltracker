@@ -2,6 +2,7 @@ package tprz.signaltracker;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.os.Handler;
 import android.telephony.PhoneStateListener;
 import android.telephony.SignalStrength;
 import android.telephony.TelephonyManager;
@@ -32,6 +33,8 @@ import tprz.signaltracker.location.Station;
 public class CellSignalCard extends Card {
     private final DataReporter dataReporter;
     private final TelephonyManager telephonyManager;
+    private final Handler handler;
+    private final SignalRunnable signalPoller;
     private LocationProvider locationProvider;
     CellSignalListener cellSignalListener;
     private TextView cellSignalTextView;
@@ -47,6 +50,8 @@ public class CellSignalCard extends Card {
     private boolean chartSetup = false;
     private boolean lock = false;
     private ImageView imageView;
+    private boolean isEnabled;
+    private int lastReading;
 
     public CellSignalCard(Context context, int innerLayout, LocationProvider locationProvider, boolean isEnabled) {
         super(context, innerLayout);
@@ -55,6 +60,8 @@ public class CellSignalCard extends Card {
         this.cellSignalListener = new CellSignalListener();
         this.locationProvider = locationProvider;
         this.dataReporter = DataReporter.getInstance(context);
+        this.handler = new Handler();
+        this.signalPoller = new SignalRunnable();
         CardThumbnail thumbnail = new CardThumbnail(getContext());
         thumbnail.setDrawableResource(cellSignalDrawables[5]);
         addCardThumbnail(thumbnail);
@@ -63,6 +70,7 @@ public class CellSignalCard extends Card {
         } else {
             disableCard();
         }
+
     }
 
     /**
@@ -188,10 +196,13 @@ public class CellSignalCard extends Card {
     }
 
     public void enableCard() {
+        this.isEnabled = true;
         telephonyManager.listen(cellSignalListener, PhoneStateListener.LISTEN_SIGNAL_STRENGTHS);
+        handler.post(signalPoller);
     }
 
     public void disableCard() {
+        this.isEnabled = false;
         telephonyManager.listen(cellSignalListener, PhoneStateListener.LISTEN_NONE);
         if(cellSignalTextView != null) {
             cellSignalTextView.setText("OFF");
@@ -205,7 +216,6 @@ public class CellSignalCard extends Card {
     }
 
     public class CellSignalListener extends PhoneStateListener {
-        private int lastReading = 0;
         @Override
         public void onSignalStrengthsChanged(SignalStrength signalStrength){
             int signalStrengthInt = signalStrength.getGsmSignalStrength() == 99 ? 0 : signalStrength.getGsmSignalStrength();
@@ -213,13 +223,28 @@ public class CellSignalCard extends Card {
                 setSignal(signalStrengthInt, signalStrength.isGsm());
 
                 MultiLogger.log(TAG, String.format("(signalStrength, %d)", signalStrength.getGsmSignalStrength()));
-                Station currStation = locationProvider.getCurrentStation();
-                if (currStation != null) {
-                    dataReporter.addSignalReading(currStation.getName(), telephonyManager.getNetworkOperatorName(), telephonyManager.getNetworkOperator(), signalStrengthInt);
-                }
+
             }
             Log.i("SigStrengthChange", "sig: " +  signalStrengthInt);
             lastReading = signalStrengthInt;
+        }
+    }
+
+    private class SignalRunnable implements Runnable {
+
+        private static final long INTERVAL = 5 * 1000;
+
+        @Override
+        public void run() {
+            Station currStation = locationProvider.getCurrentStation();
+            Log.i(TAG, "Running poll of signal strength");
+            if (currStation != null) {
+                dataReporter.addSignalReading(currStation.getName(), telephonyManager.getNetworkOperatorName(), telephonyManager.getNetworkOperator(), lastReading);
+            }
+
+            if(isEnabled) {
+                handler.postDelayed(this, INTERVAL);
+            }
         }
     }
 
