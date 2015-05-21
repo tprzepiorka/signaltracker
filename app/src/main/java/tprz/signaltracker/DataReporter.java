@@ -36,8 +36,21 @@ import tprz.signaltracker.reporter.logs.ObjectFilePair;
 public class DataReporter {
     private final SigTrackWebService service;
     private final Context context;
-    private String signalReadingsFilePath = Environment.getExternalStorageDirectory() + "/signalTracker" + "/signals.json";
-    private String macMappingFilePath = Environment.getExternalStorageDirectory() + "/signalTracker" + "/macMapping.json";
+    public static String signalReadingsFilePath = Environment.getExternalStorageDirectory() + "/signalTracker" + "/signals.json";
+    public static String macMappingFilePath = Environment.getExternalStorageDirectory() + "/signalTracker" + "/macMapping.json";
+
+    public JsonArray getSignalReadings() {
+        return signalReadings;
+    }
+
+    public DataLog getSignalLog() {
+        return signalLog;
+    }
+
+    public JsonArray getMacMapping() {
+        return macMapping;
+    }
+
     private JsonArray signalReadings;
     private JsonArray macMapping;
     private TubeGraph tubeGraph;
@@ -60,7 +73,7 @@ public class DataReporter {
     }
 
     private DataReporter(Context context) {
-        tubeGraph = new TubeGraph(context);
+        tubeGraph = TubeGraph.getInstance(context);
         this.context = context;
         String envPath = Environment.getExternalStorageDirectory() + "/signalTracker";
         this.signalLog = new DataLog(envPath, "signalLog");
@@ -409,7 +422,7 @@ public class DataReporter {
         wifiManager.startScan();
     }
 
-    private void updateTubeGraph(JsonArray newTubeGraph) {
+    public void updateTubeGraph(JsonArray newTubeGraph) {
         JsonObject holderObject = new JsonObject();
         holderObject.add("stations", newTubeGraph);
         tubeGraph.update(holderObject);
@@ -419,7 +432,7 @@ public class DataReporter {
      * On successfully sending the signal readings to server clear the persisted data file
      * and the current data object.
      */
-    private void clearSignals() {
+    public void clearSignals() {
         try {
             writeJson(new JsonArray(), signalReadingsFilePath);
             signalReadings = new JsonArray();
@@ -434,7 +447,7 @@ public class DataReporter {
      * On successfully sending the station MAC mapping readings to server clear the persisted data file
      * and the current data object.
      */
-    private void clearStationsMappingFiles() {
+    public void clearStationsMappingFiles() {
         try {
             writeJson(new JsonArray(), macMappingFilePath);
             macMapping = new JsonArray();

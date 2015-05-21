@@ -27,6 +27,17 @@
     <uses-permission android:name="android.permission.SCREEN_DIM_WAKE_LOCK"/>
     <uses-permission android:name="android.permission.WAKE_LOCK"/>
 
+    <uses-permission
+        android:name="android.permission.READ_SYNC_SETTINGS"/>
+    <uses-permission
+        android:name="android.permission.WRITE_SYNC_SETTINGS"/>
+    <uses-permission
+        android:name="android.permission.AUTHENTICATE_ACCOUNTS"/>
+    <uses-permission
+        android:name="android.permission.MANAGE_ACCOUNTS"/>
+    <uses-permission
+        android:name="android.permission.GET_ACCOUNTS"/>
+
     <!--HardwareInfoProbe-->
     <uses-permission android:name="android.permission.BLUETOOTH"/>
 
@@ -62,6 +73,35 @@
                 <action android:name="android.intent.action.USER_PRESENT" />
             </intent-filter>
         </receiver>
+
+        <service
+            android:name="tprz.signaltracker.sync.AuthenticatorService">
+            <intent-filter>
+                <action android:name="android.accounts.AccountAuthenticator"/>
+            </intent-filter>
+            <meta-data
+                android:name="android.accounts.AccountAuthenticator"
+                android:resource="@xml/authenticator" />
+        </service>
+
+        <provider
+            android:name="tprz.signaltracker.sync.StubProvider"
+            android:authorities="tprz.signaltracker.provider"
+            android:exported="false"
+            android:syncable="true"
+            android:label="my provider"/>
+
+        <service
+            android:name="tprz.signaltracker.sync.SyncService"
+            android:exported="true"
+            android:process=":sync">
+            <intent-filter>
+                <action android:name="android.content.SyncAdapter"/>
+            </intent-filter>
+            <meta-data android:name="android.content.SyncAdapter"
+                android:resource="@xml/syncadapter" />
+        </service>
+
 
     </application>
 

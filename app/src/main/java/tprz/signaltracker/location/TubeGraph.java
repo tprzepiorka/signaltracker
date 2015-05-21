@@ -33,6 +33,8 @@ import tprz.signaltracker.R;
  * TubeGraph loads the graph data representing the tube map into objects
  */
 public class TubeGraph {
+    private static TubeGraph instance;
+
     private static final String TAG = "TubeGraph";
     private final Context context;
     private Map<String, Station> macsToLocation;
@@ -41,7 +43,15 @@ public class TubeGraph {
     private String tubeGraphPath;
     private JSONObject tubeGraph;
 
-    public TubeGraph(Context context) {
+    public static TubeGraph getInstance(Context context) {
+        if(instance == null) {
+            instance = new TubeGraph(context);
+        }
+
+        return instance;
+    }
+
+    private TubeGraph(Context context) {
         this.context = context;
         macsToLocation = new HashMap<>();
         stationMap = new HashMap<>();

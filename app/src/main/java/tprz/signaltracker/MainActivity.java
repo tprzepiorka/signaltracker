@@ -1,9 +1,11 @@
 package tprz.signaltracker;
 
+import android.accounts.Account;
+import android.accounts.AccountManager;
 import android.app.Activity;
 import android.app.DownloadManager;
-import android.app.usage.UsageEvents;
 import android.content.ComponentName;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
@@ -13,6 +15,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.PowerManager;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -41,7 +44,6 @@ import edu.mit.media.funf.probe.builtin.WifiProbe;
 import edu.mit.media.funf.storage.NameValueDatabaseHelper;
 import it.gmariotti.cardslib.library.internal.CardHeader;
 import it.gmariotti.cardslib.library.internal.CardThumbnail;
-import it.gmariotti.cardslib.library.view.CardView;
 import it.gmariotti.cardslib.library.view.CardViewNative;
 import tprz.signaltracker.location.TubeGraph;
 
@@ -59,6 +61,15 @@ public class MainActivity extends Activity  implements Probe.DataListener{
     private Button syncButton;
     private TextView dataCountView;
     private Handler handler;
+    public static final String AUTHORITY = "tprz.signaltracker.provider";
+    public static final String ACCOUNT_TYPE = "tomprz.me";
+    public static final String ACCOUNT = "dummyaccount1";
+    public static final long SECONDS_PER_HOUR = 60L * 60L;
+    public static final long SYNC_INTERVAL_IN_HOURS = 6L;
+    public static final long SYNC_INTERVAL =
+            SYNC_INTERVAL_IN_HOURS *
+                    SECONDS_PER_HOUR;
+    private ContentResolver mResolver;
     private ServiceConnection funfManagerConn = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
@@ -74,6 +85,7 @@ public class MainActivity extends Activity  implements Probe.DataListener{
             hardwareInfoProbe.registerPassiveListener(MainActivity.this);
             cellSignalProbe.registerPassiveListener(MainActivity.this);
             bandwidthProbe.registerListener(MainActivity.this);
+
 
 
             // This toggle button enables or disables the pipeline
@@ -137,6 +149,7 @@ public class MainActivity extends Activity  implements Probe.DataListener{
     private StationLocationCard stationLocationCard;
     private EventLogger eventLogger;
     private PowerManager.WakeLock wakeLock;
+    private Account account;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -156,6 +169,14 @@ public class MainActivity extends Activity  implements Probe.DataListener{
         enabledToggle = (ToggleButton) findViewById(R.id.enabledToggle);
         enabledToggle.setEnabled(false);
 
+        account = CreateSyncAccount(this);
+        mResolver = getContentResolver();
+        ContentResolver.setSyncAutomatically(account, AUTHORITY, true);
+        ContentResolver.addPeriodicSync(
+                account,
+                AUTHORITY,
+                Bundle.EMPTY,
+                SYNC_INTERVAL);
 
         // Runs an archive if pipeline is enabled
         archiveButton = (Button) findViewById(R.id.archiveButton);
@@ -264,6 +285,38 @@ public class MainActivity extends Activity  implements Probe.DataListener{
                 }
             }
 
+    }
+
+    public static Account CreateSyncAccount(Context context) {
+        // Create the account type and default account
+        Account newAccount = new Account(
+                ACCOUNT, ACCOUNT_TYPE);
+        // Get an instance of the Android account manager
+        AccountManager accountManager =
+                (AccountManager) context.getSystemService(
+                        ACCOUNT_SERVICE);
+        /*
+         * Add the account and account type, no password or user data
+         * If successful, return the Account object, otherwise report an error.
+         */
+        accountManager.getAccounts();
+        if (accountManager.addAccountExplicitly(newAccount, null, null)) {
+            /*
+             * If you don't set android:syncable="true" in
+             * in your <provider> element in the manifest,
+             * then call context.setIsSyncable(account, AUTHORITY, 1)
+             * here.
+             *
+             */
+
+            return newAccount;
+        } else {
+            /*
+             * The account exists or some other error occurred. Log this, report it,
+             * or handle it internally.
+             */
+            return newAccount;
+        }
     }
 
     private void setupCards() {
