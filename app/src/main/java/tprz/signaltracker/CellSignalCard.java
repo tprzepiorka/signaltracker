@@ -237,7 +237,6 @@ public class CellSignalCard extends Card {
         @Override
         public void run() {
             Station currStation = locationProvider.getCurrentStation();
-            Log.i(TAG, "Running poll of signal strength");
             if (currStation != null) {
                 dataReporter.addSignalReading(currStation.getName(), telephonyManager.getNetworkOperatorName(), telephonyManager.getNetworkOperator(), lastReading);
             }
