@@ -368,8 +368,8 @@ public class MainActivity extends Activity  implements Probe.DataListener{
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
-        MenuItem item = menu.findItem(R.id.privacy_policy);
-        item.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+        MenuItem privacyPolicyItem = menu.findItem(R.id.privacy_policy);
+        privacyPolicyItem.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
                 Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.privacy_policy_url)));
@@ -379,7 +379,8 @@ public class MainActivity extends Activity  implements Probe.DataListener{
         });
 
         MenuItem autoOffItem = menu.findItem(R.id.autoOff);
-        autoOff.setIsEnabled(item.isChecked());
+        autoOffItem.setChecked(AutoOff.DEFAULT_ENABLED);
+        autoOff.setIsEnabled(autoOffItem.isChecked());
         autoOffItem.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {

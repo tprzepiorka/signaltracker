@@ -16,6 +16,7 @@ public class AutoOff {
     private final ToggleButton button;
 //    private final long AUTO_OFF_TIME = 5 * 1000;
     private final long AUTO_OFF_TIME = 60 * 60 * 1000;
+    public static final boolean DEFAULT_ENABLED = true;
     private final Runnable task;
     private final Handler handler;
     private boolean isEnabled;
