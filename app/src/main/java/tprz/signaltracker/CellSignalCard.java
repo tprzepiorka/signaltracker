@@ -2,6 +2,8 @@ package tprz.signaltracker;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Handler;
 import android.telephony.PhoneStateListener;
 import android.telephony.SignalStrength;
@@ -11,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.LimitLine;
@@ -19,6 +22,10 @@ import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.utils.ColorTemplate;
+import com.splunk.mint.Mint;
+
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 
 import it.gmariotti.cardslib.library.internal.Card;
 import it.gmariotti.cardslib.library.internal.CardThumbnail;
@@ -52,6 +59,7 @@ public class CellSignalCard extends Card {
     private ImageView imageView;
     private boolean isEnabled;
     private int lastReading;
+    private String lastReadingType = "Unknown";
 
     public CellSignalCard(Context context, int innerLayout, LocationProvider locationProvider, boolean isEnabled) {
         super(context, innerLayout);
@@ -77,10 +85,10 @@ public class CellSignalCard extends Card {
      * Updates the card view to display the relevant thumbnail for the given
      * signal strength.
      * @param signalStrength The SignalStrength in ASU
-     * @param gsm True if the phone is on a GSM network, false if it is on CDMA
+     * @param networkType True if the phone is on a GSM network, false if it is on CDMA
      */
-    public void setSignal(int signalStrength, boolean gsm) {
-        String contentsText = String.format("%s\nASU: %d", gsm ? "GSM" : "CDMA", signalStrength);
+    public void setSignal(int signalStrength, String networkType) {
+        String contentsText = String.format("%s\nASU: %d", networkType.isEmpty() ? "GSM" : networkType, signalStrength);
         if(cellSignalTextView == null) {
             return;
         }
@@ -217,17 +225,43 @@ public class CellSignalCard extends Card {
     }
 
     public class CellSignalListener extends PhoneStateListener {
+        ConnectivityManager cm = (ConnectivityManager) getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        public boolean isConnectedMobile(Context context){
+            NetworkInfo info = cm.getActiveNetworkInfo();
+            return (info != null && info.isConnected() && info.getType() == ConnectivityManager.TYPE_MOBILE);
+        }
+
         @Override
         public void onSignalStrengthsChanged(SignalStrength signalStrength){
             int signalStrengthInt = signalStrength.getGsmSignalStrength() == 99 ? 0 : signalStrength.getGsmSignalStrength();
-            if(signalStrengthInt != 0 || lastReading == 0) {
-                setSignal(signalStrengthInt, signalStrength.isGsm());
-
-                MultiLogger.log(TAG, String.format("(signalStrength, %d)", signalStrength.getGsmSignalStrength()));
-
-            }
             Log.i("SigStrengthChange", "sig: " +  signalStrengthInt);
             lastReading = signalStrengthInt;
+            if(cm.getActiveNetworkInfo() != null) {
+                lastReadingType = cm.getActiveNetworkInfo().getSubtypeName();
+            } else {
+                lastReadingType = "";
+            }
+
+            try {
+                Method m = SignalStrength.class.getMethod("getLteSignalStrength");
+                Integer lteSignalStrength = (Integer) m.invoke(signalStrength);
+                if(lteSignalStrength != 0 && lteSignalStrength != 99) {
+                    // Either 0 or 99 and we may have no signal or no LTE signal.
+                    // If we have no signal then the lastReading should be 0 from above anyway.
+                    lastReading = lteSignalStrength;
+                }
+            } catch (Exception e) {
+                // We use a catch all because who knows what might happen with the hidden API and
+                // this is a fall back option on signal strength anyway.
+                e.printStackTrace();
+                Mint.logException(e);
+            }
+
+            if(signalStrengthInt != 0 || lastReading == 0) {
+                MultiLogger.log(TAG, String.format("(signalStrength, %d)", signalStrength.getGsmSignalStrength()));
+            }
+
         }
     }
 
@@ -240,8 +274,10 @@ public class CellSignalCard extends Card {
             Station currStation = locationProvider.getCurrentStation();
             if (currStation != null && lastReading != -1) {
                 dataReporter.addSignalReading(currStation.getName(), telephonyManager.getNetworkOperatorName(), telephonyManager.getNetworkOperator(),
-                        telephonyManager.getSimOperator(), telephonyManager.getSimOperatorName(), lastReading);
+                        telephonyManager.getSimOperator(), telephonyManager.getSimOperatorName(), lastReading, lastReadingType);
             }
+
+            setSignal(lastReading, lastReadingType);
 
             if(isEnabled) {
                 handler.postDelayed(this, INTERVAL);
