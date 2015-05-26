@@ -14,9 +14,11 @@ public class AutoOff {
 
     private static final String TAG = "AutoOff";
     private final ToggleButton button;
+//    private final long AUTO_OFF_TIME = 5 * 1000;
     private final long AUTO_OFF_TIME = 60 * 60 * 1000;
     private final Runnable task;
     private final Handler handler;
+    private boolean isEnabled;
 
     public AutoOff(final ToggleButton button) {
         this.handler = new Handler();
@@ -32,9 +34,17 @@ public class AutoOff {
         };
     }
 
-    public void pipelineEnabled(boolean isEnabled){
+    public void setIsEnabled(boolean isEnabled) {
+        this.isEnabled = isEnabled;
         handler.removeCallbacks(task);
         if(isEnabled) {
+            handler.postDelayed(task, AUTO_OFF_TIME);
+        }
+    }
+
+    public void pipelineEnabled(boolean isTrackerEnabled){
+        handler.removeCallbacks(task);
+        if(isTrackerEnabled && isEnabled) {
             handler.postDelayed(task, AUTO_OFF_TIME);
         }
     }

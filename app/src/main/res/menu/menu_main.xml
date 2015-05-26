@@ -4,4 +4,9 @@
         <!--android:orderInCategory="100" android:showAsAction="never" />-->
     <item android:id="@+id/privacy_policy" android:title="@string/privacy_policy"
         android:orderInCategory="100" android:showAsAction="never" />
+
+    <item android:id="@+id/autoOff"
+        android:titleCondensed="Persist"
+        android:title="@string/auto_off"
+        android:checkable="true" />
 </menu>

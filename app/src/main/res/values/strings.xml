@@ -53,5 +53,6 @@
     <string name="signal_indicator_image_description">Signal Indicator Image</string>
     <string name="privacy_policy">Privacy Policy</string>
     <string name="privacy_policy_url">https://dl.dropboxusercontent.com/u/112929/privacy-policy/index.html</string>
+    <string name="auto_off">Auto Off</string>
 
 </resources>

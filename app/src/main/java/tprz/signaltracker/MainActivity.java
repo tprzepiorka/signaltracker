@@ -16,7 +16,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.PowerManager;
-import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -99,12 +98,12 @@ public class MainActivity extends Activity  implements Probe.DataListener{
                     wakeLock.release();
                 }
             }
-            auto_off.pipelineEnabled(enabledToggle.isChecked());
+            autoOff.pipelineEnabled(enabledToggle.isChecked());
             enabledToggle.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                     if (funfManager != null) {
-                        auto_off.pipelineEnabled(isChecked);
+                        autoOff.pipelineEnabled(isChecked);
                         if (isChecked) {
                             funfManager.enablePipeline(PIPELINE_NAME);
                             pipeline = (BasicPipeline) funfManager.getRegisteredPipeline(PIPELINE_NAME);
@@ -165,7 +164,7 @@ public class MainActivity extends Activity  implements Probe.DataListener{
     private EventLogger eventLogger;
     private PowerManager.WakeLock wakeLock;
     private Account account;
-    private AutoOff auto_off;
+    private AutoOff autoOff;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -185,7 +184,7 @@ public class MainActivity extends Activity  implements Probe.DataListener{
         enabledToggle = (ToggleButton) findViewById(R.id.enabledToggle);
         enabledToggle.setEnabled(false);
 
-        this.auto_off = new AutoOff(enabledToggle);
+        this.autoOff = new AutoOff(enabledToggle);
 
         account = CreateSyncAccount(this);
         mResolver = getContentResolver();
@@ -379,6 +378,16 @@ public class MainActivity extends Activity  implements Probe.DataListener{
             }
         });
 
+        MenuItem autoOffItem = menu.findItem(R.id.autoOff);
+        autoOff.setIsEnabled(item.isChecked());
+        autoOffItem.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                item.setChecked(!item.isChecked());
+                autoOff.setIsEnabled(item.isChecked());
+                return true;
+            }
+        });
         return true;
     }
 
