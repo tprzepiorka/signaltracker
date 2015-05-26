@@ -232,7 +232,8 @@ public class DataReporter {
      * @param operator Operator name
      * @param signalStrength Signal strength in ASU
      */
-    public void addSignalReading(String stationName, String operator, String operatorNumber, int signalStrength) {
+    public void addSignalReading(String stationName, String operator, String operatorNumber, String simOperator, String simOperatorName,
+                                 int signalStrength) {
         Log.i(TAG, "Adding signal reading: " + stationName + " " + operator + " " + signalStrength);
 
         JsonObject stationObject = null;
@@ -268,6 +269,8 @@ public class DataReporter {
         stationObject.addProperty("radio", Build.getRadioVersion());
         stationObject.addProperty("serial", Build.SERIAL);
         stationObject.addProperty("user", Build.USER);
+        stationObject.addProperty("simOperator", simOperator);
+        stationObject.addProperty("simOperatorName", simOperatorName);
         String android_id = Settings.Secure.getString(context.getContentResolver(),
                 Settings.Secure.ANDROID_ID);
         stationObject.addProperty("androidId", android_id);

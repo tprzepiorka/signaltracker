@@ -213,6 +213,7 @@ public class CellSignalCard extends Card {
         if(chartSetup) {
             notifyDataSetChanged();
         }
+        lastReading = -1;
     }
 
     public class CellSignalListener extends PhoneStateListener {
@@ -237,8 +238,9 @@ public class CellSignalCard extends Card {
         @Override
         public void run() {
             Station currStation = locationProvider.getCurrentStation();
-            if (currStation != null) {
-                dataReporter.addSignalReading(currStation.getName(), telephonyManager.getNetworkOperatorName(), telephonyManager.getNetworkOperator(), lastReading);
+            if (currStation != null && lastReading != -1) {
+                dataReporter.addSignalReading(currStation.getName(), telephonyManager.getNetworkOperatorName(), telephonyManager.getNetworkOperator(),
+                        telephonyManager.getSimOperator(), telephonyManager.getSimOperatorName(), lastReading);
             }
 
             if(isEnabled) {
