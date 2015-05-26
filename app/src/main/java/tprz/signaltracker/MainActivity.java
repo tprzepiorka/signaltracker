@@ -88,7 +88,6 @@ public class MainActivity extends Activity  implements Probe.DataListener{
             bandwidthProbe.registerListener(MainActivity.this);
 
 
-
             // This toggle button enables or disables the pipeline
             enabledToggle.setChecked(pipeline.isEnabled());
             if(enabledToggle.isChecked()) {
@@ -100,10 +99,12 @@ public class MainActivity extends Activity  implements Probe.DataListener{
                     wakeLock.release();
                 }
             }
+            auto_off.pipelineEnabled(enabledToggle.isChecked());
             enabledToggle.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                     if (funfManager != null) {
+                        auto_off.pipelineEnabled(isChecked);
                         if (isChecked) {
                             funfManager.enablePipeline(PIPELINE_NAME);
                             pipeline = (BasicPipeline) funfManager.getRegisteredPipeline(PIPELINE_NAME);
@@ -164,6 +165,7 @@ public class MainActivity extends Activity  implements Probe.DataListener{
     private EventLogger eventLogger;
     private PowerManager.WakeLock wakeLock;
     private Account account;
+    private AutoOff auto_off;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -182,6 +184,8 @@ public class MainActivity extends Activity  implements Probe.DataListener{
 
         enabledToggle = (ToggleButton) findViewById(R.id.enabledToggle);
         enabledToggle.setEnabled(false);
+
+        this.auto_off = new AutoOff(enabledToggle);
 
         account = CreateSyncAccount(this);
         mResolver = getContentResolver();
@@ -279,9 +283,6 @@ public class MainActivity extends Activity  implements Probe.DataListener{
         PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
         this.wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK,
                 "MyWakelockTag");
-
-
-
     }
 
     private void stopDownloads() {
@@ -377,6 +378,7 @@ public class MainActivity extends Activity  implements Probe.DataListener{
                 return true;
             }
         });
+
         return true;
     }
 
@@ -388,9 +390,9 @@ public class MainActivity extends Activity  implements Probe.DataListener{
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
+//        if (id == R.id.action_settings) {
+//            return true;
+//        }
 
         return super.onOptionsItemSelected(item);
     }
