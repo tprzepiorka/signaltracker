@@ -1,15 +1,15 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 21
-    buildToolsVersion "21.1.2"
+    compileSdkVersion 23
+    buildToolsVersion "23.0.1"
 
     defaultConfig {
         applicationId "tprz.signaltracker"
         minSdkVersion 19
-        targetSdkVersion 21
-        versionCode 5
-        versionName "1.4"
+        targetSdkVersion 23
+        versionCode 6
+        versionName "1.5"
     }
     buildTypes {
         release {
@@ -45,5 +45,5 @@ dependencies {
     compile 'com.github.gabrielemariotti.cards:cardslib-cards:2.0.1'
     compile 'com.googlecode.json-simple:json-simple:1.1'
     compile "com.mixpanel.android:mixpanel-android:4.5.3"
-    compile "com.google.android.gms:play-services:3.1+"
+    compile 'com.google.android.gms:play-services:8.4.0'
 }

@@ -112,6 +112,9 @@ public class TubeGraph {
 
             for(int i = 0; i < stations.length(); i++) {
                 JSONObject stationJson = stations.getJSONObject(i);
+                if(!stationJson.has("name")) {
+                    String nothing = "nothing";
+                }
                 String stationName = stationJson.getString("name");
                 if(stationMap.containsKey(stationName)) {
                     Station station = stationMap.get(stationName);
@@ -164,6 +167,9 @@ public class TubeGraph {
             }
             for(int i = 0; i < stations.length(); i++) {
                 JSONObject stationJson = stations.getJSONObject(i);
+                if(!stationJson.has("signalStrengths")) {
+                    String nothing = "nothing";
+                }
                 Map<String, Double> signalStrengths =  getSignalStrengths(stationJson.getJSONArray("signalStrengths"));
                 Set<String> ssids = getMacs(stationJson.getJSONArray("macs"));
 
