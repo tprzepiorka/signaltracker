@@ -26,6 +26,7 @@ import com.splunk.mint.Mint;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Locale;
 
 import it.gmariotti.cardslib.library.internal.Card;
 import it.gmariotti.cardslib.library.internal.CardThumbnail;
@@ -78,7 +79,6 @@ public class CellSignalCard extends Card {
         } else {
             disableCard();
         }
-
     }
 
     /**
@@ -88,7 +88,8 @@ public class CellSignalCard extends Card {
      * @param networkType True if the phone is on a GSM network, false if it is on CDMA
      */
     public void setSignal(int signalStrength, String networkType) {
-        String contentsText = String.format("%s\nASU: %d", networkType.isEmpty() ? "GSM" : networkType, signalStrength);
+        String contentsText = String.format(Locale.ENGLISH, "%s\nASU: %d", networkType.isEmpty()
+                ? "GSM" : networkType, signalStrength);
         if(cellSignalTextView == null) {
             return;
         }
@@ -127,7 +128,6 @@ public class CellSignalCard extends Card {
         cellSignalTextView = (TextView) parent.findViewById(R.id.cell_signal_text);
         this.chart = (LineChart) parent.findViewById(R.id.chart);
         this.imageView = (ImageView) parent.findViewById(R.id.imageView2);
-      // initChart();
 
         if(!this.chartSetup) {
             LineData data = new LineData();
@@ -151,7 +151,6 @@ public class CellSignalCard extends Card {
 
             chartSetup = true;
         }
-
     }
 
     /***
@@ -213,7 +212,7 @@ public class CellSignalCard extends Card {
         this.isEnabled = false;
         telephonyManager.listen(cellSignalListener, PhoneStateListener.LISTEN_NONE);
         if(cellSignalTextView != null) {
-            cellSignalTextView.setText("OFF");
+            cellSignalTextView.setText(R.string.OffButtonText);
         }
         CardThumbnail thumbnail = new CardThumbnail(getContext());
         thumbnail.setDrawableResource(cellSignalDrawables[5]);
@@ -259,7 +258,7 @@ public class CellSignalCard extends Card {
             }
 
             if(signalStrengthInt != 0 || lastReading == 0) {
-                MultiLogger.log(TAG, String.format("(signalStrength, %d)", signalStrength.getGsmSignalStrength()));
+                MultiLogger.log(TAG, String.format(Locale.ENGLISH, "(signalStrength, %d)", signalStrength.getGsmSignalStrength()));
             }
 
         }

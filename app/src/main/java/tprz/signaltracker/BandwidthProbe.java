@@ -9,7 +9,6 @@ import android.util.Log;
 
 import com.google.gson.JsonObject;
 
-
 import edu.mit.media.funf.Schedule;
 import edu.mit.media.funf.probe.Probe;
 
@@ -17,7 +16,6 @@ import edu.mit.media.funf.probe.Probe;
  * BandwidthProbe downloads a file and estimates the rate at which we have
  * been downloaded data so that we can get an estimated for downlink bandwidth speeds.
  */
-
 @Probe.DisplayName("BandwidthProbe")
 @Schedule.DefaultSchedule(interval=10)
 public class BandwidthProbe extends Probe.Base{
@@ -38,8 +36,6 @@ public class BandwidthProbe extends Probe.Base{
         stop();
     }
 
-
-
     @Override
     protected void onEnable() {
         // We kick off a download using the DownloadManager and routinely check how much data has been downloaded
@@ -58,9 +54,6 @@ public class BandwidthProbe extends Probe.Base{
         request.setTitle("Ubuntu Download");
 
         request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, "name-of-the-file.ext");
-
-        // get download service and enqueue file
-       // downloadId = manager.enqueue(request);
     }
 
     /***
@@ -129,6 +122,5 @@ public class BandwidthProbe extends Probe.Base{
 
         }
     }
-
 
 }

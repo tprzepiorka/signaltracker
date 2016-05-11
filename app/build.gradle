@@ -6,12 +6,17 @@ android {
 
     defaultConfig {
         applicationId "tprz.signaltracker"
-        minSdkVersion 19
+        minSdkVersion 21
         targetSdkVersion 23
         versionCode 6
         versionName "1.5"
+
+        multiDexEnabled true
     }
     buildTypes {
+        debug {
+            testCoverageEnabled = true
+        }
         release {
 //            runProguard false
 //            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'

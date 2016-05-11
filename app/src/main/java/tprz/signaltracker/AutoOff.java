@@ -1,20 +1,12 @@
 package tprz.signaltracker;
 
-import android.app.Notification;
 import android.os.Handler;
 import android.util.Log;
 import android.widget.ToggleButton;
 
-import java.util.logging.LogRecord;
-
-/**
- * Created by tomprz on 26/05/2015.
- */
 public class AutoOff {
 
     private static final String TAG = "AutoOff";
-    private final ToggleButton button;
-//    private final long AUTO_OFF_TIME = 5 * 1000;
     private final long AUTO_OFF_TIME = 60 * 60 * 1000;
     public static final boolean DEFAULT_ENABLED = true;
     private final Runnable task;
@@ -23,7 +15,6 @@ public class AutoOff {
 
     public AutoOff(final ToggleButton button) {
         this.handler = new Handler();
-        this.button = button;
         this.task = new Runnable() {
             @Override
             public void run() {

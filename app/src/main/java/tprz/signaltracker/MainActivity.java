@@ -10,7 +10,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -22,7 +21,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
-import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
@@ -41,7 +39,6 @@ import edu.mit.media.funf.pipeline.BasicPipeline;
 import edu.mit.media.funf.probe.Probe;
 import edu.mit.media.funf.probe.builtin.HardwareInfoProbe;
 import edu.mit.media.funf.probe.builtin.WifiProbe;
-import edu.mit.media.funf.storage.NameValueDatabaseHelper;
 import it.gmariotti.cardslib.library.internal.CardHeader;
 import it.gmariotti.cardslib.library.internal.CardThumbnail;
 import it.gmariotti.cardslib.library.view.CardViewNative;
@@ -54,12 +51,8 @@ public class MainActivity extends Activity  implements Probe.DataListener{
     private BasicPipeline pipeline;
     private WifiProbe wifiProbe;
     private CellSignalProbe cellSignalProbe;
-    private BandwidthProbe bandwidthProbe;
-    private HardwareInfoProbe hardwareInfoProbe;
     private ToggleButton enabledToggle;
     private Button archiveButton, scanNowButton;
-    private Button syncButton;
-    private TextView dataCountView;
     private Handler handler;
     public static final String AUTHORITY = "tprz.signaltracker.provider";
     public static final String ACCOUNT_TYPE = "tomprz.me";
@@ -69,7 +62,7 @@ public class MainActivity extends Activity  implements Probe.DataListener{
     public static final long SYNC_INTERVAL =
             SYNC_INTERVAL_IN_HOURS *
                     SECONDS_PER_HOUR;
-    private ContentResolver mResolver;
+
     private ServiceConnection funfManagerConn = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
@@ -78,8 +71,8 @@ public class MainActivity extends Activity  implements Probe.DataListener{
             Gson gson = funfManager.getGson();
             wifiProbe = gson.fromJson(new JsonObject(), WifiProbe.class);
             cellSignalProbe = gson.fromJson(new JsonObject(), CellSignalProbe.class);
-            bandwidthProbe = gson.fromJson(new JsonObject(), BandwidthProbe.class);
-            hardwareInfoProbe = gson.fromJson(new JsonObject(), HardwareInfoProbe.class);
+            BandwidthProbe bandwidthProbe = gson.fromJson(new JsonObject(), BandwidthProbe.class);
+            HardwareInfoProbe hardwareInfoProbe = gson.fromJson(new JsonObject(), HardwareInfoProbe.class);
             pipeline = (BasicPipeline) funfManager.getRegisteredPipeline(PIPELINE_NAME);
             wifiProbe.registerPassiveListener(MainActivity.this);
             hardwareInfoProbe.registerPassiveListener(MainActivity.this);
@@ -163,7 +156,6 @@ public class MainActivity extends Activity  implements Probe.DataListener{
     private StationLocationCard stationLocationCard;
     private EventLogger eventLogger;
     private PowerManager.WakeLock wakeLock;
-    private Account account;
     private AutoOff autoOff;
 
     @Override
@@ -174,20 +166,15 @@ public class MainActivity extends Activity  implements Probe.DataListener{
 
         eventLogger = EventLogger.getInstance(getApplicationContext());
 
-        // Displays the count of rows in the data
-        dataCountView = (TextView) findViewById(R.id.dataCountText);
-
         // Used to make interface changes on main thread
         handler = new Handler();
-
 
         enabledToggle = (ToggleButton) findViewById(R.id.enabledToggle);
         enabledToggle.setEnabled(false);
 
         this.autoOff = new AutoOff(enabledToggle);
 
-        account = CreateSyncAccount(this);
-        mResolver = getContentResolver();
+        Account account = CreateSyncAccount(this);
         ContentResolver.setSyncAutomatically(account, AUTHORITY, true);
         ContentResolver.addPeriodicSync(
                 account,
@@ -257,7 +244,7 @@ public class MainActivity extends Activity  implements Probe.DataListener{
             }
         });
 
-        syncButton = (Button) findViewById(R.id.sync_button);
+        Button syncButton = (Button) findViewById(R.id.sync_button);
         syncButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -393,21 +380,6 @@ public class MainActivity extends Activity  implements Probe.DataListener{
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-//        if (id == R.id.action_settings) {
-//            return true;
-//        }
-
-        return super.onOptionsItemSelected(item);
-    }
-
-    @Override
     protected void onDestroy() {
         MixpanelAPI.getInstance(getApplicationContext(), EventLogger.MIXPANEL_TOKEN).flush();
         super.onDestroy();
@@ -421,39 +393,9 @@ public class MainActivity extends Activity  implements Probe.DataListener{
     @Override
     public void onDataCompleted(IJsonObject probeConfig, JsonElement checkpoint) {
         Log.i("MainActivity", "onDataCompleted");
-        //updateScanCount();
+
         // Re-register to keep listening after probe completes.
         wifiProbe.registerPassiveListener(this);
-//        locationProbe.registerPassiveListener(this);
         cellSignalProbe.registerPassiveListener(this);
-//        bandwidthProbe.registerPassiveListener(this);
-//        hardwareInfoProbe.registerPassiveListener(this);
     }
-
-    private static final String TOTAL_COUNT_SQL = "SELECT count(*) FROM " + NameValueDatabaseHelper.DATA_TABLE.name;
-    /**
-     * Queries the database of the pipeline to determine how many rows of data we have recorded so far.
-     */
-    private void updateScanCount() {
-        // Query the pipeline db for the count of rows in the data table
-        SQLiteDatabase db = pipeline.getDb();
-        if(db.isOpen()) {
-            db.close();
-       }
-        Cursor mcursor = db.rawQuery(TOTAL_COUNT_SQL, null);
-        mcursor.moveToFirst();
-        final int count = mcursor.getInt(0);
-        mcursor.close();
-        // Update interface on main thread
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                dataCountView.setText("Data Count: " + count);
-            }
-        });
-
-
-    }
-
-
 }
